@@ -20,6 +20,8 @@ public class GuideMenu : MonoBehaviour
     public TMP_Text guideDescriptionText;
     public int guideProgress = 0;
     public MapManager mapManager;
+    public TMP_InputField guideGoToStepText;
+
 
     void Start()
     {
@@ -122,6 +124,28 @@ public class GuideMenu : MonoBehaviour
         guideTitleText.text = guideStepData[guideProgress].title;
         guideDescriptionText.text = guideStepData[guideProgress].description;
         guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
+    }
+
+    public void GoToStep()
+    {
+        int step = int.Parse(guideGoToStepText.text);
+        if(step > 0 && step <= guideStepData.Count)
+        {
+            GoToGuideStep(step-1);
+        }
+    }
+
+    public void GoToGuideStep(int guideIndex)
+    {
+        guideProgress = guideIndex;
+        guideIDText.text = (guideProgress+1).ToString() + "/" + guideStepData.Count;
+        guideTitleText.text = guideStepData[guideProgress].title;
+        guideDescriptionText.text = guideStepData[guideProgress].description;
+        guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
+        SaveGuideProgression();
+        int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
+        int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
+        mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
     }
 
     public void NextStep()
