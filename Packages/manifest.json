@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.sator-imaging.app-window-utility": "file:C:/Users/benja/Downloads/AppWindowUtility-main/AppWindowUtility-main",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "2.0.4",
     "com.unity.ide.rider": "3.0.21",
