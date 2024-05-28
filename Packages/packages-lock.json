@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.sator-imaging.app-window-utility": {
-      "version": "file:C:/Users/benja/Downloads/AppWindowUtility-main/AppWindowUtility-main",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {}
-    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,
