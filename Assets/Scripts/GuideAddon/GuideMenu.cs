@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System.Linq;
 
 public class GuideMenu : MonoBehaviour
 {
@@ -21,7 +22,7 @@ public class GuideMenu : MonoBehaviour
     public int guideProgress = 0;
     public MapManager mapManager;
     public TMP_InputField guideGoToStepText;
-
+    public TMP_InputField searchBar;
 
     void Start()
     {
@@ -65,10 +66,8 @@ public class GuideMenu : MonoBehaviour
         GUIUtility.systemCopyBuffer = Application.persistentDataPath + "/guides";
     }
 
-    public void ReloadGuideList()
+    private FileInfo[] GetGuides()
     {
-        RemoveGuides();
-        
         string saveFilePath = Application.persistentDataPath + "/guides/";
 
         if (!Directory.Exists(Path.GetDirectoryName(saveFilePath)))
@@ -80,6 +79,22 @@ public class GuideMenu : MonoBehaviour
         var fileInfo = info.GetFiles();
 
         Debug.Log("Files in guides folder: " + fileInfo.Length);
+
+        if (searchBar.text != "")
+        {
+            fileInfo = fileInfo.Where(e => e.Name.ToLower().Contains(searchBar.text.ToLower())).ToArray();
+        }
+
+        Debug.Log("Files shown: " + fileInfo.Length);
+
+        return fileInfo;
+    }
+
+    public void ReloadGuideList()
+    {
+        RemoveGuides();
+
+        var fileInfo = GetGuides();
 
         foreach (FileInfo file in fileInfo)
         {
