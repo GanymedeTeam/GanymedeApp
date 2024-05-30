@@ -2966,7 +2966,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 933245590}
         m_TargetAssemblyTypeName: GuideMenu, Assembly-CSharp
-        m_MethodName: ReloadGuideList
+        m_MethodName: BackToGuideSelection
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
