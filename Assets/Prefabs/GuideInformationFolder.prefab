@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3131126615786571464}
-  - component: {fileID: 529883500226594182}
+  - component: {fileID: -3472300766689641224}
   m_Layer: 5
-  m_Name: GuideInformation
+  m_Name: GuideInformationFolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37,7 +37,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &529883500226594182
+--- !u!114 &-3472300766689641224
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -46,11 +46,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3449490263196945788}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95bf78d2cdab89e409e79406429f634e, type: 3}
+  m_Script: {fileID: 11500000, guid: fd0c6b9bb6cb4f041883571f2a1768f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  guideNameText: {fileID: 8129496000651024756}
-  guideName: 
+  guideFolderText: {fileID: 8129496000651024756}
+  guideFolderName: 
 --- !u!1 &6538397577505723378
 GameObject:
   m_ObjectHideFlags: 0
@@ -63,7 +63,7 @@ GameObject:
   - component: {fileID: 640647923487626313}
   - component: {fileID: 8129496000651024756}
   m_Layer: 5
-  m_Name: GuideName
+  m_Name: GuideFolderName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 5958731961968409996}
   - component: {fileID: 2090732290992406248}
   m_Layer: 5
-  m_Name: GuideButton
+  m_Name: GuideFolderButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -307,9 +307,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 529883500226594182}
-        m_TargetAssemblyTypeName: GuideObject, Assembly-CSharp
-        m_MethodName: OpenGuide
+      - m_Target: {fileID: -3472300766689641224}
+        m_TargetAssemblyTypeName: GuideFolder, Assembly-CSharp
+        m_MethodName: OpenFolder
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -384,7 +384,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9ee351f9129272f4f80e9e50d6efa057, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a70ea908f22b9334980f2fa3e549388d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
