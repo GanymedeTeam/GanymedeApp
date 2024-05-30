@@ -72,6 +72,20 @@ public class GuideMenu : MonoBehaviour
 
     private DirectoryInfo[] GetGuidesFolders()
     {
+        bool RecursiveSearch(DirectoryInfo dir)
+        {
+            bool matchedSearch = false;
+            string[] files = Directory.GetFiles(@dir.FullName, "*.json", SearchOption.AllDirectories).Select(s => s.ToLowerInvariant()).ToArray();
+            string[] folders = Directory.GetDirectories(@dir.FullName, "*", SearchOption.AllDirectories).Select(s => s.ToLowerInvariant()).ToArray();
+            files = files.Select(e => e.Split('\\').Last()).ToArray();
+            folders = folders.Select(e => e.Split('\\').Last()).ToArray();
+            if (searchBar.text != "")
+            {
+                matchedSearch = Array.Exists(files, e => e.Contains(searchBar.text.ToLowerInvariant())) || Array.Exists(folders, e => e.Contains(searchBar.text.ToLowerInvariant()));
+            }
+            return matchedSearch;
+        }
+
         if (!Directory.Exists(Path.GetDirectoryName(guidesCurrentPath)))
         {
             Directory.CreateDirectory(Path.GetDirectoryName(guidesCurrentPath));
@@ -83,7 +97,7 @@ public class GuideMenu : MonoBehaviour
 
         if (searchBar.text != "")
         {
-            dirInfo = dirInfo.Where(e => e.Name.ToLower().Contains(searchBar.text.ToLower())).ToArray();
+            dirInfo = dirInfo.Where(e => e.Name.ToLower().Contains(searchBar.text.ToLower()) || RecursiveSearch(e)).ToArray();
         }
 
         Debug.Log("Folders in guides folder: " + dirInfo.Length);
