@@ -52,5 +52,5 @@
         "Temp/": true
     },
     "dotnet.preferCSharpExtension": true,
-    "dotnet.defaultSolution": "DofusHelper.sln"
+    "dotnet.defaultSolution": "GanymedeApp.sln"
 }
