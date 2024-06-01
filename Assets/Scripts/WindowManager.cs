@@ -12,7 +12,6 @@ public class WindowManager : MonoBehaviour
     public GameObject travelWindow;
     public GameObject guideWindow;
     public GameObject messageWindow;
-    public GameObject easySwitchWindow;
 
     public bool isInteractiveMapActive = false;
 
@@ -21,6 +20,7 @@ public class WindowManager : MonoBehaviour
         AppWindowUtility.Transparent = true;
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
+        AppWindowUtility.SetScreenSize(300, 450);
     }
 
     public void ToggleWindow()
@@ -56,14 +56,6 @@ public class WindowManager : MonoBehaviour
     {
         SelectedWindow.SetActive(false);
         SelectedWindow = messageWindow;
-        SelectedWindow.SetActive(true);
-        ActivateInteractiveMap(false);
-    }
-
-    public void EasySwitchWindowClicked()
-    {
-        SelectedWindow.SetActive(false);
-        SelectedWindow = easySwitchWindow;
         SelectedWindow.SetActive(true);
         ActivateInteractiveMap(false);
     }
