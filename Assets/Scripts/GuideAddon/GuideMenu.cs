@@ -139,8 +139,13 @@ public class GuideMenu : MonoBehaviour
             text = text.Remove(0, 1);
             text = text.Remove(text.Length - 1, 1);
             bool isTruncated = false;
-            while(text.Length > 30)
+            int maxSize = 30;
+            while(text.Length > maxSize)
             {
+                if(text.Split('/').Count() == 1)
+                {
+                    break;
+                }
                 isTruncated = true;
                 text = text.Substring(text.IndexOf('/', 2) + 1);
             }
