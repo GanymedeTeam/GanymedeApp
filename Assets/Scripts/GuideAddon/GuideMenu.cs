@@ -66,9 +66,9 @@ public class GuideMenu : MonoBehaviour
         GUIUtility.systemCopyBuffer = "/travel " + guideStepData[guideProgress].travelPosition;
     }
 
-    public void CopyGuideFileStorage()
+    public void OpenGuideFileStorage()
     {
-        GUIUtility.systemCopyBuffer = Application.persistentDataPath + "/guides";
+        System.Diagnostics.Process.Start("explorer.exe","/open,"+Application.persistentDataPath.Replace('/', '\\') + "\\guides");
     }
 
     private DirectoryInfo[] GetGuidesFolders()
