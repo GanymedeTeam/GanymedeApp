@@ -20,6 +20,7 @@ public class GuideMenu : MonoBehaviour
     public TMP_Text guideTravelPositionText;
     public TMP_Text guideTitleText;
     public TMP_Text guideDescriptionText;
+    public TMP_Text currentPath;
     public int guideProgress = 0;
     public MapManager mapManager;
     public TMP_InputField guideGoToStepText;
@@ -131,6 +132,27 @@ public class GuideMenu : MonoBehaviour
 
     public void ReloadGuideList()
     {
+        void FormatCurrentPath()
+        {
+            string text = guidesCurrentPath;
+            text = text.Replace(Application.persistentDataPath, "");
+            text = text.Remove(0, 1);
+            text = text.Remove(text.Length - 1, 1);
+            bool isTruncated = false;
+            while(text.Length > 30)
+            {
+                isTruncated = true;
+                text = text.Substring(text.IndexOf('/', 2) + 1);
+            }
+            text = text.Replace("/", " <b><color=\"yellow\">></b></color> ");
+            if (isTruncated)
+            {
+                text = "... <b><color=\"yellow\">></b></color> " + text;
+            }
+            Debug.Log(text);
+            currentPath.text = text;
+        }
+
         Debug.Log("Reloading list of guides!");
         RemoveGuides();
 
@@ -157,6 +179,9 @@ public class GuideMenu : MonoBehaviour
                 guideObject.Initialize(file.Name.Replace(".json", ""));
             }
         }
+
+        FormatCurrentPath();
+
     }
 
     void RemoveGuides()
