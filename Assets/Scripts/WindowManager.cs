@@ -60,6 +60,21 @@ public class WindowManager : MonoBehaviour
         ActivateInteractiveMap(false);
     }
 
+    public void DiscordButtonClicked()
+    {
+        Application.OpenURL("https://discord.gg/fxWuXB3dct");
+    }
+
+    public void TwitterButtonClicked()
+    {
+        Application.OpenURL("https://twitter.com/Pynx0");
+    }
+
+    public void WebsiteButtonClicked()
+    {
+        Application.OpenURL("https://ganymededofus.com");
+    }
+
     public void ActivateInteractiveMap(bool isActivate)
     {
         if (isActivate)
