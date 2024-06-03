@@ -18,7 +18,7 @@ public class DatabaseManager : MonoBehaviour
 
     void Awake()
     {
-        string databasePath = Path.Combine(Application.persistentDataPath, "MyDatabase.db");
+        string databasePath = Path.Combine(Application.persistentDataPath, "GanyBase.db");
         db = new SQLiteConnection(databasePath);
 
         // Initialize services
