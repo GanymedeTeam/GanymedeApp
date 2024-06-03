@@ -8,7 +8,7 @@ public class DatabaseTest : MonoBehaviour
 
     void Start()
     {
-        string databasePath = Path.Combine(Application.persistentDataPath, "MyDatabase.db");
+        string databasePath = Path.Combine(Application.persistentDataPath, "GanyBase.db");
         db = new SQLiteConnection(databasePath);
 
         // Création de la table Guide si elle n'existe pas déjà
