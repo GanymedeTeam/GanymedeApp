@@ -1,26 +1,26 @@
 using SQLite;
 using System.Collections.Generic;
 
-public class MonsterSubStepService
+public class MonsterSubStepsService
 {
     private SQLiteConnection db;
 
-    public MonsterSubStepService(SQLiteConnection dbConnection)
+    public MonsterSubStepsService(SQLiteConnection dbConnection)
     {
         db = dbConnection;
     }
 
-    public void CreateMonsterSubStep(MonsterSubStep monsterSubStep)
+    public void CreateMonsterSubStep(MonsterSubSteps monsterSubStep)
     {
         db.Insert(monsterSubStep);
     }
 
-    public MonsterSubStep GetMonsterSubStep(int id)
+    public MonsterSubSteps GetMonsterSubStep(int id)
     {
-        return db.Table<MonsterSubStep>().FirstOrDefault(mss => mss.Id == id);
+        return db.Table<MonsterSubSteps>().FirstOrDefault(mss => mss.id == id);
     }
 
-    public void UpdateMonsterSubStep(MonsterSubStep monsterSubStep)
+    public void UpdateMonsterSubStep(MonsterSubSteps monsterSubStep)
     {
         db.Update(monsterSubStep);
     }
@@ -34,8 +34,8 @@ public class MonsterSubStepService
         }
     }
 
-    public List<MonsterSubStep> GetAllMonsterSubSteps()
+    public List<MonsterSubSteps> GetAllMonsterSubSteps()
     {
-        return db.Table<MonsterSubStep>().ToList();
+        return db.Table<MonsterSubSteps>().ToList();
     }
 }

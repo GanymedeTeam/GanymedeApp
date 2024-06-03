@@ -1,26 +1,26 @@
 using SQLite;
 using System.Collections.Generic;
 
-public class ItemSubStepService
+public class ItemSubStepsService
 {
     private SQLiteConnection db;
 
-    public ItemSubStepService(SQLiteConnection dbConnection)
+    public ItemSubStepsService(SQLiteConnection dbConnection)
     {
         db = dbConnection;
     }
 
-    public void CreateItemSubStep(ItemSubStep itemSubStep)
+    public void CreateItemSubStep(ItemSubSteps itemSubStep)
     {
         db.Insert(itemSubStep);
     }
 
-    public ItemSubStep GetItemSubStep(int id)
+    public ItemSubSteps GetItemSubStep(int id)
     {
-        return db.Table<ItemSubStep>().FirstOrDefault(iss => iss.Id == id);
+        return db.Table<ItemSubSteps>().FirstOrDefault(iss => iss.id == id);
     }
 
-    public void UpdateItemSubStep(ItemSubStep itemSubStep)
+    public void UpdateItemSubStep(ItemSubSteps itemSubStep)
     {
         db.Update(itemSubStep);
     }
@@ -34,8 +34,8 @@ public class ItemSubStepService
         }
     }
 
-    public List<ItemSubStep> GetAllItemSubSteps()
+    public List<ItemSubSteps> GetAllItemSubSteps()
     {
-        return db.Table<ItemSubStep>().ToList();
+        return db.Table<ItemSubSteps>().ToList();
     }
 }
