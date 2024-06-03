@@ -70,3 +70,17 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# NuGet
+**/[Pp]ackages/*/
+**/[Pp]ackage[Cc]ache/*/
+**/[Pp]roject[Ll]ock[Jj]son.json
+**/[Aa]ssets/[Pp]lugins/[Nn]u[Gg]et/
+
+# SQLite
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
+# Nuget Packages
+**/[Nn]u[Gg]et[Pp]ackages/
