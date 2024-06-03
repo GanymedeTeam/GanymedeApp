@@ -12,7 +12,6 @@ public class WindowManager : MonoBehaviour
     public GameObject travelWindow;
     public GameObject guideWindow;
     public GameObject messageWindow;
-    public GameObject easySwitchWindow;
 
     public bool isInteractiveMapActive = false;
 
@@ -21,6 +20,7 @@ public class WindowManager : MonoBehaviour
         AppWindowUtility.Transparent = true;
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
+        AppWindowUtility.SetScreenSize(300, 450);
     }
 
     public void ToggleWindow()
@@ -60,12 +60,19 @@ public class WindowManager : MonoBehaviour
         ActivateInteractiveMap(false);
     }
 
-    public void EasySwitchWindowClicked()
+    public void DiscordButtonClicked()
     {
-        SelectedWindow.SetActive(false);
-        SelectedWindow = easySwitchWindow;
-        SelectedWindow.SetActive(true);
-        ActivateInteractiveMap(false);
+        Application.OpenURL("https://discord.gg/fxWuXB3dct");
+    }
+
+    public void TwitterButtonClicked()
+    {
+        Application.OpenURL("https://twitter.com/Pynx0");
+    }
+
+    public void WebsiteButtonClicked()
+    {
+        Application.OpenURL("https://ganymededofus.com");
     }
 
     public void ActivateInteractiveMap(bool isActivate)
