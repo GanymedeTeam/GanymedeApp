@@ -12,16 +12,16 @@ public class DatabaseTest : MonoBehaviour
         db = new SQLiteConnection(databasePath);
 
         // Création de la table Guide si elle n'existe pas déjà
-        db.CreateTable<Guide>();
+        db.CreateTable<Guides>();
 
         // Ajouter des utilisateurs pour tester
-        db.Insert(new Guide { Name = "Turquoise", Status = "DRAFT" });
-        db.Insert(new Guide { Name = "Emeraude", Status = "PUBLISHED" });
+        db.Insert(new Guides { name = "Turquoise", status = "DRAFT" });
+        db.Insert(new Guides { name = "Emeraude", status = "PUBLISHED" });
 
-        var guides = db.Table<Guide>();
+        var guides = db.Table<Guides>();
         foreach (var guide in guides)
         {
-            Debug.Log($"Guide ID: {guide.Id}, Name: {guide.Name}, Status: {guide.Status}");
+            Debug.Log($"Guide ID: {guide.id}, Name: {guide.name}, Status: {guide.status}");
         }
     }
 

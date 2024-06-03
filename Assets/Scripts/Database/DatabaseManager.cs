@@ -5,16 +5,16 @@ using UnityEngine;
 public class DatabaseManager : MonoBehaviour
 {
     private SQLiteConnection db;
-    public GuideService GuideService { get; private set; }
-    public StepService StepService { get; private set; }
-    public SubStepService SubStepService { get; private set; }
-    public DungeonService DungeonService { get; private set; }
-    public QuestService QuestService { get; private set; }
-    public ItemService ItemService { get; private set; }
-    public ItemSubStepService ItemSubStepService { get; private set; }
-    public MonsterService MonsterService { get; private set; }
-    public MonsterSubStepService MonsterSubStepService { get; private set; }
-    public UserService UserService { get; private set; }
+    public GuidesService GuidesService { get; private set; }
+    public StepsService StepsService { get; private set; }
+    public SubStepsService SubStepsService { get; private set; }
+    public DungeonsService DungeonsService { get; private set; }
+    public QuestsService QuestsService { get; private set; }
+    public ItemsService ItemsService { get; private set; }
+    public ItemSubStepsService ItemSubStepsService { get; private set; }
+    public MonstersService MonstersService { get; private set; }
+    public MonsterSubStepsService MonsterSubStepsService { get; private set; }
+    public UsersService UsersService { get; private set; }
 
     void Awake()
     {
@@ -22,28 +22,28 @@ public class DatabaseManager : MonoBehaviour
         db = new SQLiteConnection(databasePath);
 
         // Initialize services
-        GuideService = new GuideService(db);
-        StepService = new StepService(db);
-        SubStepService = new SubStepService(db);
-        DungeonService = new DungeonService(db);
-        QuestService = new QuestService(db);
-        ItemService = new ItemService(db);
-        ItemSubStepService = new ItemSubStepService(db);
-        MonsterService = new MonsterService(db);
-        MonsterSubStepService = new MonsterSubStepService(db);
-        UserService = new UserService(db);
+        GuidesService = new GuidesService(db);
+        StepsService = new StepsService(db);
+        SubStepsService = new SubStepsService(db);
+        DungeonsService = new DungeonsService(db);
+        QuestsService = new QuestsService(db);
+        ItemsService = new ItemsService(db);
+        ItemSubStepsService = new ItemSubStepsService(db);
+        MonstersService = new MonstersService(db);
+        MonsterSubStepsService = new MonsterSubStepsService(db);
+        UsersService = new UsersService(db);
 
         // Create tables if they don't exist
-        db.CreateTable<Guide>();
-        db.CreateTable<Step>();
-        db.CreateTable<SubStep>();
-        db.CreateTable<Dungeon>();
-        db.CreateTable<Quest>();
-        db.CreateTable<Item>();
-        db.CreateTable<ItemSubStep>();
-        db.CreateTable<Monster>();
-        db.CreateTable<MonsterSubStep>();
-        db.CreateTable<User>();
+        db.CreateTable<Guides>();
+        db.CreateTable<Steps>();
+        db.CreateTable<SubSteps>();
+        db.CreateTable<Dungeons>();
+        db.CreateTable<Quests>();
+        db.CreateTable<Items>();
+        db.CreateTable<ItemSubSteps>();
+        db.CreateTable<Monsters>();
+        db.CreateTable<MonsterSubSteps>();
+        db.CreateTable<Users>();
     }
 
     void OnDestroy()
