@@ -20,6 +20,11 @@ public class MonstersService
         return db.Table<Monsters>().FirstOrDefault(m => m.id == id);
     }
 
+    public Monsters GetMonsterByApiId(int apiId)
+    {
+        return db.Table<Monsters>().FirstOrDefault(monster => monster.apiId == apiId);
+    }
+
     public void UpdateMonster(Monsters monster)
     {
         db.Update(monster);

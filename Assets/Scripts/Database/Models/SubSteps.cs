@@ -1,5 +1,6 @@
 using SQLite;
 using System;
+using System.Collections.Generic;
 
 public class SubSteps
 {
@@ -19,7 +20,7 @@ public class SubSteps
     [MaxLength(10)]
     public string contentType { get; set; }
 
-    public int contentId { get; set; }
+    public int? contentId { get; set; }
 
     [MaxLength(1024)]
     public string text { get; set; }
@@ -27,5 +28,17 @@ public class SubSteps
     public DateTime updatedAt { get; set; }
 
     [Ignore]
-    public object content { get; set; }  // Content could be Dungeon, Quest, SubStepItem or SubStepMonster
+    public List<ItemSubSteps> itemSubSteps { get; set; }  // Liste des ItemSubSteps
+
+    [Ignore]
+    public List<MonsterSubSteps> monsterSubSteps { get; set; }  // Liste des ItemSubSteps
+
+    [Ignore]
+    public object content { get; set; } // Utiliser 'object' pour un contenu polymorphique ou définir des types spécifiques
+
+    [Ignore]
+    public Dungeons dungeonContent { get; set; }
+
+    [Ignore]
+    public Quests questContent { get; set; }
 }

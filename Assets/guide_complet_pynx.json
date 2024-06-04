@@ -1,0 +1,442 @@
+{
+    "id":1,
+    "user_id":1,
+    "name":"Guide Complet Pynx",
+    "status":"PUBLISHED",
+    "description":"Le tuto de PYNX",
+    "created_at":"2024-05-28T21:15:59.000000Z",
+    "updated_at":"2024-05-29T11:59:37.000000Z",
+    "deleted_at":null,
+    "steps":[
+       {
+          "id":1,
+          "guide_id":1,
+          "name":"D\u00e9but du guide",
+          "order":1,
+          "pos_x":0,
+          "pos_y":0,
+          "created_at":"2024-05-28T21:20:59.000000Z",
+          "updated_at":"2024-05-29T11:39:41.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":1,
+                "type":"text",
+                "step_id":1,
+                "order":1,
+                "text":"Bienvenue dans ce guide. Il a pour but de vous permettre de faire votre aventure compl\u00e8te sans perdre de temps.\\n\\nAu fur et \u00e0 mesure des \u00e9tapes, vous verrez les informations importantes <color=#ffff00>en jaune<\/color> et la position de la prochaine \u00e9tape \u00e0 la fin de la description <color=#62ACFF>en bleu<\/color>\nPar moment le guide vous demandera de mettre de cot\u00e9 des ressources. Elles seront utilis\u00e9es plus tard dans des qu\u00eates, libre \u00e0 vous de les vendre \u00e0 la place, mais vous risquez de devoir les drop \u00e0 nouveau plus tard\nSi vous voyez la moindre erreur, n h\u00e9sitez pas \u00e0 me le dire ( <color=#ffff00>pynx_<\/color> sur discord ) en fournissant l \u00e9tape \u00e0 laquelle vous \u00eates",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-28T21:32:50.000000Z",
+                "updated_at":"2024-06-02T17:57:27.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":18,
+                "type":"item",
+                "step_id":1,
+                "order":2,
+                "text":null,
+                "content_id":6,
+                "content_type":"App\\Models\\Dungeon",
+                "created_at":"2024-05-29T15:35:11.000000Z",
+                "updated_at":"2024-05-30T14:26:24.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":{
+                   "id":6,
+                   "dofusdb_id":8,
+                   "name":"Grange du Tournesol Affam\u00e9",
+                   "level":20,
+                   "image_url":null,
+                   "success":null,
+                   "created_at":"2024-05-28T20:48:00.000000Z",
+                   "updated_at":"2024-05-28T20:48:00.000000Z"
+                }
+             },
+             {
+                "id":15,
+                "type":"text",
+                "step_id":1,
+                "order":3,
+                "text":"Parlez au <color=#ffff00>Capitaine des Kerubims<\/color> pour <color=#ffff00>annoncer votre victoire<\/color> et valider la qu\u00eate <color=#ffff00>Mise \u00e0 l'\u00e9preuve<\/color>\\n\\n- Reparlez lui ensuite pour d\u00e9buter la qu\u00eate <color=#ffff00>Champs de bataille<\/color>\\n\\n- sortez ensuite puis allez <color=#62ACFF>1 map en bas et 1 \u00e0 gauche<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:32:06.000000Z",
+                "updated_at":"2024-05-29T15:32:06.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             }
+          ]
+       },
+       {
+          "id":2,
+          "guide_id":1,
+          "name":"Tuto Incarnam",
+          "order":2,
+          "pos_x":-3,
+          "pos_y":-3,
+          "created_at":"2024-05-29T11:44:11.000000Z",
+          "updated_at":"2024-05-29T17:42:31.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":2,
+                "type":"text",
+                "step_id":2,
+                "order":1,
+                "text":"Terminez le tutoriel de <color=#ffff00>Ganym\u00e8de<\/color> compl\u00e8tement jusqu'a sortir du temple devant <color=#ffff00>Lykhen Lesurviven<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T11:44:40.000000Z",
+                "updated_at":"2024-05-29T11:44:40.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             }
+          ]
+       },
+       {
+          "id":3,
+          "guide_id":1,
+          "name":"Incarnam",
+          "order":3,
+          "pos_x":-1,
+          "pos_y":-3,
+          "created_at":"2024-05-29T11:59:15.000000Z",
+          "updated_at":"2024-05-29T17:42:49.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":3,
+                "type":"item",
+                "step_id":3,
+                "order":1,
+                "text":"Pendant tous les qu\u00eates d'incarnam, vous allez avoir besoin de ressources de m\u00e9tier, la majorit\u00e9 pourront \u00eatre r\u00e9colt\u00e9es \u00e0 des moments pr\u00e9cis, mais n'h\u00e9sitez pas \u00e0 en ramasser si vous les voyez sur votre chemin, \u00e7a permettra de progresser plus vite\\n\\n<color=#ffff00>Si vous voulez les acheter<\/color> pour gagner du temps, voici la liste",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T11:45:24.000000Z",
+                "updated_at":"2024-05-29T12:03:23.000000Z",
+                "deleted_at":null,
+                "items":[
+                   {
+                      "id":248,
+                      "dofusdb_id":519,
+                      "name":"Poudre de Perlinpainpain",
+                      "image_url":"https:\/\/api.dofusdb.fr\/img\/items\/48002.png",
+                      "created_at":"2024-05-28T20:44:03.000000Z",
+                      "updated_at":"2024-05-28T20:44:03.000000Z",
+                      "pivot":{
+                         "sub_step_id":3,
+                         "item_id":248,
+                         "quantity":6
+                      }
+                   }
+                ],
+                "content":null
+             },
+             {
+                "id":4,
+                "type":"text",
+                "step_id":3,
+                "order":2,
+                "text":"Parlez \u00e0 <color=#ffff00>Lykhen Lesurviven<\/color> pour prendre sa qu\u00eate <color=#ffff00>Le village dans les nuages<\/color> puis allez <color=#ffff00>1 map \u00e0 droite<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T12:03:36.000000Z",
+                "updated_at":"2024-05-29T12:03:36.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":5,
+                "type":"text",
+                "step_id":3,
+                "order":3,
+                "text":"Parlez \u00e0 <color=#ffff00>Ternette Nhin<\/color> pour faire progresser la qu\u00eate <color=#ffff00>Le village dans les nuages<\/color> avec l'option <color=#ffff00>se pr\u00e9senter<\/color> \\n- Reparlez lui pour prendre la qu\u00eate <color=#ffff00>Transport peu commun<\/color> puis allez <color=#62ACFF>1 map \u00e0 droite<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T12:03:56.000000Z",
+                "updated_at":"2024-05-29T12:03:56.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":6,
+                "type":"text",
+                "step_id":3,
+                "order":4,
+                "text":"Parlez \u00e0 <color=#ffff00>Berb Nhin<\/color> pour faire progresser la qu\u00eate <color=#ffff00>Le village dans les nuages<\/color> avec l'option <color=#ffff00>se pr\u00e9senter<\/color>\\n\\n- Reparlez lui pour prendre la qu\u00eate <color=#ffff00>Produits Naturels<\/color>\\n\\n- Cliquez sur l avis de recherche placard\u00e9 au mur de la taverne et acceptez la qu\u00eate <color=#ffff00>Mort au rat !<\/color> puis entrez <color=#ffff00>dans la taverne<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T12:04:27.000000Z",
+                "updated_at":"2024-05-29T15:21:10.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":7,
+                "type":"text",
+                "step_id":3,
+                "order":5,
+                "text":"Parlez \u00e0 <color=#ffff00>Grobid<\/color> pour faire progresser la qu\u00eate <color=#ffff00>Le village dans les nuages<\/color> avec l option <color=#ffff00>se pr\u00e9senter<\/color>\\n\\n- Reparlez lui pour acheter une <color=#ffff00>Limonade<\/color> \u00e0 1 kamas ainsi que <color=#ffff00>1 lailait<\/color> \u00e0 4 kamas puis dirigez vous vers <color=#ffff00>la cave de la taverne<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:21:50.000000Z",
+                "updated_at":"2024-05-29T15:21:50.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             }
+          ]
+       },
+       {
+          "id":4,
+          "guide_id":1,
+          "name":"Taverne Incarnam",
+          "order":4,
+          "pos_x":0,
+          "pos_y":-3,
+          "created_at":"2024-05-29T15:22:06.000000Z",
+          "updated_at":"2024-05-29T17:42:54.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":8,
+                "type":"text",
+                "step_id":4,
+                "order":1,
+                "text":"Parlez \u00e0 <color=#ffff00>Grobid<\/color> pour faire progresser la qu\u00eate <color=#ffff00>Le village dans les nuages<\/color> avec l option <color=#ffff00>se pr\u00e9senter<\/color>\\n\\n- Reparlez lui pour acheter une <color=#ffff00>Limonade<\/color> \u00e0 1 kamas ainsi que <color=#ffff00>1 lailait<\/color> \u00e0 4 kamas puis dirigez vous vers <color=#ffff00>la cave de la taverne<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:22:33.000000Z",
+                "updated_at":"2024-05-29T15:22:33.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":9,
+                "type":"text",
+                "step_id":4,
+                "order":2,
+                "text":"Cliquez deux fois sur le tonneau de bi\u00e8re\\n\\n- Combattez le Rat Soiff\u00e9 \\n\\nAttention, le rat est assez fort mais n a que 3 PM et frappe uniquement au corps a corps. Il peut aussi se soigner. Si ce combat est trop difficile pour votre classe, revenez plus tard, cette qu\u00eate n est un pr\u00e9requis pour aucune autre",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:22:48.000000Z",
+                "updated_at":"2024-05-29T15:22:48.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":10,
+                "type":"text",
+                "step_id":4,
+                "order":3,
+                "text":"Parler \u00e0 <color=#ffff00>Grobid<\/color> pour <color=#ffff00>Annoncer avoir vaincu le rat<\/color> et valider la qu\u00eate <color=#ffff00>Mort au rat !<\/color>\\n\\n- Sortez de la taverne puis allez <color=#62ACFF>1 map \u00e0 droite<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:23:04.000000Z",
+                "updated_at":"2024-05-29T15:23:04.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             }
+          ]
+       },
+       {
+          "id":5,
+          "guide_id":1,
+          "name":"Incarnam",
+          "order":5,
+          "pos_x":1,
+          "pos_y":-3,
+          "created_at":"2024-05-29T15:23:50.000000Z",
+          "updated_at":"2024-05-29T17:43:04.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":11,
+                "type":"text",
+                "step_id":5,
+                "order":1,
+                "text":"Parlez \u00e0 <color=#ffff00>Hollie Brok<\/color> et dites <color=#ffff00>se pr\u00e9senter<\/color> pour progresser dans la qu\u00eate <color=#ffff00>Le village dans les nuages<\/color>\\n\\n- Descendez ensuite sur la carte du dessous puis allez <color=#62ACFF>1 map en bas<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:24:05.000000Z",
+                "updated_at":"2024-05-29T15:24:05.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":12,
+                "type":"text",
+                "step_id":5,
+                "order":2,
+                "text":"Parlez \u00e0 <color=#ffff00>Anta Brok<\/color> pour lancer la qu\u00eate <color=#ffff00>La galette secr\u00e8te<\/color>\\n\\n- Lisez la recette de la galette dans vos objets de qu\u00eates puis allez <color=#62ACFF>1 map \u00e0 gauche et 2 map en haut<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:30:13.000000Z",
+                "updated_at":"2024-05-29T15:30:13.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             }
+          ]
+       },
+       {
+          "id":6,
+          "guide_id":1,
+          "name":"Milice",
+          "order":6,
+          "pos_x":0,
+          "pos_y":-4,
+          "created_at":"2024-05-29T15:30:31.000000Z",
+          "updated_at":"2024-05-29T17:43:12.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":13,
+                "type":"text",
+                "step_id":6,
+                "order":1,
+                "text":"Entrez dans la milice et parlez au <color=#ffff00>Capitaine des Kerubims<\/color> pour <color=#ffff00>se pr\u00e9senter<\/color> puis reparlez lui et choisissez l'option <color=#ffff00>Proposer vos services<\/color> pour prendre la qu\u00eate <color=#ffff00>Mise \u00e0 l'\u00e9preuve<\/color>",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:30:40.000000Z",
+                "updated_at":"2024-05-29T15:30:40.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             },
+             {
+                "id":14,
+                "type":"text",
+                "step_id":6,
+                "order":2,
+                "text":"Prenez <color=#ffff00>l'escalier<\/color> pour aller \u00e0 l'\u00e9tage\\n\\n- Lancez le combat contre <color=#ffff00>Caporale Mynerve<\/color> puis <color=#ffff00>reparlez lui<\/color> ensuite pour valider l'\u00e9tape avant de redescendre <color=#ffff00>les escaliers<\/color>\\n\\nCe combat n'est pas tr\u00e8s difficile, la caporale n'a que 2 PM et ne frappe qu'en ligne, Emp\u00eachez l\u00e0 de s'alligner avec vous et c'est gagn\u00e9",
+                "content_id":null,
+                "content_type":null,
+                "created_at":"2024-05-29T15:31:40.000000Z",
+                "updated_at":"2024-05-29T15:31:45.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":null
+             }
+          ]
+       },
+       {
+          "id":7,
+          "guide_id":1,
+          "name":"Donjon Incarnam",
+          "order":7,
+          "pos_x":5,
+          "pos_y":-1,
+          "created_at":"2024-05-29T15:32:50.000000Z",
+          "updated_at":"2024-05-29T17:43:43.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":16,
+                "type":"dungeon",
+                "step_id":7,
+                "order":1,
+                "text":"Tape le donjon !",
+                "content_id":77,
+                "content_type":"App\\Models\\Dungeon",
+                "created_at":"2024-05-29T15:33:06.000000Z",
+                "updated_at":"2024-05-29T15:33:06.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":{
+                   "id":77,
+                   "dofusdb_id":90,
+                   "name":"Crypte de Kardorim",
+                   "level":10,
+                   "image_url":null,
+                   "success":null,
+                   "created_at":"2024-05-28T20:48:00.000000Z",
+                   "updated_at":"2024-05-28T20:48:00.000000Z"
+                }
+             }
+          ]
+       },
+       {
+          "id":8,
+          "guide_id":1,
+          "name":"Donjon des champs",
+          "order":8,
+          "pos_x":7,
+          "pos_y":-24,
+          "created_at":"2024-05-29T15:34:40.000000Z",
+          "updated_at":"2024-05-29T17:44:06.000000Z",
+          "deleted_at":null,
+          "sub_steps":[
+             {
+                "id":17,
+                "type":"quest",
+                "step_id":8,
+                "order":1,
+                "text":"Parle a Meta grosbill",
+                "content_id":1692,
+                "content_type":"App\\Models\\Quest",
+                "created_at":"2024-05-29T15:35:02.000000Z",
+                "updated_at":"2024-05-29T15:35:02.000000Z",
+                "deleted_at":null,
+                "items":[
+                   
+                ],
+                "content":{
+                   "id":1692,
+                   "quest_category_id":2,
+                   "name":"Le tour du monde",
+                   "dofusdb_id":2005,
+                   "last_updated_at":"2023-05-02 07:46:36",
+                   "created_at":"2024-05-28T20:47:45.000000Z",
+                   "updated_at":"2024-05-28T20:47:45.000000Z"
+                }
+             }
+          ]
+       }
+    ]
+ }
