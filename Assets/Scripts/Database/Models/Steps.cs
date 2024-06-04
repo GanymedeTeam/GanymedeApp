@@ -14,6 +14,7 @@ public class Steps
 
     [MaxLength(255)]
     public string name { get; set; }
+    public string map { get; set; }
 
     public int position { get; set; }
 

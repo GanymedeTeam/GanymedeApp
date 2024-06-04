@@ -8,6 +8,7 @@ public class Guides
     public int id { get; set; }
 
     public int apiId { get; set; }
+    public int userId { get; set; }
 
     [MaxLength(255)]
     public string name { get; set; }

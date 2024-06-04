@@ -6,12 +6,13 @@ public class ItemSubSteps
     [PrimaryKey, AutoIncrement]
     public int id { get; set; }
 
-    public int resourceId { get; set; }
     public int apiId { get; set; }
 
     public int quantity { get; set; }
 
+    [Indexed]
     public int subStepId { get; set; }
+    public int resourceId { get; set; }
 
     public DateTime updatedAt { get; set; }
 
