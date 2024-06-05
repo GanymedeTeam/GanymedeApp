@@ -1,5 +1,6 @@
 using SQLite;
 using System;
+using System.Collections.Generic;
 
 public class Monsters
 {
@@ -8,12 +9,9 @@ public class Monsters
 
     public int dofusDbId { get; set; }
     public int apiId { get; set; }
-
-    [MaxLength(255)]
     public string name { get; set; }
-
-    [MaxLength(1024)]
     public string imageUrl { get; set; }
 
-    public DateTime updatedAt { get; set; }
+    [Ignore]
+    public virtual List<MonsterSubSteps> monsterSubSteps { get; set; }
 }

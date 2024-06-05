@@ -53,7 +53,6 @@ public class DungeonsService
             existingDungeon.dofusDbId = newDungeon.dofusDbId;
             existingDungeon.name = newDungeon.name;
             existingDungeon.level = newDungeon.level;
-            existingDungeon.updatedAt = newDungeon.updatedAt;
             db.Update(existingDungeon);
         }
         else

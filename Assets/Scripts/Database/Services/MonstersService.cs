@@ -15,14 +15,14 @@ public class MonstersService
         db.Insert(monster);
     }
 
-    public Monsters GetMonster(int id)
-    {
-        return db.Table<Monsters>().FirstOrDefault(m => m.id == id);
-    }
-
     public Monsters GetMonsterByApiId(int apiId)
     {
-        return db.Table<Monsters>().FirstOrDefault(monster => monster.apiId == apiId);
+        return db.Table<Monsters>().FirstOrDefault(m => m.apiId == apiId);
+    }
+
+    public Monsters GetMonsterById(int id)
+    {
+        return db.Find<Monsters>(id);
     }
 
     public void UpdateMonster(Monsters monster)
@@ -32,7 +32,7 @@ public class MonstersService
 
     public void DeleteMonster(int id)
     {
-        var monster = GetMonster(id);
+        var monster = GetMonsterById(id);
         if (monster != null)
         {
             db.Delete(monster);

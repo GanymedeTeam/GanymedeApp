@@ -15,14 +15,14 @@ public class ItemsService
         db.Insert(item);
     }
 
-    public Items GetItem(int id)
-    {
-        return db.Table<Items>().FirstOrDefault(i => i.id == id);
-    }
-
     public Items GetItemByApiId(int apiId)
     {
-        return db.Table<Items>().FirstOrDefault(item => item.apiId == apiId);
+        return db.Table<Items>().FirstOrDefault(i => i.apiId == apiId);
+    }
+
+    public Items GetItemById(int id)
+    {
+        return db.Find<Items>(id);
     }
 
     public void UpdateItem(Items item)
@@ -32,7 +32,7 @@ public class ItemsService
 
     public void DeleteItem(int id)
     {
-        var item = GetItem(id);
+        var item = GetItemById(id);
         if (item != null)
         {
             db.Delete(item);
@@ -42,24 +42,5 @@ public class ItemsService
     public List<Items> GetAllItems()
     {
         return db.Table<Items>().ToList();
-    }
-
-    public void AddOrUpdateItem(Items newItem)
-    {
-        var existingItem = GetItemByApiId(newItem.apiId);
-        if (existingItem != null)
-        {
-            // Mettre à jour l'item existant
-            existingItem.dofusDbId = newItem.dofusDbId;
-            existingItem.name = newItem.name;
-            existingItem.imageUrl = newItem.imageUrl;
-            existingItem.updatedAt = newItem.updatedAt;
-            db.Update(existingItem);
-        }
-        else
-        {
-            // Insérer le nouvel item
-            db.Insert(newItem);
-        }
     }
 }

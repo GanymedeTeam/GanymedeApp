@@ -51,88 +51,27 @@ public class GuidesService
         return db.Table<Guides>().ToList();
     }
 
-
-    public void AddGuide(Guides guide)
+    public void LoadRelations(Guides guide)
     {
-        if (guide == null)
+        guide.steps = db.Table<Steps>().Where(s => s.guideId == guide.id).ToList();
+        foreach (var step in guide.steps)
         {
-            Debug.LogError("Guide is null");
-            return;
-        }
-
-
-        db.Insert(guide);
-        Debug.Log("Guide inserted successfully.");
-
-        if (guide.steps != null)
-        {
-            foreach (var step in guide.steps)
+            step.subSteps = db.Table<SubSteps>().Where(ss => ss.stepId == step.id).ToList();
+            foreach (var subStep in step.subSteps)
             {
-                step.guideId = guide.id;  // Assure la liaison de l'étape au guide
-                db.Insert(step);
-                Debug.Log("Step inserted successfully.");
+                subStep.itemSubSteps = db.Table<ItemSubSteps>().Where(iss => iss.subStepId == subStep.id).ToList();
+                subStep.monsterSubSteps = db.Table<MonsterSubSteps>().Where(mss => mss.subStepId == subStep.id).ToList();
 
-                if (step.subSteps != null)
+                if (subStep.dungeonContentId.HasValue)
                 {
-                    foreach (var subStep in step.subSteps)
-                    {
-                        subStep.stepId = step.id;  // Assure la liaison de la sous-étape à l'étape
-                        db.Insert(subStep);
-                        Debug.Log("SubStep inserted successfully.");
+                    subStep.dungeonContent = db.Find<Dungeons>(subStep.dungeonContentId.Value);
+                }
 
-                        if (subStep.itemSubSteps != null)
-                        {
-                            foreach (var itemSubStep in subStep.itemSubSteps)
-                            {
-                                itemSubStep.subStepId = subStep.id;
-                                db.Insert(itemSubStep);
-                            }
-                            Debug.Log("ItemSubSteps inserted successfully.");
-                        }
-
-                        if (subStep.content != null)
-                        {
-                            db.Insert(subStep.content);
-                            Debug.Log("Content inserted successfully.");
-                        }
-                    }
+                if (subStep.questContentId.HasValue)
+                {
+                    subStep.questContent = db.Find<Quests>(subStep.questContentId.Value);
                 }
             }
         }
-    }
-
-    public void DeleteGuideAndDependencies(int guideId)
-    {
-        var guide = GetGuide(guideId);
-        if (guide == null) return;
-
-        // Suppression des sous-étapes liées aux étapes du guide
-        var steps = db.Table<Steps>().Where(s => s.guideId == guideId).ToList();
-        foreach (var step in steps)
-        {
-            var subSteps = db.Table<SubSteps>().Where(ss => ss.stepId == step.id).ToList();
-            foreach (var subStep in subSteps)
-            {           
-                // Suppression des ItemSubSteps avant de supprimer les SubSteps eux-mêmes
-                var itemSubSteps = db.Table<ItemSubSteps>().Where(iss => iss.subStepId == subStep.id).ToList();
-                foreach (var itemSubStep in itemSubSteps)
-                {
-                    db.Delete(itemSubStep);
-                }
-
-                // // Suppression des MonsterSubSteps avant de supprimer les SubSteps eux-mêmes
-                // var monsterSubSteps = db.Table<MonsterSubSteps>().Where(mss => mss.subStepId == subStep.id).ToList();
-                // foreach (var monsterSubStep in monsterSubSteps)
-                // {
-                //     db.Delete(monsterSubStep);
-                // }
-
-                db.Delete(subStep);
-            }
-            db.Delete(step);
-        }
-
-        // Supprimer le guide
-        db.Delete(guide);
     }
 }

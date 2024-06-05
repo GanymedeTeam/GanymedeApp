@@ -52,7 +52,6 @@ public class QuestsService
             // Mettre à jour la quest existante
             existingQuest.dofusDbId = newQuest.dofusDbId;
             existingQuest.name = newQuest.name;
-            existingQuest.updatedAt = newQuest.updatedAt;
             db.Update(existingQuest);
         }
         else

@@ -1,8 +1,10 @@
+using UnityEngine;
+using UnityEngine.Networking;
+using System.Collections;
 using SQLite;
 using System;
-using System.Linq;
 using System.IO;
-using UnityEngine;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 public class DatabaseManager : MonoBehaviour
@@ -47,6 +49,8 @@ public class DatabaseManager : MonoBehaviour
         db.CreateTable<Monsters>();
         db.CreateTable<MonsterSubSteps>();
         db.CreateTable<Users>();
+
+        StartCoroutine(SyncAndThenSyncGuides());
     }
 
     void OnDestroy()
@@ -54,14 +58,210 @@ public class DatabaseManager : MonoBehaviour
         db.Close();
     }
 
-    public void LoadDataFromJson(string jsonPath)
+    // SYNCHRO
+    private IEnumerator SyncAndThenSyncGuides()
     {
-        Debug.Log("Chemin du fichier JSON : " + jsonPath);
+        yield return StartCoroutine(SyncDataFromApi("https://ganymede-dofus.com/api/sync"));
+        StartSyncGuides();
+    }
+
+    private IEnumerator SyncDataFromApi(string url)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
+        {
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Error: " + webRequest.error);
+            }
+            else
+            {
+                Debug.Log("Received: " + webRequest.downloadHandler.text);
+                ProcessApiResponse(webRequest.downloadHandler.text);
+            }
+        }
+    }
+
+        private void ProcessApiResponse(string jsonResponse)
+    {
+        JObject jsonObj = JObject.Parse(jsonResponse);
+
+        if (jsonObj["quests"] is JArray questsArray)
+        {
+            foreach (JObject quest in questsArray)
+            {
+                ProcessQuest(quest);
+            }
+        }
+
+        if (jsonObj["monsters"] is JArray monstersArray)
+        {
+            foreach (JObject monster in monstersArray)
+            {
+                ProcessMonster(monster);
+            }
+        }
+
+        if (jsonObj["dungeons"] is JArray dungeonsArray)
+        {
+            foreach (JObject dungeon in dungeonsArray)
+            {
+                ProcessDungeon(dungeon);
+            }
+        }
+
+        if (jsonObj["items"] is JArray itemsArray)
+        {
+            foreach (JObject item in itemsArray)
+            {
+                ProcessItem(item);
+            }
+        }
+    }
+
+    public void StartSyncGuides()
+    {
+        StartCoroutine(SyncGuides("https://ganymede-dofus.com/api/guides"));
+    }
+
+    private IEnumerator SyncGuides(string url)
+    {
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
+        {
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Error: " + webRequest.error);
+            }
+            else
+            {
+                Debug.Log("Received Guides List: " + webRequest.downloadHandler.text);
+                JArray guidesArray = JArray.Parse(webRequest.downloadHandler.text);
+                foreach (JObject guide in guidesArray)
+                {
+                    int guideId = (int)guide["id"];
+                    StartCoroutine(getAPIGuide(guideId));
+                }
+            }
+        }
+    }
+
+    public IEnumerator getAPIGuide(int id)
+    {
+        string url = $"https://ganymede-dofus.com/api/guides/{id}";
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
+        {
+            yield return webRequest.SendWebRequest();
+
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Error: " + webRequest.error);
+            }
+            else
+            {
+                Debug.Log($"Received Guide {id}: " + webRequest.downloadHandler.text);
+                LoadDataFromJson(webRequest.downloadHandler.text);
+            }
+        }
+    }
+
+    private void ProcessQuest(JObject quest)
+    {
+        Quests newQuest = new Quests
+        {
+            dofusDbId = (int)quest["dofusdb_id"],
+            apiId = (int)quest["id"],
+            name = (string)quest["name"]
+        };
+
+        Quests existingQuest = QuestsService.GetQuestByApiId(newQuest.apiId);
+        if (existingQuest == null)
+        {
+            db.Insert(newQuest);
+        }
+        else
+        {
+            newQuest.id = existingQuest.id;
+            db.Update(newQuest);
+        }
+    }
+
+    private void ProcessMonster(JObject monster)
+    {
+        Monsters newMonster = new Monsters
+        {
+            dofusDbId = (int)monster["dofusdb_id"],
+            apiId = (int)monster["id"],
+            name = (string)monster["name"],
+            imageUrl = (string)monster["image_url"]
+        };
+
+        Monsters existingMonster = MonstersService.GetMonsterByApiId(newMonster.apiId);
+        if (existingMonster == null)
+        {
+            db.Insert(newMonster);
+        }
+        else
+        {
+            newMonster.id = existingMonster.id;
+            db.Update(newMonster);
+        }
+    }
+
+    private void ProcessDungeon(JObject dungeon)
+    {
+        Dungeons newDungeon = new Dungeons
+        {
+            dofusDbId = (int)dungeon["dofusdb_id"],
+            apiId = (int)dungeon["id"],
+            name = (string)dungeon["name"],
+            level = (int)dungeon["level"]
+        };
+
+        Dungeons existingDungeon = DungeonsService.GetDungeonByApiId(newDungeon.apiId);
+        if (existingDungeon == null)
+        {
+            db.Insert(newDungeon);
+        }
+        else
+        {
+            newDungeon.id = existingDungeon.id;
+            db.Update(newDungeon);
+        }
+    }
+
+    private void ProcessItem(JObject item)
+    {
+        Items newItem = new Items
+        {
+            dofusDbId = (int)item["dofusdb_id"],
+            apiId = (int)item["id"],
+            name = (string)item["name"],
+            imageUrl = (string)item["image_url"]
+        };
+
+        Items existingItem = ItemsService.GetItemByApiId(newItem.apiId);
+        if (existingItem == null)
+        {
+            db.Insert(newItem);
+        }
+        else
+        {
+            newItem.id = existingItem.id;
+            db.Update(newItem);
+        }
+    }
+
+    // CREATION D'UN GUIDE
+    public void LoadDataFromJson(string jsonResponse)
+    {
+        Debug.Log("Loading JSON Data");
 
         try
         {
-            string json = File.ReadAllText(jsonPath);
-            JObject jsonObj = JObject.Parse(json);
+            JObject jsonObj = JObject.Parse(jsonResponse);
 
             if (jsonObj == null)
             {
@@ -70,163 +270,246 @@ public class DatabaseManager : MonoBehaviour
             }
 
             int apiId = (int)jsonObj["id"];
-            // DateTime updatedAtJson = DateTime.Parse((string)jsonObj["updated_at"], null, System.Globalization.DateTimeStyles.RoundtripKind);
-
-            // Vérifiez si le guide existe déjà
             Guides existingGuide = GuidesService.GetGuideByApiId(apiId);
             if (existingGuide == null)
             {
                 Guides guide = new Guides
                 {
-                    apiId = (int)jsonObj["id"],
+                    apiId = apiId,
                     name = (string)jsonObj["name"],
-                    description = (string)jsonObj["description"] != null ? (string)jsonObj["description"] : null,
+                    description = (string)jsonObj["description"],
                     status = (string)jsonObj["status"],
-                    updatedAt = DateTime.UtcNow
+                    updatedAt = (string)jsonObj["updated_at"]
+
                 };
+
+                db.Insert(guide);  // Assurez-vous que l'objet Guide est inséré pour obtenir son ID
 
                 if (jsonObj["steps"] is JArray stepsArray)
                 {
-                    guide.steps = stepsArray.Select(step =>
+                    guide.steps = new List<Steps>();
+                    foreach (JObject step in stepsArray)
                     {
-                        JObject s = (JObject)step;
                         Steps newStep = new Steps
                         {
-                            guideId = guide.id,
-                            apiId = (int)s["id"],
-                            name = (string)s["name"],
-                            position = (int)s["order"],
-                            posX = (int)s["pos_x"],
-                            posY = (int)s["pos_y"],
-                            updatedAt = DateTime.UtcNow
+                            guideId = guide.id,  // Utilisation de l'ID de Guide après son insertion
+                            apiId = (int)step["id"],
+                            name = (string)step["name"],
+                            position = (int)step["order"],
+                            posX = (int)step["pos_x"],
+                            posY = (int)step["pos_y"],
+                            updatedAt = (string)step["updated_at"]
                         };
 
-                        if (s["sub_steps"] is JArray subStepsArray)
+                        db.Insert(newStep);  // Insertion pour obtenir l'ID de Step
+
+                        newStep.subSteps = new List<SubSteps>();
+                        if (step["sub_steps"] is JArray subStepsArray)
                         {
-                            newStep.subSteps = subStepsArray.Select(sub_step =>
+                            foreach (JObject subStep in subStepsArray)
                             {
-                                var ss = (JObject)sub_step;
-                                Debug.Log("Processing SubStep ss: " + ss);
-                                var newSubStep = new SubSteps
+                                SubSteps newSubStep = new SubSteps
                                 {
-                                    type = (string)ss["type"],
                                     stepId = newStep.id,
-                                    apiId = (int)ss["id"],
-                                    position = (int)ss["order"],
-                                    contentType = ss["content_type"] != null ? (string)ss["content_type"] : null,
-                                    contentId = ss["content_id"] != null ? (int?)ss["content_id"] : (int?)null,
-                                    text = ss["text"] != null ? (string)ss["text"] : null,
-                                    updatedAt = DateTime.UtcNow
+                                    type = (string)subStep["type"],
+                                    apiId = (int)subStep["id"],
+                                    position = (int)subStep["order"],
+                                    text = (string)subStep["text"],
+                                    updatedAt = (string)subStep["updated_at"]
                                 };
 
-                                Debug.Log("Processing SubStep: " + newSubStep.type);
+                                db.Insert(newSubStep);  // Insertion pour obtenir l'ID de SubStep
 
-                                if ((string)ss["type"] == "item")
+                                // Traitez ici les liens vers des objets spécifiques comme Items ou Monsters
+                                // Par exemple, pour des Items:
+                                if ((string)subStep["type"] == "item")
                                 {
-                                    if (ss["items"] is JArray itemsArray)
+                                    if (subStep["items"] is JArray itemsArray)
                                     {
-                                        newSubStep.itemSubSteps = itemsArray.Select(item =>
-                                        {
-                                            // Création de l'objet Item
-                                            var newItem = new Items {
-                                                dofusDbId = (int)item["dofusdb_id"],
-                                                apiId = (int)item["id"],
-                                                name = (string)item["name"],
-                                                imageUrl = (string)item["image_url"],
-                                                updatedAt = DateTime.UtcNow
-                                            };
-
-                                            // Enregistrement de l'objet Item dans la base de données si il existe pas
-                                            ItemsService.AddOrUpdateItem(newItem);
-
-                                            var it = (JObject)item;
-                                            return new ItemSubSteps
-                                            {
-                                                subStepId = newSubStep.id,
-                                                resourceId = (int)it["pivot"]["item_id"],
-                                                apiId = (int)it["pivot"]["sub_step_id"],
-                                                quantity = (int)it["pivot"]["quantity"],
-                                                updatedAt = DateTime.UtcNow
-                                            };
-                                        }).ToList();
+                                        ProcessItems(itemsArray, newSubStep);
                                     }
                                 }
-                                else if ((string)ss["type"] == "monster")
+                                else if ((string)subStep["type"] == "monster")
                                 {
-                                    if (ss["monsters"] is JArray monstersArray)
+                                    if (subStep["monsters"] is JArray monstersArray)
                                     {
-                                        newSubStep.monsterSubSteps = monstersArray.Select(monster =>
-                                        {
-                                            var newMonster = new Monsters {
-                                                dofusDbId = (int)monster["dofusdb_id"],
-                                                apiId = (int)monster["id"],
-                                                name = (string)monster["name"],
-                                                imageUrl = (string)monster["image_url"],
-                                                updatedAt = DateTime.UtcNow
-                                            };
-                                            
-                                            // Enregistrement de l'objet Item dans la base de données
-                                            db.Insert(newMonster);
-
-                                            var mo = (JObject)monster;
-                                            return new MonsterSubSteps
-                                            {
-                                                subStepId = newSubStep.id,
-                                                monsterId = (int)mo["pivot"]["monster_id"],
-                                                apiId = (int)mo["pivot"]["sub_step_id"],
-                                                quantity = (int)mo["pivot"]["quantity"],
-                                                updatedAt = DateTime.UtcNow
-                                            };
-                                        }).ToList();
+                                        ProcessMonsters(monstersArray, newSubStep);
                                     }
                                 }
-                                else if ((string)ss["type"] == "dungeon" || (string)ss["type"] == "quest")
+                                else if ((string)subStep["type"] == "dungeon" || (string)subStep["type"] == "quest")
                                 {
-                                    if (ss["content"] is JObject content)
-                                    {
-                                        if ((string)ss["type"] == "dungeon")
-                                        {
-                                            newSubStep.content = new Dungeons
-                                            {
-                                                dofusDbId = (int)content["dofusdb_id"],
-                                                apiId = (int)content["id"],
-                                                name = (string)content["name"],
-                                                level = (int)content["level"],
-                                                updatedAt = DateTime.UtcNow
-                                            };
-                                        }
-                                        else if ((string)ss["type"] == "quest")
-                                        {
-                                            newSubStep.content = new Quests
-                                            {
-                                                dofusDbId = (int)content["dofusdb_id"],
-                                                apiId = (int)content["id"],
-                                                name = (string)content["name"],
-                                                updatedAt = DateTime.UtcNow
-                                            };
-                                        }
-                                    }
+                                    ProcessContent(subStep, newSubStep);
                                 }
 
-                                return newSubStep;
-                            }).ToList();
+                                newStep.subSteps.Add(newSubStep);
+                            }
                         }
 
-                        return newStep;
-                    }).ToList();
+                        guide.steps.Add(newStep);
+                    }
                 }
-                GuidesService.AddGuide(guide);
+
                 Debug.Log("Guide loaded and saved successfully.");
             }
             else
             {
-                Debug.Log("Guide is in database");
-            }
-        } 
+                Debug.Log("Guide already exists. Details:");
 
+                // Charger les relations du guide existant
+                GuidesService.LoadRelations(existingGuide);
+
+                // Afficher les détails du guide
+                Debug.Log($"Guide: {existingGuide.name}, Description: {existingGuide.description}, Status: {existingGuide.status}, Updated At: {existingGuide.updatedAt}");
+                foreach (var step in existingGuide.steps)
+                {
+                    Debug.Log($"  Step: {step.name}, Position: {step.position}, Updated At: {step.updatedAt}");
+                    foreach (var subStep in step.subSteps)
+                    {
+                        Debug.Log($"    SubStep: {subStep.type}, Text: {subStep.text}, Position: {subStep.position}, Updated At: {subStep.updatedAt}");
+
+                        if (subStep.itemSubSteps != null)
+                        {
+                            foreach (var itemSubStep in subStep.itemSubSteps)
+                            {
+                                var item = ItemsService.GetItemById(itemSubStep.itemId);
+                                Debug.Log($"      Item: {item.name}, Quantity: {itemSubStep.quantity}, Updated At: {itemSubStep.updatedAt}");
+                            }
+                        }
+
+                        if (subStep.monsterSubSteps != null)
+                        {
+                            foreach (var monsterSubStep in subStep.monsterSubSteps)
+                            {
+                                var monster = MonstersService.GetMonsterById(monsterSubStep.monsterId);
+                                Debug.Log($"      Monster: {monster.name}, Quantity: {monsterSubStep.quantity}, Updated At: {monsterSubStep.updatedAt}");
+                            }
+                        }
+
+                        if (subStep.dungeonContent != null)
+                        {
+                            Debug.Log($"      Dungeon: {subStep.dungeonContent.name}, Level: {subStep.dungeonContent.level}");
+                        }
+
+                        if (subStep.questContent != null)
+                        {
+                            Debug.Log($"      Quest: {subStep.questContent.name}");
+                        }
+                    }
+                }
+            }
+        }
         catch (Exception ex)
         {
             Debug.LogError("Error loading JSON: " + ex.Message);
+        }
+    }
+
+    private void ProcessItems(JArray itemsArray, SubSteps newSubStep)
+    {
+        newSubStep.itemSubSteps = new List<ItemSubSteps>();
+        foreach (JObject item in itemsArray)
+        {
+            int itemId;
+            Items existingItem = ItemsService.GetItemByApiId((int)item["id"]);
+            if (existingItem != null)
+            {
+                itemId = existingItem.id;
+            }
+            else
+            {
+                Debug.LogError($"Item with API ID {item["id"]} not found.");
+                continue;
+            }
+
+            ItemSubSteps newItemSubStep = new ItemSubSteps
+            {
+                subStepId = newSubStep.id,
+                itemId = itemId,
+                apiId = (int)item["pivot"]["sub_step_id"],
+                quantity = (int)item["pivot"]["quantity"],
+                updatedAt = (string)item["pivot"]["updated_at"]
+            };
+
+            db.Insert(newItemSubStep); // Insérer les itemSubSteps dans la base de données
+            newSubStep.itemSubSteps.Add(newItemSubStep);
+        }
+    }
+
+
+    private void ProcessMonsters(JArray monstersArray, SubSteps newSubStep)
+    {
+        newSubStep.monsterSubSteps = new List<MonsterSubSteps>();
+        foreach (JObject monster in monstersArray)
+        {
+            int monsterId;
+            Monsters existingMonster = MonstersService.GetMonsterByApiId((int)monster["id"]);
+            if (existingMonster != null)
+            {
+                monsterId = existingMonster.id;
+            }
+            else
+            {
+                Debug.LogError($"Monster with API ID {monster["id"]} not found.");
+                continue;
+            }
+
+            MonsterSubSteps newMonsterSubStep = new MonsterSubSteps
+            {
+                subStepId = newSubStep.id,
+                monsterId = monsterId,
+                apiId = (int)monster["pivot"]["sub_step_id"],
+                quantity = (int)monster["pivot"]["quantity"],
+                updatedAt = (string)monster["pivot"]["updated_at"]
+            };
+
+            db.Insert(newMonsterSubStep); // Insérer les MonsterSubStep dans la base de données
+            newSubStep.monsterSubSteps.Add(newMonsterSubStep);
+        }
+    }
+
+    private void ProcessContent(JObject subStep, SubSteps newSubStep)
+    {
+        if ((string)subStep["type"] == "dungeon")
+        {
+            if (subStep["content"] is JObject content)
+            {
+                int dungeonId;
+                Dungeons existingDungeon = DungeonsService.GetDungeonByApiId((int)content["id"]);
+                if (existingDungeon != null)
+                {
+                    dungeonId = existingDungeon.id;
+                }
+                else
+                {
+                    Debug.LogError($"Dungeon with API ID {content["id"]} not found.");
+                    return;
+                }
+
+                newSubStep.dungeonContentId = dungeonId;
+                newSubStep.dungeonContent = existingDungeon;
+                db.Update(newSubStep);  // Mettre à jour SubSteps après l'insertion de Dungeon
+            }
+        }
+        else if ((string)subStep["type"] == "quest")
+        {
+            if (subStep["content"] is JObject content)
+            {
+                int questId;
+                Quests existingQuest = QuestsService.GetQuestByApiId((int)content["id"]);
+                if (existingQuest != null)
+                {
+                    questId = existingQuest.id;
+                }
+                else
+                {
+                    Debug.LogError($"Quest with API ID {content["id"]} not found.");
+                    return;
+                }
+
+                newSubStep.questContentId = questId;
+                newSubStep.questContent = existingQuest;
+                db.Update(newSubStep);  // Mettre à jour SubSteps après l'insertion de Quest
+            }
         }
     }
 }

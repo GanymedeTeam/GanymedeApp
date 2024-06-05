@@ -7,15 +7,14 @@ public class MonsterSubSteps
     public int id { get; set; }
 
     public int apiId { get; set; }
-
     public int quantity { get; set; }
-
-    [Indexed]
     public int subStepId { get; set; }
     public int monsterId { get; set; }
-
-    public DateTime updatedAt { get; set; }
+    public string updatedAt { get; set; }
 
     [Ignore]
-    public Monsters monsters { get; set; }
+    public virtual Monsters monster { get; set; }
+
+    [Ignore]
+    public virtual SubSteps subStep { get; set; }
 }

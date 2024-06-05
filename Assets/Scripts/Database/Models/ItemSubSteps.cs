@@ -7,15 +7,14 @@ public class ItemSubSteps
     public int id { get; set; }
 
     public int apiId { get; set; }
-
     public int quantity { get; set; }
-
-    [Indexed]
     public int subStepId { get; set; }
-    public int resourceId { get; set; }
-
-    public DateTime updatedAt { get; set; }
+    public int itemId { get; set; }
+    public string updatedAt { get; set; }
 
     [Ignore]
-    public Items items { get; set; }
+    public virtual Items item { get; set; }
+
+    [Ignore]
+    public virtual SubSteps subStep { get; set; }
 }

@@ -10,35 +10,28 @@ public class SubSteps
     [MaxLength(10)]
     public string type { get; set; }
 
-    [Indexed]
     public int stepId { get; set; }
-
     public int apiId { get; set; }
-
     public int position { get; set; }
-
-    [MaxLength(10)]
-    public string contentType { get; set; }
-
-    public int? contentId { get; set; }
-
-    [MaxLength(1024)]
     public string text { get; set; }
-
-    public DateTime updatedAt { get; set; }
-
-    [Ignore]
-    public List<ItemSubSteps> itemSubSteps { get; set; }  // Liste des ItemSubSteps
-
-    [Ignore]
-    public List<MonsterSubSteps> monsterSubSteps { get; set; }  // Liste des ItemSubSteps
+    public string updatedAt { get; set; }
+    // Clés étrangères pour les contenus
+    public int? dungeonContentId { get; set; }
+    public int? questContentId { get; set; }
 
     [Ignore]
-    public object content { get; set; } // Utiliser 'object' pour un contenu polymorphique ou définir des types spécifiques
+    public virtual Steps step { get; set; }
 
     [Ignore]
-    public Dungeons dungeonContent { get; set; }
+    public virtual List<MonsterSubSteps> monsterSubSteps { get; set; }
 
     [Ignore]
-    public Quests questContent { get; set; }
+    public virtual List<ItemSubSteps> itemSubSteps { get; set; }
+
+    // Propriétés de navigation pour les contents
+    [Ignore]
+    public virtual Dungeons dungeonContent { get; set; }
+
+    [Ignore]
+    public virtual Quests questContent { get; set; }
 }

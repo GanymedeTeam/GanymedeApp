@@ -1,5 +1,6 @@
 using SQLite;
 using System;
+using System.Collections.Generic;
 
 public class Quests
 {
@@ -8,9 +9,8 @@ public class Quests
 
     public int dofusDbId { get; set; }
     public int apiId { get; set; }
-
-    [MaxLength(255)]
     public string name { get; set; }
 
-    public DateTime updatedAt { get; set; }
+    [Ignore]
+    public virtual List<SubSteps> subSteps { get; set; }
 }
