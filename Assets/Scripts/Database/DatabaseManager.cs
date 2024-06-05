@@ -19,6 +19,7 @@ public class DatabaseManager : MonoBehaviour
     public SubStepsService SubStepsService { get; private set; }
     public DungeonsService DungeonsService { get; private set; }
     public QuestsService QuestsService { get; private set; }
+    public NpcsService NpcsService { get; private set; }
     public ItemsService ItemsService { get; private set; }
     public ItemSubStepsService ItemSubStepsService { get; private set; }
     public MonstersService MonstersService { get; private set; }
@@ -67,7 +68,17 @@ public class DatabaseManager : MonoBehaviour
     //
     private IEnumerator SyncAndThenSyncGuides()
     {
-        yield return StartCoroutine(SyncDataFromApi("https://ganymede-dofus.com/api/sync"));
+        string lastUpdatedAt = PlayerPrefs.GetString("updated_at", null);
+        string url = "https://ganymede-dofus.com/api/sync";
+        if (!string.IsNullOrEmpty(lastUpdatedAt))
+        {
+            url += "?updated_at=" + lastUpdatedAt;
+        }
+
+        yield return StartCoroutine(SyncDataFromApi(url));
+        PlayerPrefs.SetString("updated_at", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"));
+        PlayerPrefs.Save();
+
         StartSyncGuides();
     }
 
@@ -97,6 +108,7 @@ public class DatabaseManager : MonoBehaviour
         List<Monsters> monstersToInsert = new List<Monsters>();
         List<Dungeons> dungeonsToInsert = new List<Dungeons>();
         List<Items> itemsToInsert = new List<Items>();
+        List<Npcs> npcsToInsert = new List<Npcs>();
 
         if (jsonObj["quests"] is JArray questsArray)
         {
@@ -106,6 +118,18 @@ public class DatabaseManager : MonoBehaviour
                 if (newQuest != null)
                 {
                     questsToInsert.Add(newQuest);
+                }
+            }
+        }
+
+        if (jsonObj["npcs"] is JArray npcsArray)
+        {
+            foreach (JObject npc in npcsArray)
+            {
+                Npcs newNpc = PrepareNpc(npc);
+                if (newNpc != null)
+                {
+                    npcsToInsert.Add(newNpc);
                 }
             }
         }
@@ -152,6 +176,7 @@ public class DatabaseManager : MonoBehaviour
             db.InsertAll(monstersToInsert);
             db.InsertAll(dungeonsToInsert);
             db.InsertAll(itemsToInsert);
+            db.InsertAll(npcsToInsert);
         });
     }
 
@@ -171,6 +196,27 @@ public class DatabaseManager : MonoBehaviour
                 dofusDbId = (int)quest["dofusdb_id"],
                 apiId = apiId,
                 name = (string)quest["name"]
+            };
+        }
+    }
+
+    private Npcs PrepareNpc(JObject npc)
+    {
+        int apiId = (int)npc["id"];
+        Npcs existingNpc = NpcsService.GetNpcByApiId(apiId);
+        if (existingNpc != null)
+        {
+            Debug.Log($"Npc already exists: {existingNpc.name}");
+            return null;
+        }
+        else
+        {
+            return new Npcs
+            {
+                dofusDbId = (int)npc["dofusdb_id"],
+                apiId = apiId,
+                name = (string)npc["name"],
+                imageUrl = (string)npc["image_url"]
             };
         }
     }
@@ -534,6 +580,27 @@ public class DatabaseManager : MonoBehaviour
 
                 newSubStep.questContentId = questId;
                 newSubStep.questContent = existingQuest;
+                db.Update(newSubStep);  // Update SubSteps after inserting Quest
+            }
+        }
+        else if ((string)subStep["type"] == "npc")
+        {
+            if (subStep["content"] is JObject content)
+            {
+                int npcId;
+                Npcs existingNpc = NpcsService.GetNpcByApiId((int)content["id"]);
+                if (existingNpc != null)
+                {
+                    npcId = existingNpc.id;
+                }
+                else
+                {
+                    Debug.LogError($"Npc with API ID {content["id"]} not found.");
+                    return;
+                }
+
+                newSubStep.npcContentId = npcId;
+                newSubStep.npcContent = existingNpc;
                 db.Update(newSubStep);  // Update SubSteps after inserting Quest
             }
         }

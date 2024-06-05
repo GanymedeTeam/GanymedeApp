@@ -67,10 +67,13 @@ public class GuidesService
                 {
                     subStep.dungeonContent = db.Find<Dungeons>(subStep.dungeonContentId.Value);
                 }
-
                 if (subStep.questContentId.HasValue)
                 {
                     subStep.questContent = db.Find<Quests>(subStep.questContentId.Value);
+                }
+                if (subStep.npcContentId.HasValue)
+                {
+                    subStep.npcContent = db.Find<Npcs>(subStep.npcContentId.Value);
                 }
             }
         }

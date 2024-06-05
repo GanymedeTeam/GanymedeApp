@@ -18,6 +18,7 @@ public class SubSteps
     // Clés étrangères pour les contenus
     public int? dungeonContentId { get; set; }
     public int? questContentId { get; set; }
+    public int? npcContentId { get; set; }
 
     [Ignore]
     public virtual Steps step { get; set; }
@@ -34,4 +35,7 @@ public class SubSteps
 
     [Ignore]
     public virtual Quests questContent { get; set; }
+
+    [Ignore]
+    public virtual Npcs npcContent { get; set; }
 }
