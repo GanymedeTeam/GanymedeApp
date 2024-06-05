@@ -29,6 +29,14 @@ public class DatabaseManager : MonoBehaviour
     void Awake()
     {
         string databasePath = Path.Combine(Application.persistentDataPath, "GanyBase.db");
+
+        // Check if the database exists
+        if (!File.Exists(databasePath))
+        {
+            // Destroy PlayerPref updatedAt if database does not exist
+            PlayerPrefs.DeleteKey("updated_at");
+        }
+
         db = new SQLiteConnection(databasePath);
 
         // Initialize services
@@ -39,6 +47,7 @@ public class DatabaseManager : MonoBehaviour
         QuestsService = new QuestsService(db);
         ItemsService = new ItemsService(db);
         ItemSubStepsService = new ItemSubStepsService(db);
+        NpcsService = new NpcsService(db);
         MonstersService = new MonstersService(db);
         MonsterSubStepsService = new MonsterSubStepsService(db);
         UsersService = new UsersService(db);
@@ -51,6 +60,7 @@ public class DatabaseManager : MonoBehaviour
         db.CreateTable<Quests>();
         db.CreateTable<Items>();
         db.CreateTable<ItemSubSteps>();
+        db.CreateTable<Npcs>();
         db.CreateTable<Monsters>();
         db.CreateTable<MonsterSubSteps>();
         db.CreateTable<Users>();
