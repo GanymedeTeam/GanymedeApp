@@ -20,6 +20,11 @@ public class MonsterSubStepsService
         return db.Table<MonsterSubSteps>().FirstOrDefault(mss => mss.id == id);
     }
 
+    public MonsterSubSteps GetMonsterSubStepByApiId(int apiId)
+    {
+        return db.Table<MonsterSubSteps>().FirstOrDefault(mss => mss.apiId == apiId);
+    }
+
     public void UpdateMonsterSubStep(MonsterSubSteps monsterSubStep)
     {
         db.Update(monsterSubStep);
@@ -37,5 +42,10 @@ public class MonsterSubStepsService
     public List<MonsterSubSteps> GetAllMonsterSubSteps()
     {
         return db.Table<MonsterSubSteps>().ToList();
+    }
+
+    public List<MonsterSubSteps> GetMonsterSubStepsBySubStepId(int subStepId)
+    {
+        return db.Table<MonsterSubSteps>().Where(mss => mss.subStepId == subStepId).ToList();
     }
 }

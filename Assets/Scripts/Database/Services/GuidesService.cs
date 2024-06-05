@@ -51,6 +51,7 @@ public class GuidesService
         return db.Table<Guides>().ToList();
     }
 
+    // Load relations to use it easily
     public void LoadRelations(Guides guide)
     {
         guide.steps = db.Table<Steps>().Where(s => s.guideId == guide.id).ToList();
@@ -72,6 +73,50 @@ public class GuidesService
                     subStep.questContent = db.Find<Quests>(subStep.questContentId.Value);
                 }
             }
+        }
+    }
+
+    // Delete guide and all his content
+    public void DeleteGuideWithRelations(int guideId)
+    {
+        var guide = GetGuide(guideId);
+        if (guide != null)
+        {
+            LoadRelations(guide);
+
+            foreach (var step in guide.steps)
+            {
+                foreach (var subStep in step.subSteps)
+                {
+                    db.Table<ItemSubSteps>().Delete(iss => iss.subStepId == subStep.id);
+                    db.Table<MonsterSubSteps>().Delete(mss => mss.subStepId == subStep.id);
+                }
+                db.Table<SubSteps>().Delete(ss => ss.stepId == step.id);
+            }
+            db.Table<Steps>().Delete(s => s.guideId == guide.id);
+
+            db.Delete(guide);
+        }
+    }
+
+    // Delete guide content but keep the guide with his id
+    public void DeleteUnderGuideWithRelations(int guideId)
+    {
+        var guide = GetGuide(guideId);
+        if (guide != null)
+        {
+            LoadRelations(guide);
+
+            foreach (var step in guide.steps)
+            {
+                foreach (var subStep in step.subSteps)
+                {
+                    db.Table<ItemSubSteps>().Delete(iss => iss.subStepId == subStep.id);
+                    db.Table<MonsterSubSteps>().Delete(mss => mss.subStepId == subStep.id);
+                }
+                db.Table<SubSteps>().Delete(ss => ss.stepId == step.id);
+            }
+            db.Table<Steps>().Delete(s => s.guideId == guide.id);
         }
     }
 }

@@ -20,6 +20,11 @@ public class StepsService
         return db.Table<Steps>().FirstOrDefault(s => s.id == id);
     }
 
+    public Steps GetStepByApiId(int apiId)
+    {
+        return db.Table<Steps>().FirstOrDefault(s => s.apiId == apiId);
+    }
+
     public void UpdateStep(Steps step)
     {
         db.Update(step);
@@ -37,5 +42,10 @@ public class StepsService
     public List<Steps> GetAllSteps()
     {
         return db.Table<Steps>().ToList();
+    }
+
+    public List<Steps> GetStepsByGuideId(int guideId)
+    {
+        return db.Table<Steps>().Where(s => s.guideId == guideId).ToList();
     }
 }

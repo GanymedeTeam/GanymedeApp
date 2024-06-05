@@ -6,9 +6,13 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System.Linq;
 
 public class DatabaseManager : MonoBehaviour
 {
+    //
+    // Init Db
+    //
     private SQLiteConnection db;
     public GuidesService GuidesService { get; private set; }
     public StepsService StepsService { get; private set; }
@@ -58,7 +62,9 @@ public class DatabaseManager : MonoBehaviour
         db.Close();
     }
 
-    // SYNCHRO
+    //
+    // SYNCHRO API TO Db
+    //
     private IEnumerator SyncAndThenSyncGuides()
     {
         yield return StartCoroutine(SyncDataFromApi("https://ganymede-dofus.com/api/sync"));
@@ -83,15 +89,24 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
-        private void ProcessApiResponse(string jsonResponse)
+    private void ProcessApiResponse(string jsonResponse)
     {
         JObject jsonObj = JObject.Parse(jsonResponse);
+
+        List<Quests> questsToInsert = new List<Quests>();
+        List<Monsters> monstersToInsert = new List<Monsters>();
+        List<Dungeons> dungeonsToInsert = new List<Dungeons>();
+        List<Items> itemsToInsert = new List<Items>();
 
         if (jsonObj["quests"] is JArray questsArray)
         {
             foreach (JObject quest in questsArray)
             {
-                ProcessQuest(quest);
+                Quests newQuest = PrepareQuest(quest);
+                if (newQuest != null)
+                {
+                    questsToInsert.Add(newQuest);
+                }
             }
         }
 
@@ -99,7 +114,11 @@ public class DatabaseManager : MonoBehaviour
         {
             foreach (JObject monster in monstersArray)
             {
-                ProcessMonster(monster);
+                Monsters newMonster = PrepareMonster(monster);
+                if (newMonster != null)
+                {
+                    monstersToInsert.Add(newMonster);
+                }
             }
         }
 
@@ -107,7 +126,11 @@ public class DatabaseManager : MonoBehaviour
         {
             foreach (JObject dungeon in dungeonsArray)
             {
-                ProcessDungeon(dungeon);
+                Dungeons newDungeon = PrepareDungeon(dungeon);
+                if (newDungeon != null)
+                {
+                    dungeonsToInsert.Add(newDungeon);
+                }
             }
         }
 
@@ -115,8 +138,103 @@ public class DatabaseManager : MonoBehaviour
         {
             foreach (JObject item in itemsArray)
             {
-                ProcessItem(item);
+                Items newItem = PrepareItem(item);
+                if (newItem != null)
+                {
+                    itemsToInsert.Add(newItem);
+                }
             }
+        }
+
+        db.RunInTransaction(() =>
+        {
+            db.InsertAll(questsToInsert);
+            db.InsertAll(monstersToInsert);
+            db.InsertAll(dungeonsToInsert);
+            db.InsertAll(itemsToInsert);
+        });
+    }
+
+    private Quests PrepareQuest(JObject quest)
+    {
+        int apiId = (int)quest["id"];
+        Quests existingQuest = QuestsService.GetQuestByApiId(apiId);
+        if (existingQuest != null)
+        {
+            Debug.Log($"Quest already exists: {existingQuest.name}");
+            return null;
+        }
+        else
+        {
+            return new Quests
+            {
+                dofusDbId = (int)quest["dofusdb_id"],
+                apiId = apiId,
+                name = (string)quest["name"]
+            };
+        }
+    }
+
+    private Monsters PrepareMonster(JObject monster)
+    {
+        int apiId = (int)monster["id"];
+        Monsters existingMonster = MonstersService.GetMonsterByApiId(apiId);
+        if (existingMonster != null)
+        {
+            Debug.Log($"Monster already exists: {existingMonster.name}");
+            return null;
+        }
+        else
+        {
+            return new Monsters
+            {
+                dofusDbId = (int)monster["dofusdb_id"],
+                apiId = apiId,
+                name = (string)monster["name"],
+                imageUrl = (string)monster["image_url"]
+            };
+        }
+    }
+
+    private Dungeons PrepareDungeon(JObject dungeon)
+    {
+        int apiId = (int)dungeon["id"];
+        Dungeons existingDungeon = DungeonsService.GetDungeonByApiId(apiId);
+        if (existingDungeon != null)
+        {
+            Debug.Log($"Dungeon already exists: {existingDungeon.name}");
+            return null;
+        }
+        else
+        {
+            return new Dungeons
+            {
+                dofusDbId = (int)dungeon["dofusdb_id"],
+                apiId = apiId,
+                name = (string)dungeon["name"],
+                level = (int)dungeon["level"]
+            };
+        }
+    }
+
+    private Items PrepareItem(JObject item)
+    {
+        int apiId = (int)item["id"];
+        Items existingItem = ItemsService.GetItemByApiId(apiId);
+        if (existingItem != null)
+        {
+            Debug.Log($"Item already exists: {existingItem.name}");
+            return null;
+        }
+        else
+        {
+            return new Items
+            {
+                dofusDbId = (int)item["dofusdb_id"],
+                apiId = apiId,
+                name = (string)item["name"],
+                imageUrl = (string)item["image_url"]
+            };
         }
     }
 
@@ -139,10 +257,28 @@ public class DatabaseManager : MonoBehaviour
             {
                 Debug.Log("Received Guides List: " + webRequest.downloadHandler.text);
                 JArray guidesArray = JArray.Parse(webRequest.downloadHandler.text);
+                List<int> receivedGuideIds = new List<int>();
                 foreach (JObject guide in guidesArray)
                 {
                     int guideId = (int)guide["id"];
-                    StartCoroutine(getAPIGuide(guideId));
+                    string updatedAt = (string)guide["updated_at"];
+                    Guides existingGuide = GuidesService.GetGuideByApiId(guideId);
+
+                    if (existingGuide == null || existingGuide.updatedAt != updatedAt)
+                    {
+                        StartCoroutine(getAPIGuide(guideId));
+                    }
+                    receivedGuideIds.Add(guideId);
+                }
+
+                // Remove guides not present in the response
+                var existingGuides = GuidesService.GetAllGuides();
+                foreach (var existingGuide in existingGuides)
+                {
+                    if (!receivedGuideIds.Contains(existingGuide.apiId))
+                    {
+                        GuidesService.DeleteGuideWithRelations(existingGuide.id);
+                    }
                 }
             }
         }
@@ -167,94 +303,9 @@ public class DatabaseManager : MonoBehaviour
         }
     }
 
-    private void ProcessQuest(JObject quest)
-    {
-        Quests newQuest = new Quests
-        {
-            dofusDbId = (int)quest["dofusdb_id"],
-            apiId = (int)quest["id"],
-            name = (string)quest["name"]
-        };
-
-        Quests existingQuest = QuestsService.GetQuestByApiId(newQuest.apiId);
-        if (existingQuest == null)
-        {
-            db.Insert(newQuest);
-        }
-        else
-        {
-            newQuest.id = existingQuest.id;
-            db.Update(newQuest);
-        }
-    }
-
-    private void ProcessMonster(JObject monster)
-    {
-        Monsters newMonster = new Monsters
-        {
-            dofusDbId = (int)monster["dofusdb_id"],
-            apiId = (int)monster["id"],
-            name = (string)monster["name"],
-            imageUrl = (string)monster["image_url"]
-        };
-
-        Monsters existingMonster = MonstersService.GetMonsterByApiId(newMonster.apiId);
-        if (existingMonster == null)
-        {
-            db.Insert(newMonster);
-        }
-        else
-        {
-            newMonster.id = existingMonster.id;
-            db.Update(newMonster);
-        }
-    }
-
-    private void ProcessDungeon(JObject dungeon)
-    {
-        Dungeons newDungeon = new Dungeons
-        {
-            dofusDbId = (int)dungeon["dofusdb_id"],
-            apiId = (int)dungeon["id"],
-            name = (string)dungeon["name"],
-            level = (int)dungeon["level"]
-        };
-
-        Dungeons existingDungeon = DungeonsService.GetDungeonByApiId(newDungeon.apiId);
-        if (existingDungeon == null)
-        {
-            db.Insert(newDungeon);
-        }
-        else
-        {
-            newDungeon.id = existingDungeon.id;
-            db.Update(newDungeon);
-        }
-    }
-
-    private void ProcessItem(JObject item)
-    {
-        Items newItem = new Items
-        {
-            dofusDbId = (int)item["dofusdb_id"],
-            apiId = (int)item["id"],
-            name = (string)item["name"],
-            imageUrl = (string)item["image_url"]
-        };
-
-        Items existingItem = ItemsService.GetItemByApiId(newItem.apiId);
-        if (existingItem == null)
-        {
-            db.Insert(newItem);
-        }
-        else
-        {
-            newItem.id = existingItem.id;
-            db.Update(newItem);
-        }
-    }
-
-    // CREATION D'UN GUIDE
+    //
+    // CREATION GUIDE
+    //
     public void LoadDataFromJson(string jsonResponse)
     {
         Debug.Log("Loading JSON Data");
@@ -271,8 +322,16 @@ public class DatabaseManager : MonoBehaviour
 
             int apiId = (int)jsonObj["id"];
             Guides existingGuide = GuidesService.GetGuideByApiId(apiId);
-            if (existingGuide == null)
+            bool guideUpdated = existingGuide != null && existingGuide.updatedAt != (string)jsonObj["updated_at"];
+
+            if (existingGuide == null || guideUpdated)
             {
+                if (existingGuide != null)
+                {
+                    // Delete data and relations under guide
+                    GuidesService.DeleteUnderGuideWithRelations(existingGuide.id);
+                }
+
                 Guides guide = new Guides
                 {
                     apiId = apiId,
@@ -280,10 +339,17 @@ public class DatabaseManager : MonoBehaviour
                     description = (string)jsonObj["description"],
                     status = (string)jsonObj["status"],
                     updatedAt = (string)jsonObj["updated_at"]
-
                 };
 
-                db.Insert(guide);  // Assurez-vous que l'objet Guide est inséré pour obtenir son ID
+                if (existingGuide == null)
+                {
+                    db.Insert(guide);  // Ensure the Guide object is inserted to obtain its ID
+                }
+                else
+                {
+                    guide.id = existingGuide.id; // Keep the existing ID
+                    db.Update(guide);
+                }
 
                 if (jsonObj["steps"] is JArray stepsArray)
                 {
@@ -292,7 +358,7 @@ public class DatabaseManager : MonoBehaviour
                     {
                         Steps newStep = new Steps
                         {
-                            guideId = guide.id,  // Utilisation de l'ID de Guide après son insertion
+                            guideId = guide.id,  // Use the Guide ID after insertion
                             apiId = (int)step["id"],
                             name = (string)step["name"],
                             position = (int)step["order"],
@@ -301,7 +367,7 @@ public class DatabaseManager : MonoBehaviour
                             updatedAt = (string)step["updated_at"]
                         };
 
-                        db.Insert(newStep);  // Insertion pour obtenir l'ID de Step
+                        db.Insert(newStep);
 
                         newStep.subSteps = new List<SubSteps>();
                         if (step["sub_steps"] is JArray subStepsArray)
@@ -318,10 +384,9 @@ public class DatabaseManager : MonoBehaviour
                                     updatedAt = (string)subStep["updated_at"]
                                 };
 
-                                db.Insert(newSubStep);  // Insertion pour obtenir l'ID de SubStep
+                                db.Insert(newSubStep);
 
-                                // Traitez ici les liens vers des objets spécifiques comme Items ou Monsters
-                                // Par exemple, pour des Items:
+                                // Handle links to specific objects like Items or Monsters
                                 if ((string)subStep["type"] == "item")
                                 {
                                     if (subStep["items"] is JArray itemsArray)
@@ -353,49 +418,7 @@ public class DatabaseManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("Guide already exists. Details:");
-
-                // Charger les relations du guide existant
-                GuidesService.LoadRelations(existingGuide);
-
-                // Afficher les détails du guide
-                Debug.Log($"Guide: {existingGuide.name}, Description: {existingGuide.description}, Status: {existingGuide.status}, Updated At: {existingGuide.updatedAt}");
-                foreach (var step in existingGuide.steps)
-                {
-                    Debug.Log($"  Step: {step.name}, Position: {step.position}, Updated At: {step.updatedAt}");
-                    foreach (var subStep in step.subSteps)
-                    {
-                        Debug.Log($"    SubStep: {subStep.type}, Text: {subStep.text}, Position: {subStep.position}, Updated At: {subStep.updatedAt}");
-
-                        if (subStep.itemSubSteps != null)
-                        {
-                            foreach (var itemSubStep in subStep.itemSubSteps)
-                            {
-                                var item = ItemsService.GetItemById(itemSubStep.itemId);
-                                Debug.Log($"      Item: {item.name}, Quantity: {itemSubStep.quantity}, Updated At: {itemSubStep.updatedAt}");
-                            }
-                        }
-
-                        if (subStep.monsterSubSteps != null)
-                        {
-                            foreach (var monsterSubStep in subStep.monsterSubSteps)
-                            {
-                                var monster = MonstersService.GetMonsterById(monsterSubStep.monsterId);
-                                Debug.Log($"      Monster: {monster.name}, Quantity: {monsterSubStep.quantity}, Updated At: {monsterSubStep.updatedAt}");
-                            }
-                        }
-
-                        if (subStep.dungeonContent != null)
-                        {
-                            Debug.Log($"      Dungeon: {subStep.dungeonContent.name}, Level: {subStep.dungeonContent.level}");
-                        }
-
-                        if (subStep.questContent != null)
-                        {
-                            Debug.Log($"      Quest: {subStep.questContent.name}");
-                        }
-                    }
-                }
+                Debug.Log("Guide is already up to date.");
             }
         }
         catch (Exception ex)
@@ -406,6 +429,8 @@ public class DatabaseManager : MonoBehaviour
 
     private void ProcessItems(JArray itemsArray, SubSteps newSubStep)
     {
+        if (itemsArray == null) return;
+
         newSubStep.itemSubSteps = new List<ItemSubSteps>();
         foreach (JObject item in itemsArray)
         {
@@ -427,17 +452,18 @@ public class DatabaseManager : MonoBehaviour
                 itemId = itemId,
                 apiId = (int)item["pivot"]["sub_step_id"],
                 quantity = (int)item["pivot"]["quantity"],
-                updatedAt = (string)item["pivot"]["updated_at"]
+                updatedAt = newSubStep.updatedAt
             };
 
-            db.Insert(newItemSubStep); // Insérer les itemSubSteps dans la base de données
+            db.Insert(newItemSubStep); // Insert itemSubSteps into the database
             newSubStep.itemSubSteps.Add(newItemSubStep);
         }
     }
 
-
     private void ProcessMonsters(JArray monstersArray, SubSteps newSubStep)
     {
+        if (monstersArray == null) return;
+
         newSubStep.monsterSubSteps = new List<MonsterSubSteps>();
         foreach (JObject monster in monstersArray)
         {
@@ -459,10 +485,10 @@ public class DatabaseManager : MonoBehaviour
                 monsterId = monsterId,
                 apiId = (int)monster["pivot"]["sub_step_id"],
                 quantity = (int)monster["pivot"]["quantity"],
-                updatedAt = (string)monster["pivot"]["updated_at"]
+                updatedAt = newSubStep.updatedAt
             };
 
-            db.Insert(newMonsterSubStep); // Insérer les MonsterSubStep dans la base de données
+            db.Insert(newMonsterSubStep); // Insert MonsterSubSteps into the database
             newSubStep.monsterSubSteps.Add(newMonsterSubStep);
         }
     }
@@ -487,7 +513,7 @@ public class DatabaseManager : MonoBehaviour
 
                 newSubStep.dungeonContentId = dungeonId;
                 newSubStep.dungeonContent = existingDungeon;
-                db.Update(newSubStep);  // Mettre à jour SubSteps après l'insertion de Dungeon
+                db.Update(newSubStep);  // Update SubSteps after inserting Dungeon
             }
         }
         else if ((string)subStep["type"] == "quest")
@@ -508,7 +534,7 @@ public class DatabaseManager : MonoBehaviour
 
                 newSubStep.questContentId = questId;
                 newSubStep.questContent = existingQuest;
-                db.Update(newSubStep);  // Mettre à jour SubSteps après l'insertion de Quest
+                db.Update(newSubStep);  // Update SubSteps after inserting Quest
             }
         }
     }

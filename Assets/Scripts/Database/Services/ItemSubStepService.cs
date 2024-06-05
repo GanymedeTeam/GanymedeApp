@@ -1,5 +1,6 @@
 using SQLite;
 using System.Collections.Generic;
+using System.Linq;
 
 public class ItemSubStepsService
 {
@@ -20,6 +21,11 @@ public class ItemSubStepsService
         return db.Table<ItemSubSteps>().FirstOrDefault(iss => iss.id == id);
     }
 
+    public ItemSubSteps GetItemSubStepByApiId(int apiId)
+    {
+        return db.Table<ItemSubSteps>().FirstOrDefault(iss => iss.apiId == apiId);
+    }
+
     public void UpdateItemSubStep(ItemSubSteps itemSubStep)
     {
         db.Update(itemSubStep);
@@ -37,5 +43,10 @@ public class ItemSubStepsService
     public List<ItemSubSteps> GetAllItemSubSteps()
     {
         return db.Table<ItemSubSteps>().ToList();
+    }
+
+    public List<ItemSubSteps> GetItemSubStepsBySubStepId(int subStepId)
+    {
+        return db.Table<ItemSubSteps>().Where(iss => iss.subStepId == subStepId).ToList();
     }
 }
