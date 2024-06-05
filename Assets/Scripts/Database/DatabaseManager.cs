@@ -416,6 +416,7 @@ public class DatabaseManager : MonoBehaviour
                         {
                             guideId = guide.id,  // Use the Guide ID after insertion
                             apiId = (int)step["id"],
+                            map = (string)step["map"],
                             name = (string)step["name"],
                             position = (int)step["order"],
                             posX = (int)step["pos_x"],
