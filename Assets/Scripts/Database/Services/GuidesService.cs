@@ -51,6 +51,16 @@ public class GuidesService
         return db.Table<Guides>().ToList();
     }
 
+    public List<Guides> GetCertifiedGuides()
+    {
+        return db.Table<Guides>().Where(g => g.status == "certified").ToList();
+    }
+
+    public List<Guides> GetDraftOrPublicGuides()
+    {
+        return db.Table<Guides>().Where(g => g.status == "draft" || g.status == "public").ToList();
+    }
+
     // Load relations to use it easily
     public void LoadRelations(Guides guide)
     {

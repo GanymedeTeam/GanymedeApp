@@ -34,7 +34,8 @@ public class DatabaseManager : MonoBehaviour
         if (!File.Exists(databasePath))
         {
             // Destroy PlayerPref updatedAt if database does not exist
-            PlayerPrefs.DeleteKey("updated_at");
+            PlayerPrefs.DeleteKey("dofusDB_updated_at");
+            PlayerPrefs.DeleteKey("guides_updated_at");
         }
 
         db = new SQLiteConnection(databasePath);
@@ -78,7 +79,7 @@ public class DatabaseManager : MonoBehaviour
     //
     private IEnumerator SyncAndThenSyncGuides()
     {
-        string lastUpdatedAt = PlayerPrefs.GetString("updated_at", null);
+        string lastUpdatedAt = PlayerPrefs.GetString("dofusDB_updated_at", null);
         string url = "https://ganymede-dofus.com/api/sync";
         if (!string.IsNullOrEmpty(lastUpdatedAt))
         {
@@ -86,10 +87,12 @@ public class DatabaseManager : MonoBehaviour
         }
 
         yield return StartCoroutine(SyncDataFromApi(url));
-        PlayerPrefs.SetString("updated_at", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"));
+        PlayerPrefs.SetString("dofusDB_updated_at", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"));
         PlayerPrefs.Save();
 
         StartSyncGuides();
+        PlayerPrefs.SetString("guides_updated_at", DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ"));
+        PlayerPrefs.Save();
     }
 
     private IEnumerator SyncDataFromApi(string url)
@@ -296,9 +299,18 @@ public class DatabaseManager : MonoBehaviour
 
     public void StartSyncGuides()
     {
-        StartCoroutine(SyncGuides("https://ganymede-dofus.com/api/guides"));
+        string lastUpdatedAt = PlayerPrefs.GetString("guides_updated_at", null);
+
+        string url = "https://ganymede-dofus.com/api/guides";
+        if (!string.IsNullOrEmpty(lastUpdatedAt))
+        {
+            url += "?updated_at=" + lastUpdatedAt;
+        }
+
+        StartCoroutine(SyncGuides(url));
     }
 
+    // sync guides api/guides just the Guide Model
     private IEnumerator SyncGuides(string url)
     {
         using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
@@ -314,6 +326,8 @@ public class DatabaseManager : MonoBehaviour
                 Debug.Log("Received Guides List: " + webRequest.downloadHandler.text);
                 JArray guidesArray = JArray.Parse(webRequest.downloadHandler.text);
                 List<int> receivedGuideIds = new List<int>();
+                List<Guides> guidesToInsert = new List<Guides>();
+
                 foreach (JObject guide in guidesArray)
                 {
                     int guideId = (int)guide["id"];
@@ -322,7 +336,11 @@ public class DatabaseManager : MonoBehaviour
 
                     if (existingGuide == null || existingGuide.updatedAt != updatedAt)
                     {
-                        StartCoroutine(getAPIGuide(guideId));
+                        Guides newGuide = PrepareGuide(guide);
+                        if (newGuide != null)
+                        {
+                            guidesToInsert.Add(newGuide);
+                        }
                     }
                     receivedGuideIds.Add(guideId);
                 }
@@ -336,10 +354,50 @@ public class DatabaseManager : MonoBehaviour
                         GuidesService.DeleteGuideWithRelations(existingGuide.id);
                     }
                 }
+
+                // Insert or update guides in the database
+                db.RunInTransaction(() =>
+                {
+                    foreach (var guide in guidesToInsert)
+                    {
+                        if (guide.id == 0)
+                        {
+                            db.Insert(guide);
+                        }
+                        else
+                        {
+                            db.Update(guide);
+                        }
+                    }
+                });
             }
         }
     }
 
+    private Guides PrepareGuide(JObject guide)
+    {
+        int apiId = (int)guide["id"];
+        Guides existingGuide = GuidesService.GetGuideByApiId(apiId);
+        if (existingGuide != null && existingGuide.updatedAt == (string)guide["updated_at"])
+        {
+            Debug.Log($"Guide already up to date: {existingGuide.name}");
+            return null;
+        }
+        else
+        {
+            return new Guides
+            {
+                apiId = apiId,
+                userId = (int)guide["user_id"],
+                name = (string)guide["name"],
+                description = (string)guide["description"],
+                status = (string)guide["status"],
+                updatedAt = (string)guide["updated_at"]
+            };
+        }
+    }
+
+    //Get A Full guide from API and save it to DB 
     public IEnumerator getAPIGuide(int id)
     {
         string url = $"https://ganymede-dofus.com/api/guides/{id}";
