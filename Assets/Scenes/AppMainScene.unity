@@ -427,6 +427,9 @@ MonoBehaviour:
   travelWindow: {fileID: 845808064}
   guideWindow: {fileID: 933245588}
   messageWindow: {fileID: 550795691}
+  settingsWindow: {fileID: 4435810541433271062}
+  canvasGroup: {fileID: 4435810541433271061}
+  opacitySlider: {fileID: 4435810541433271060}
   isInteractiveMapActive: 0
 --- !u!65 &1643475893
 BoxCollider:
@@ -825,8 +828,105 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: WebsiteButtonClicked
       objectReference: {fileID: 0}
+    - target: {fileID: 5361260944002769146, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5361260944002769146, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360666397619745694, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360666397619745694, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360666397619745694, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360666397619745694, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360666397619745694, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360666397619745694, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6368891787312980462, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367405237180001220, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367405237180001220, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1643475892}
+    - target: {fileID: 7367405237180001220, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ChangeCanvasOpacity
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367405237180001220, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: WindowManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 7367405237180001220, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 7778656844527155368, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7778656844527155368, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7778656844527155368, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7936395878961381984, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1643475892}
+    - target: {fileID: 7936395878961381984, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SettingsWindowClicked
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+--- !u!114 &4435810541433271060 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7367405237180001220, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+  m_PrefabInstance: {fileID: 4435810541433271059}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!225 &4435810541433271061 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 1881567095476180022, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+  m_PrefabInstance: {fileID: 4435810541433271059}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4435810541433271062 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6368891787312980462, guid: 80687fef9323d1f49896a9112cf9082a, type: 3}
+  m_PrefabInstance: {fileID: 4435810541433271059}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8549809498276572349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -842,6 +942,23 @@ MonoBehaviour:
   MapMask: {fileID: 1513809124}
   whereToGoX: -2
   whereToGoY: 0
+  douze:
+    mapName: Douze
+    origineX: 6480
+    origineY: 4944
+    gridCellWidth: 69.5
+    gridCellHeight: 49.7
+    totalWidth: 10000
+    totalHeight: 8000
+    WidthNumberOfTile: 40
+    HeightNumberOfTile: 32
+    WidthNumberOfGridCell: 144
+    HeightNumberOfGridCell: 161
+    gridOffsetX: -53
+    gridOffsetY: 26.000076
+    firstPositionX: -94
+    firstPositionY: -100
+    mapParentScale: 1
   incarnam:
     mapName: Incarnam
     origineX: 1800
@@ -859,22 +976,430 @@ MonoBehaviour:
     firstPositionX: -5
     firstPositionY: -8
     mapParentScale: 0.3
-  douze:
-    mapName: Douze
-    origineX: 6480
-    origineY: 4944
-    gridCellWidth: 69.5
-    gridCellHeight: 49.7
-    totalWidth: 10000
-    totalHeight: 8000
-    WidthNumberOfTile: 40
-    HeightNumberOfTile: 32
-    WidthNumberOfGridCell: 144
-    HeightNumberOfGridCell: 161
-    gridOffsetX: -53
-    gridOffsetY: 26.000076
-    firstPositionX: -94
-    firstPositionY: -100
+  minotoror:
+    mapName: LabyMino
+    origineX: 9130
+    origineY: 2980
+    gridCellWidth: 210
+    gridCellHeight: 150
+    totalWidth: 2463
+    totalHeight: 1820
+    WidthNumberOfTile: 10
+    HeightNumberOfTile: 8
+    WidthNumberOfGridCell: 12
+    HeightNumberOfGridCell: 13
+    gridOffsetX: -110
+    gridOffsetY: 20
+    firstPositionX: -44
+    firstPositionY: -20
+    mapParentScale: 1
+  dragonCochon:
+    mapName: LabyDC
+    origineX: 900
+    origineY: -4330
+    gridCellWidth: 211
+    gridCellHeight: 150
+    totalWidth: 3200
+    totalHeight: 2000
+    WidthNumberOfTile: 13
+    HeightNumberOfTile: 8
+    WidthNumberOfGridCell: 16
+    HeightNumberOfGridCell: 14
+    gridOffsetX: -155
+    gridOffsetY: 280
+    firstPositionX: -5
+    firstPositionY: 27
+    mapParentScale: 1
+  maitreCorbac:
+    mapName: BibliMC
+    origineX: 3770
+    origineY: 9900
+    gridCellWidth: 210
+    gridCellHeight: 150
+    totalWidth: 2100
+    totalHeight: 2100
+    WidthNumberOfTile: 9
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 10
+    HeightNumberOfGridCell: 14
+    gridOffsetX: -10
+    gridOffsetY: 0
+    firstPositionX: -18
+    firstPositionY: -66
+    mapParentScale: 1
+  caverneGivrefoux:
+    mapName: Givrefoux
+    origineX: 17214
+    origineY: 11845
+    gridCellWidth: 210
+    gridCellHeight: 150
+    totalWidth: 1800
+    totalHeight: 1400
+    WidthNumberOfTile: 8
+    HeightNumberOfTile: 6
+    WidthNumberOfGridCell: 9
+    HeightNumberOfGridCell: 10
+    gridOffsetX: -6
+    gridOffsetY: 5
+    firstPositionX: -82
+    firstPositionY: -79
+    mapParentScale: 1
+  canauxMephitiques:
+    mapName: CanauxMephitiques
+    origineX: 9860
+    origineY: 11200
+    gridCellWidth: 260
+    gridCellHeight: 184
+    totalWidth: 2840
+    totalHeight: 2162
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 11
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -20
+    gridOffsetY: 24
+    firstPositionX: -38
+    firstPositionY: -61
+    mapParentScale: 1
+  egoutsBrakmar:
+    mapName: EgoutsBrakmar
+    origineX: 7454
+    origineY: -5652
+    gridCellWidth: 257
+    gridCellHeight: 182
+    totalWidth: 2840
+    totalHeight: 2162
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 12
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -256
+    gridOffsetY: 192
+    firstPositionX: -30
+    firstPositionY: 30
+    mapParentScale: 1
+  canopee:
+    mapName: Canopee
+    origineX: 12855
+    origineY: -1225
+    gridCellWidth: 209
+    gridCellHeight: 150
+    totalWidth: 3559
+    totalHeight: 2804
+    WidthNumberOfTile: 15
+    HeightNumberOfTile: 12
+    WidthNumberOfGridCell: 18
+    HeightNumberOfGridCell: 19
+    gridOffsetX: -103
+    gridOffsetY: 175
+    firstPositionX: -62
+    firstPositionY: 7
+    mapParentScale: 1
+  harebourg:
+    mapName: ChateauHarebourg
+    origineX: 6882
+    origineY: 6108
+    gridCellWidth: 91.5
+    gridCellHeight: 65.5
+    totalWidth: 2500
+    totalHeight: 1904
+    WidthNumberOfTile: 10
+    HeightNumberOfTile: 8
+    WidthNumberOfGridCell: 28
+    HeightNumberOfGridCell: 30
+    gridOffsetX: -72
+    gridOffsetY: 49
+    firstPositionX: -76
+    firstPositionY: -94
+    mapParentScale: 1
+  enutrosor:
+    mapName: Enutrosor
+    origineX: 2678
+    origineY: 1925
+    gridCellWidth: 204
+    gridCellHeight: 147
+    totalWidth: 4089
+    totalHeight: 2589
+    WidthNumberOfTile: 17
+    HeightNumberOfTile: 11
+    WidthNumberOfGridCell: 21
+    HeightNumberOfGridCell: 18
+    gridOffsetX: -178
+    gridOffsetY: 133
+    firstPositionX: -14
+    firstPositionY: -14
+    mapParentScale: 1
+  srambad:
+    mapName: Srambad
+    origineX: 1050
+    origineY: 1440
+    gridCellWidth: 204
+    gridCellHeight: 147
+    totalWidth: 4750
+    totalHeight: 3904
+    WidthNumberOfTile: 19
+    HeightNumberOfTile: 16
+    WidthNumberOfGridCell: 24
+    HeightNumberOfGridCell: 27
+    gridOffsetX: -174
+    gridOffsetY: 30
+    firstPositionX: -6
+    firstPositionY: -10
+    mapParentScale: 1
+  xelorium:
+    mapName: Xelorium
+    origineX: 1248
+    origineY: 1543
+    gridCellWidth: 204
+    gridCellHeight: 147
+    totalWidth: 4171
+    totalHeight: 3576
+    WidthNumberOfTile: 17
+    HeightNumberOfTile: 15
+    WidthNumberOfGridCell: 21
+    HeightNumberOfGridCell: 25
+    gridOffsetX: -180
+    gridOffsetY: 74
+    firstPositionX: -7
+    firstPositionY: -11
+    mapParentScale: 1
+  ecaflipus:
+    mapName: Ecaflipus
+    origineX: 3200
+    origineY: 4200
+    gridCellWidth: 203
+    gridCellHeight: 146
+    totalWidth: 5069
+    totalHeight: 5584
+    WidthNumberOfTile: 21
+    HeightNumberOfTile: 23
+    WidthNumberOfGridCell: 25
+    HeightNumberOfGridCell: 39
+    gridOffsetX: -48
+    gridOffsetY: 34
+    firstPositionX: -16
+    firstPositionY: -29
+    mapParentScale: 1
+  abysses:
+    mapName: Abysses
+    origineX: -1810
+    origineY: -2950
+    gridCellWidth: 150
+    gridCellHeight: 122
+    totalWidth: 3333
+    totalHeight: 1719
+    WidthNumberOfTile: 14
+    HeightNumberOfTile: 7
+    WidthNumberOfGridCell: 23
+    HeightNumberOfGridCell: 15
+    gridOffsetX: -160
+    gridOffsetY: 144
+    firstPositionX: 11
+    firstPositionY: 23
+    mapParentScale: 1
+  pyramide:
+    mapName: PyramideTalKasha
+    origineX: -3000
+    origineY: 17820
+    gridCellWidth: 415
+    gridCellHeight: 225
+    totalWidth: 3529
+    totalHeight: 2357
+    WidthNumberOfTile: 15
+    HeightNumberOfTile: 10
+    WidthNumberOfGridCell: 9
+    HeightNumberOfGridCell: 11
+    gridOffsetX: -510
+    gridOffsetY: 180
+    firstPositionX: 6
+    firstPositionY: -80
+    mapParentScale: 1
+  epave:
+    mapName: EpavesSilencieuses
+    origineX: 8385
+    origineY: 10700
+    gridCellWidth: 150
+    gridCellHeight: 122
+    totalWidth: 3333
+    totalHeight: 1719
+    WidthNumberOfTile: 14
+    HeightNumberOfTile: 7
+    WidthNumberOfGridCell: 23
+    HeightNumberOfGridCell: 15
+    gridOffsetX: -15
+    gridOffsetY: 36
+    firstPositionX: -56
+    firstPositionY: -88
+    mapParentScale: 1
+  pwak:
+    mapName: Pwak
+    origineX: 2268
+    origineY: 2565
+    gridCellWidth: 286
+    gridCellHeight: 205
+    totalWidth: 3560
+    totalHeight: 2802
+    WidthNumberOfTile: 15
+    HeightNumberOfTile: 12
+    WidthNumberOfGridCell: 13
+    HeightNumberOfGridCell: 14
+    gridOffsetX: -20
+    gridOffsetY: 100
+    firstPositionX: -8
+    firstPositionY: -13
+    mapParentScale: 1
+  crocuzko:
+    mapName: Crocuzko
+    origineX: 14604
+    origineY: 2635
+    gridCellWidth: 164
+    gridCellHeight: 114
+    totalWidth: 2016
+    totalHeight: 1719
+    WidthNumberOfTile: 9
+    HeightNumberOfTile: 7
+    WidthNumberOfGridCell: 13
+    HeightNumberOfGridCell: 16
+    gridOffsetX: -156
+    gridOffsetY: 101
+    firstPositionX: -90
+    firstPositionY: -24
+    mapParentScale: 1
+  songes:
+    mapName: Songes
+    origineX: 1208
+    origineY: 800
+    gridCellWidth: 91.5
+    gridCellHeight: 65.5
+    totalWidth: 2500
+    totalHeight: 1904
+    WidthNumberOfTile: 10
+    HeightNumberOfTile: 8
+    WidthNumberOfGridCell: 28
+    HeightNumberOfGridCell: 30
+    gridOffsetX: -73
+    gridOffsetY: 51.5
+    firstPositionX: -14
+    firstPositionY: -13
+    mapParentScale: 1
+  guerre:
+    mapName: Guerre
+    origineX: 790
+    origineY: 1165
+    gridCellWidth: 289
+    gridCellHeight: 195
+    totalWidth: 2840
+    totalHeight: 2170
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 10
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -77
+    gridOffsetY: 5
+    firstPositionX: -3
+    firstPositionY: -6
+    mapParentScale: 1
+  corruption:
+    mapName: Corrupiton
+    origineX: 775
+    origineY: 718
+    gridCellWidth: 260
+    gridCellHeight: 182
+    totalWidth: 2840
+    totalHeight: 2162
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 11
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -5
+    gridOffsetY: 10
+    firstPositionX: -3
+    firstPositionY: -4
+    mapParentScale: 1
+  misere:
+    mapName: Misere
+    origineX: 770
+    origineY: 717
+    gridCellWidth: 258
+    gridCellHeight: 185
+    totalWidth: 2840
+    totalHeight: 2170
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 12
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -4
+    gridOffsetY: 23
+    firstPositionX: -3
+    firstPositionY: -4
+    mapParentScale: 1
+  servitude:
+    mapName: Servitude
+    origineX: 775
+    origineY: 1266
+    gridCellWidth: 257
+    gridCellHeight: 183
+    totalWidth: 2840
+    totalHeight: 2162
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 12
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -253
+    gridOffsetY: 15
+    firstPositionX: -4
+    firstPositionY: -7
+    mapParentScale: 1
+  encrePapier:
+    mapName: EncrePapier
+    origineX: 1960
+    origineY: 1390
+    gridCellWidth: 352
+    gridCellHeight: 251.7
+    totalWidth: 4000
+    totalHeight: 2900
+    WidthNumberOfTile: 16
+    HeightNumberOfTile: 12
+    WidthNumberOfGridCell: 12
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -152
+    gridOffsetY: 120.19998
+    firstPositionX: -6
+    firstPositionY: -6
+    mapParentScale: 1
+  cauchemar:
+    mapName: Cauchemar
+    origineX: 773
+    origineY: 532
+    gridCellWidth: 257
+    gridCellHeight: 183
+    totalWidth: 2840
+    totalHeight: 2162
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 9
+    WidthNumberOfGridCell: 12
+    HeightNumberOfGridCell: 12
+    gridOffsetX: -255
+    gridOffsetY: 17
+    firstPositionX: -4
+    firstPositionY: -3
+    mapParentScale: 1
+  ereboria:
+    mapName: Ereboria
+    origineX: -6953
+    origineY: 13663
+    gridCellWidth: 257.5
+    gridCellHeight: 185
+    totalWidth: 2840
+    totalHeight: 2881
+    WidthNumberOfTile: 12
+    HeightNumberOfTile: 12
+    WidthNumberOfGridCell: 12
+    HeightNumberOfGridCell: 16
+    gridOffsetX: -258
+    gridOffsetY: 27
+    firstPositionX: 26
+    firstPositionY: -74
     mapParentScale: 1
   tilePrefab: {fileID: 9046392563983847684, guid: 980cb88a699dc15429eb5c5798ace2d5, type: 3}
   TileGrid: {fileID: 1493813756558819321}
@@ -2464,6 +2989,31 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4c1acc64de6b792438e9742712194714, type: 3}
   - {fileID: 21300000, guid: 55ef28f0ab8b84545806dde43829180e, type: 3}
   - {fileID: 21300000, guid: 9258a899d9a33374bb03f8e0b42f80d3, type: 3}
+  minotororScaleOneTileSprites: []
+  dragonCochonScaleOneTileSprites: []
+  maitreCorbacScaleOneTileSprites: []
+  caverneGivrefouxScaleOneTileSprites: []
+  canauxMephitiquesScaleOneTileSprites: []
+  egoutsBrakmarScaleOneTileSprites: []
+  canopeeScaleOneTileSprites: []
+  harebourgScaleOneTileSprites: []
+  enutrosorScaleOneTileSprites: []
+  srambadScaleOneTileSprites: []
+  xeloriumScaleOneTileSprites: []
+  ecaflipusScaleOneTileSprites: []
+  abyssesScaleOneTileSprites: []
+  pyramideScaleOneTileSprites: []
+  epaveScaleOneTileSprites: []
+  pwakScaleOneTileSprites: []
+  crocuzkoScaleOneTileSprites: []
+  songesScaleOneTileSprites: []
+  guerreScaleOneTileSprites: []
+  corruptionScaleOneTileSprites: []
+  misereScaleOneTileSprites: []
+  servitudeScaleOneTileSprites: []
+  encrePapierScaleOneTileSprites: []
+  cauchemarScaleOneTileSprites: []
+  ereboriaScaleOneTileSprites: []
   worldTiles: []
   ButtontilePrefab: {fileID: 5199743744203861809, guid: 8066f44dba1ee964cbe61244d3afdee9, type: 3}
   ButtonTileGrid: {fileID: 1378112101339976380}

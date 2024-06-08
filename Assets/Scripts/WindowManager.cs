@@ -12,15 +12,27 @@ public class WindowManager : MonoBehaviour
     public GameObject travelWindow;
     public GameObject guideWindow;
     public GameObject messageWindow;
+    public GameObject settingsWindow;
+    public CanvasGroup canvasGroup;
+
+    public Slider opacitySlider;
 
     public bool isInteractiveMapActive = false;
 
     void Start()
     {
+        LoadPlayerPrefs();
         AppWindowUtility.Transparent = true;
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
         AppWindowUtility.SetScreenSize(300, 450);
+    }
+
+    private void LoadPlayerPrefs()
+    {
+        float opacity = PlayerPrefs.GetFloat("opacity", 1);
+        opacitySlider.value = opacity;
+        ChangeCanvasOpacity(opacity);
     }
 
     public void ToggleWindow()
@@ -60,6 +72,14 @@ public class WindowManager : MonoBehaviour
         ActivateInteractiveMap(false);
     }
 
+    public void SettingsWindowClicked()
+    {
+        SelectedWindow.SetActive(false);
+        SelectedWindow = settingsWindow;
+        SelectedWindow.SetActive(true);
+        ActivateInteractiveMap(false);
+    }
+
     public void DiscordButtonClicked()
     {
         Application.OpenURL("https://discord.gg/fxWuXB3dct");
@@ -93,5 +113,11 @@ public class WindowManager : MonoBehaviour
                 AppWindowUtility.SetScreenSize(300, 450);
             }
         }
+    }
+
+    public void ChangeCanvasOpacity(float opacity)
+    {
+        canvasGroup.alpha = opacity;
+        PlayerPrefs.SetFloat("opacity", opacity);
     }
 }
