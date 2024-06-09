@@ -51,16 +51,16 @@ public class GuideManager : MonoBehaviour
     private string FilterDownloadedGuides(string jsonResponse)
     {
         var guides = JArray.Parse(jsonResponse);
-        var localGuideNames = GetLocalGuideNames();
+        var localGuideIds = GetLocalGuideIds();
 
-        var filteredGuides = guides.Where(guide => !localGuideNames.Contains(guide["name"].ToString())).ToArray();
+        var filteredGuides = guides.Where(guide => !localGuideIds.Contains(guide["id"].ToString())).ToArray();
 
         return JArray.FromObject(filteredGuides).ToString();
     }
 
-    private HashSet<string> GetLocalGuideNames()
+    private HashSet<string> GetLocalGuideIds()
     {
-        var guideNames = new HashSet<string>();
+        var guideIds = new HashSet<string>();
 
         guidesCurrentPath = Application.persistentDataPath + "/guides/";
 
@@ -74,11 +74,11 @@ public class GuideManager : MonoBehaviour
                 {
                     var json = File.ReadAllText(file);
                     var guide = JObject.Parse(json);
-                    var guideName = guide["name"]?.ToString();
+                    var guideId = guide["id"]?.ToString();
 
-                    if (!string.IsNullOrEmpty(guideName))
+                    if (!string.IsNullOrEmpty(guideId))
                     {
-                        guideNames.Add(guideName);
+                        guideIds.Add(guideId);
                     }
                 }
                 catch (Exception e)
@@ -88,7 +88,7 @@ public class GuideManager : MonoBehaviour
             }
         }
 
-        return guideNames;
+        return guideIds;
     }
 
     public void onClickDownloadGuide(int id)
@@ -140,13 +140,14 @@ public class GuideManager : MonoBehaviour
             return;
         }
 
-        // Parse the JSON to get the guide name
+        // Parse the JSON to get the guide ID and name
         var guideObject = JObject.Parse(guideJson);
         var guideName = guideObject["name"]?.ToString();
+        var guideId = guideObject["id"]?.ToString();
 
-        if (string.IsNullOrEmpty(guideName))
+        if (string.IsNullOrEmpty(guideName) || string.IsNullOrEmpty(guideId))
         {
-            Debug.LogError("Guide name is not found in the JSON.");
+            Debug.LogError("Guide name or ID is not found in the JSON.");
             return;
         }
 
