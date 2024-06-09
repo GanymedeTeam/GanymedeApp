@@ -151,7 +151,19 @@ public class GuideManager : MonoBehaviour
             return;
         }
 
-        string filePath = Path.Combine(path, guideName + ".json");
+        // Search for an existing file with the same ID in the /guides directory or its subdirectories
+        string existingFilePath = FindExistingGuideFile(path, guideId);
+
+        string filePath;
+        if (existingFilePath != null)
+        {
+            filePath = existingFilePath;
+            Debug.Log($"Guide with ID {guideId} already exists, it will be overwritten.");
+        }
+        else
+        {
+            filePath = Path.Combine(path, guideName + ".json");
+        }
 
         try
         {
@@ -163,6 +175,34 @@ public class GuideManager : MonoBehaviour
         {
             Debug.LogError("Failed to save guide: " + e.Message);
         }
+    }
+
+    private string FindExistingGuideFile(string path, string guideId)
+    {
+        if (Directory.Exists(path))
+        {
+            var files = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
+            foreach (var file in files)
+            {
+                try
+                {
+                    var json = File.ReadAllText(file);
+                    var guide = JObject.Parse(json);
+                    var existingGuideId = guide["id"]?.ToString();
+
+                    if (existingGuideId == guideId)
+                    {
+                        return file;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Failed to read or parse guide file: " + e.Message);
+                }
+            }
+        }
+
+        return null;
     }
 
     // Additional functions to get the stored responses
