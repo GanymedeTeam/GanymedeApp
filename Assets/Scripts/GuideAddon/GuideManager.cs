@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 
 public class GuideManager : MonoBehaviour
 {
@@ -13,20 +15,14 @@ public class GuideManager : MonoBehaviour
     private string guidesCertifiedListResponse;
 
     // API call api/guides dont return private guides
-    public void onClickGuidesDraftAndPublicList()
+    public void onClickGuidesDraftAndPublicList(Action<string> callback)
     {
-        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=public", response => {
-            guidesDraftAndPublicListResponse = response;
-            Debug.Log("Draft and Public Guides Response: " + response);
-        }));
+        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=public", callback));
     }
 
-    public void onClickGuidesCertifiedList()
+    public void onClickGuidesCertifiedList(Action<string> callback)
     {
-        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=certified", response => {
-            guidesCertifiedListResponse = response;
-            Debug.Log("Certified Guides Response: " + response);
-        }));
+        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=certified", callback));
     }
 
     private IEnumerator GetGuidesList(string url, Action<string> callback)
@@ -42,9 +38,57 @@ public class GuideManager : MonoBehaviour
             }
             else
             {
-                callback(webRequest.downloadHandler.text);
+                string jsonResponse = webRequest.downloadHandler.text;
+                Debug.Log("Received Guides List: " + jsonResponse);
+
+                jsonResponse = FilterDownloadedGuides(jsonResponse);
+
+                callback(jsonResponse);
             }
         }
+    }
+
+    private string FilterDownloadedGuides(string jsonResponse)
+    {
+        var guides = JArray.Parse(jsonResponse);
+        var localGuideNames = GetLocalGuideNames();
+
+        var filteredGuides = guides.Where(guide => !localGuideNames.Contains(guide["name"].ToString())).ToArray();
+
+        return JArray.FromObject(filteredGuides).ToString();
+    }
+
+    private HashSet<string> GetLocalGuideNames()
+    {
+        var guideNames = new HashSet<string>();
+
+        guidesCurrentPath = Application.persistentDataPath + "/guides/";
+
+        if (Directory.Exists(guidesCurrentPath))
+        {
+            var files = Directory.GetFiles(guidesCurrentPath, "*.json", SearchOption.AllDirectories);
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    var json = File.ReadAllText(file);
+                    var guide = JObject.Parse(json);
+                    var guideName = guide["name"]?.ToString();
+
+                    if (!string.IsNullOrEmpty(guideName))
+                    {
+                        guideNames.Add(guideName);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Failed to read or parse guide file: " + e.Message);
+                }
+            }
+        }
+
+        return guideNames;
     }
 
     public void onClickDownloadGuide(int id)
@@ -120,6 +164,7 @@ public class GuideManager : MonoBehaviour
         }
     }
 
+    // Additional functions to get the stored responses
     public string GetDraftAndPublicListResponse()
     {
         return guidesDraftAndPublicListResponse;
