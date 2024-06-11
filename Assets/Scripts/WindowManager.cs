@@ -82,7 +82,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = MainWindow;
         SelectedWindow.SetActive(true);
-        ActivateInteractiveMap(false);
+        ToggleInteractiveMap(false);
     }
 
     public void TravelWindowClicked()
@@ -90,7 +90,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = travelWindow;
         SelectedWindow.SetActive(true);
-        ActivateInteractiveMap(false);
+        ToggleInteractiveMap(false);
     }
 
     public void GuideWindowClicked()
@@ -98,7 +98,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
-        ActivateInteractiveMap(true);
+        ToggleInteractiveMap(true);
     }
 
     public void MessageWindowClicked()
@@ -106,7 +106,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = messageWindow;
         SelectedWindow.SetActive(true);
-        ActivateInteractiveMap(false);
+        ToggleInteractiveMap(false);
     }
 
     public void SettingsWindowClicked()
@@ -114,7 +114,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = settingsWindow;
         SelectedWindow.SetActive(true);
-        ActivateInteractiveMap(false);
+        ToggleInteractiveMap(false);
     }
 
     public void DiscordButtonClicked()
@@ -132,24 +132,12 @@ public class WindowManager : MonoBehaviour
         Application.OpenURL("https://ganymede-dofus.com");
     }
 
-    public void ActivateInteractiveMap(bool isActivate)
+    public void ToggleInteractiveMap(bool setActive)
     {
-        if (isActivate)
-        {
-            if (!isInteractiveMapActive)
-            {
-                isInteractiveMapActive = true;
-                AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
-            }
-        }
+        if (setActive)
+            AppWindowUtility.SetScreenSize(300, 750);
         else
-        {
-            if (isInteractiveMapActive)
-            {
-                isInteractiveMapActive = false;
-                AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
-            }
-        }
+            AppWindowUtility.SetScreenSize(300, 450);
     }
 
     public void ChangeCanvasOpacity(float opacity)

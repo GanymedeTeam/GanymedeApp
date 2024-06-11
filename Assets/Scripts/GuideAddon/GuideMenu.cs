@@ -1,32 +1,39 @@
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using TMPro;
 using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEngine.UI;
 
 public class GuideMenu : MonoBehaviour
 {
-    public List<GuideEntry> guideStepData = new List<GuideEntry>();
+
     public GameObject gridGameobject;
     public GameObject guideUIPrefab;
     public GameObject guideUIFolderPrefab;
     public GameObject GuideDetailsMenu;
     public GameObject GuideSelectionMenu;
+    public GameObject StepContent;
+    public GameObject SubstepPrefab;
+    public GameObject CheckboxPrefab;
     public string OpenedGuide;
-    public TMP_Text guideNameText;
-    public TMP_Text guideIDText;
-    public TMP_Text guideTravelPositionText;
-    public TMP_Text guideTitleText;
-    public TMP_Text guideDescriptionText;
     public TMP_Text currentPath;
     public int guideProgress = 0;
     public MapManager mapManager;
     public TMP_InputField guideGoToStepText;
     public TMP_InputField searchBar;
-
     public string guidesCurrentPath;
+    public TMP_Text guideNameText;
+    public TMP_Text stepNumberText;
+    public TMP_Text stepTravelPositionText;
+    public TMP_Text stepTitleText;
+    public TMP_FontAsset textFont;
+
+    [SerializeField]
+    private GuideEntry guideInfos;
 
     void Start()
     {
@@ -34,36 +41,14 @@ public class GuideMenu : MonoBehaviour
         ReloadGuideList();
     }
 
-    void LoadGuideProgression(string guideName)
-    {
-        //TODO : LOAD GUIDE PROGRESSION FROM SAVEFILE
-        string saveFilePath = Application.persistentDataPath + "/guideprogression/" + guideName + "_progression";
-        if (File.Exists(saveFilePath))
-        {
-            string saveData = File.ReadAllText(saveFilePath);
-            guideProgress = int.Parse(saveData);
-        }
-        else
-        {
-            guideProgress = 0;
-        }
-    }
-
-    void SaveGuideProgression()
-    {
-        //TODO : SAVE GUIDE PROGRESSION TO SAVEFILE
-
-        string saveFilePath = Application.persistentDataPath + "/guideprogression/" + OpenedGuide + "_progression";
-        if (!Directory.Exists(Path.GetDirectoryName(saveFilePath)))
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(saveFilePath));
-        }
-        File.WriteAllText(saveFilePath, guideProgress.ToString());
-    }
-
     public void CopyTravelPosition()
     {
-        GUIUtility.systemCopyBuffer = "/travel " + guideStepData[guideProgress].travelPosition;
+        GUIUtility.systemCopyBuffer = "[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]";
+    }
+
+    public void CopyGuideTravelPosition()
+    {
+        GUIUtility.systemCopyBuffer = "/travel [" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]";
     }
 
     public void OpenGuideFileStorage()
@@ -81,25 +66,19 @@ public class GuideMenu : MonoBehaviour
             files = files.Select(e => e.Split('\\').Last()).ToArray();
             folders = folders.Select(e => e.Split('\\').Last()).ToArray();
             if (searchBar.text != "")
-            {
                 matchedSearch = Array.Exists(files, e => e.Contains(searchBar.text.ToLowerInvariant())) || Array.Exists(folders, e => e.Contains(searchBar.text.ToLowerInvariant()));
-            }
             return matchedSearch;
         }
 
         if (!Directory.Exists(Path.GetDirectoryName(guidesCurrentPath)))
-        {
             Directory.CreateDirectory(Path.GetDirectoryName(guidesCurrentPath));
-        }
 
         var info = new DirectoryInfo(guidesCurrentPath);
 
         var dirInfo = info.GetDirectories();
 
         if (searchBar.text != "")
-        {
             dirInfo = dirInfo.Where(e => e.Name.ToLower().Contains(searchBar.text.ToLower()) || RecursiveSearch(e)).ToArray();
-        }
 
         Debug.Log("Folders in guides folder: " + dirInfo.Length);
 
@@ -110,9 +89,7 @@ public class GuideMenu : MonoBehaviour
     {
 
         if (!Directory.Exists(Path.GetDirectoryName(guidesCurrentPath)))
-        {
             Directory.CreateDirectory(Path.GetDirectoryName(guidesCurrentPath));
-        }
 
         var info = new DirectoryInfo(guidesCurrentPath);
 
@@ -121,9 +98,7 @@ public class GuideMenu : MonoBehaviour
         Debug.Log("Files in guides folder: " + fileInfo.Length);
 
         if (searchBar.text != "")
-        {
             fileInfo = fileInfo.Where(e => e.Name.ToLower().Contains(searchBar.text.ToLower())).ToArray();
-        }
 
         Debug.Log("Files shown: " + fileInfo.Length);
 
@@ -143,17 +118,13 @@ public class GuideMenu : MonoBehaviour
             while (text.Length > maxSize)
             {
                 if (text.Split('/').Count() == 1)
-                {
                     break;
-                }
                 isTruncated = true;
                 text = text.Substring(text.IndexOf('/', 2) + 1);
             }
             text = text.Replace("/", " <b><color=\"yellow\">></b></color> ");
             if (isTruncated)
-            {
                 text = "... <b><color=\"yellow\">></b></color> " + text;
-            }
             Debug.Log(text);
             currentPath.text = text;
         }
@@ -192,9 +163,7 @@ public class GuideMenu : MonoBehaviour
     void RemoveGuides()
     {
         foreach (Transform child in gridGameobject.transform)
-        {
             Destroy(child.gameObject);
-        }
     }
 
     public void BackToGuideSelection()
@@ -209,24 +178,16 @@ public class GuideMenu : MonoBehaviour
         string[] split = guidesCurrentPath.Split('/');
 
         if (split[split.Count() - 1] == "")
-        {
             split = split.Take(split.Count() - 2).ToArray();
-        }
         else
-        {
             split = split.Take(split.Count() - 1).ToArray();
-        }
 
         string newPath = String.Join("/", split) + "/";
 
         if (newPath.Contains(Application.persistentDataPath + "/guides/"))
-        {
             guidesCurrentPath = newPath;
-        }
         else
-        {
             guidesCurrentPath = Application.persistentDataPath + "/guides/";
-        }
         ReloadGuideList();
         Debug.Log("Currently in folder path " + guidesCurrentPath);
     }
@@ -234,75 +195,121 @@ public class GuideMenu : MonoBehaviour
     public void LoadGuide(string guideName)
     {
         OpenedGuide = guideName;
-        guideStepData = FileHandler.ReadListFromJSON<GuideEntry>(guidesCurrentPath.Replace(Application.persistentDataPath + "/", "") + guideName + ".json");
-        Debug.Log(guideStepData.Count);
-        guideNameText.text = guideName;
+        string filePath = guidesCurrentPath + guideName + ".json";
+        string jsonToRead = File.ReadAllText(filePath);
+        guideInfos = JsonUtility.FromJson<GuideEntry>(jsonToRead);
 
-        //TODO : LOAD GUIDE PROGRESSION FROM SAVEFILE
-        guideProgress = 0;
-        LoadGuideProgression(guideName);
+        guideProgress = PlayerPrefs.GetInt(guideInfos.id.ToString() + "_currstep", -1);
+        if (guideProgress == -1)
+        {
+            guideProgress = 0;
+            PlayerPrefs.SetInt(guideInfos.id.ToString() + "_currstep", guideProgress);
+        }
 
-        //TODO : LOAD GUIDE DETAILS FROM RIGHT STEP
-        guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-        guideTitleText.text = guideStepData[guideProgress].title;
-        guideDescriptionText.text = guideStepData[guideProgress].description;
-        guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-
-        int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-        int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-        mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
+        guideNameText.text = guideInfos.name;
+        GoToGuideStep(guideProgress);
     }
 
-    public void GoToStep()
+    public void PublicGoToGuideStep(string guideIndex)
     {
-        int step = int.Parse(guideGoToStepText.text);
-        if (step > 0 && step <= guideStepData.Count)
-        {
-            GoToGuideStep(step - 1);
-        }
+        
+        int step = Int32.Parse(guideIndex);
+        if (step <= guideInfos.steps.Count() && step > 0)
+            GoToGuideStep(step-1);
     }
 
     public void GoToGuideStep(int guideIndex)
     {
+        foreach (Transform child in StepContent.transform) {
+            if (child.name.Contains("Substep") || child.name.Contains("Checkbox"))
+                GameObject.Destroy(child.gameObject);
+        }
         guideProgress = guideIndex;
-        guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-        guideTitleText.text = guideStepData[guideProgress].title;
-        guideDescriptionText.text = guideStepData[guideProgress].description;
-        guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-        SaveGuideProgression();
-        int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-        int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-        mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
+        stepNumberText.text = (guideProgress+1).ToString() + "/" + guideInfos.steps.Count();
+        stepTitleText.text = guideInfos.steps[guideProgress].name;
+        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]</color>";
+        ProcessSubSteps(guideInfos.steps[guideProgress].sub_steps);
+        int posX = guideInfos.steps[guideProgress].pos_x;
+        int posY = guideInfos.steps[guideProgress].pos_y;
+        mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress].map);
+    }
+
+    private void ProcessSubSteps(List<SubstepEntry> subentries)
+    {
+        IEnumerator SetSubStepPosition(List<GameObject> substepList)
+        {
+            yield return 0;
+            float offsetSubstepPosition = 0f;
+            foreach (GameObject substep in substepList)
+            {
+                substep.transform.position += new Vector3(0, offsetSubstepPosition, 0);
+                offsetSubstepPosition -= substep.GetComponent<RectTransform>().rect.height;
+            }
+            StepContent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, -offsetSubstepPosition);
+        }
+
+        int substepIndex = 0;
+        Regex CheckboxRegex = new Regex(@"<checkbox>(.+?)</checkbox>");
+        List<(string, bool)> entities = new List<(string, bool)>();
+        List<GameObject> subStepsList = new List<GameObject>();
+        foreach (SubstepEntry subentry in subentries)
+        {
+            string text = subentry.text;
+            foreach (Match checkboxMatch in CheckboxRegex.Matches(subentry.text))
+            {
+                string[] disassembled_text = text.Split(new string[] { checkboxMatch.Value }, StringSplitOptions.None);
+                entities.Add((disassembled_text[0], false));
+                entities.Add((checkboxMatch.Groups[1].Value, true));
+                text = text.Replace(disassembled_text[0] + checkboxMatch.Value, "");
+            }
+            entities.Add((text, false));
+        }
+        foreach ((string, bool) entity in entities)
+        {
+            if (entity.Item1 == "")
+                continue;
+            if (entity.Item2 == true)
+            {
+                GameObject checkboxGameObject = Instantiate(CheckboxPrefab, StepContent.transform);
+                subStepsList.Add(checkboxGameObject);
+                checkboxGameObject.name = "Checkbox " + (++substepIndex).ToString();
+                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
+                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn = Convert.ToBoolean(PlayerPrefs.GetInt(guideInfos.id.ToString() + "_cb" + guideProgress + checkboxGameObject.name[checkboxGameObject.name.Length - 1]));
+                checkboxGameObject.transform.SetParent(StepContent.transform);
+                checkboxGameObject.GetComponent<TMP_Text>().text = entity.Item1;
+            }
+            else if (entity.Item2 == false)
+            {
+                GameObject subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
+                subStepsList.Add(subStepGameObject);
+                subStepGameObject.name = "Substep " + (++substepIndex).ToString();
+                subStepGameObject.transform.SetParent(StepContent.transform);
+                subStepGameObject.GetComponent<TMP_Text>().text = entity.Item1;
+            }
+        }
+        StartCoroutine(SetSubStepPosition(subStepsList));
     }
 
     public void NextStep()
     {
-        if (guideProgress < guideStepData.Count - 1)
+        if (guideProgress < guideInfos.steps.Count() - 1)
         {
-            guideProgress++;
-            guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-            guideTitleText.text = guideStepData[guideProgress].title;
-            guideDescriptionText.text = guideStepData[guideProgress].description;
-            guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-            SaveGuideProgression();
-            int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-            int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-            mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
+            GoToGuideStep(++guideProgress);
         }
     }
+
+    public void SaveCheckboxStates()
+    {
+        foreach (Transform child in StepContent.transform)
+        {
+            if (child.name.Contains("Checkbox"))
+                PlayerPrefs.SetInt(guideInfos.id.ToString() + "_cb" + guideProgress + child.name[child.name.Length - 1], child.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn ? 1 : 0);
+        }
+    }
+
     public void PreviousStep()
     {
         if (guideProgress > 0)
-        {
-            guideProgress--;
-            guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-            guideTitleText.text = guideStepData[guideProgress].title;
-            guideDescriptionText.text = guideStepData[guideProgress].description;
-            guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-            SaveGuideProgression();
-            int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-            int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-            mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
-        }
+            GoToGuideStep(--guideProgress);
     }
 }
