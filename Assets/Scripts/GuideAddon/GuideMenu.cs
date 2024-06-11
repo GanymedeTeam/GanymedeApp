@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -8,25 +7,30 @@ using System.Linq;
 
 public class GuideMenu : MonoBehaviour
 {
-    public List<GuideEntry> guideStepData = new List<GuideEntry>();
+
     public GameObject gridGameobject;
     public GameObject guideUIPrefab;
     public GameObject guideUIFolderPrefab;
     public GameObject GuideDetailsMenu;
     public GameObject GuideSelectionMenu;
+    public GameObject StepContent;
     public string OpenedGuide;
-    public TMP_Text guideNameText;
-    public TMP_Text guideIDText;
-    public TMP_Text guideTravelPositionText;
-    public TMP_Text guideTitleText;
-    public TMP_Text guideDescriptionText;
     public TMP_Text currentPath;
     public int guideProgress = 0;
     public MapManager mapManager;
     public TMP_InputField guideGoToStepText;
     public TMP_InputField searchBar;
-
     public string guidesCurrentPath;
+    public TMP_Text guideNameText;
+    public TMP_Text stepNumberText;
+    public TMP_Text stepTravelPositionText;
+    public TMP_Text stepTitleText;
+    public TMP_FontAsset textFont;
+
+    [SerializeField]
+    private string guideCurrID;
+    [SerializeField]
+    private GuideEntry guideInfos;
 
     void Start()
     {
@@ -34,36 +38,14 @@ public class GuideMenu : MonoBehaviour
         ReloadGuideList();
     }
 
-    void LoadGuideProgression(string guideName)
-    {
-        //TODO : LOAD GUIDE PROGRESSION FROM SAVEFILE
-        string saveFilePath = Application.persistentDataPath + "/guideprogression/" + guideName + "_progression";
-        if (File.Exists(saveFilePath))
-        {
-            string saveData = File.ReadAllText(saveFilePath);
-            guideProgress = int.Parse(saveData);
-        }
-        else
-        {
-            guideProgress = 0;
-        }
-    }
-
-    void SaveGuideProgression()
-    {
-        //TODO : SAVE GUIDE PROGRESSION TO SAVEFILE
-
-        string saveFilePath = Application.persistentDataPath + "/guideprogression/" + OpenedGuide + "_progression";
-        if (!Directory.Exists(Path.GetDirectoryName(saveFilePath)))
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(saveFilePath));
-        }
-        File.WriteAllText(saveFilePath, guideProgress.ToString());
-    }
-
     public void CopyTravelPosition()
     {
-        GUIUtility.systemCopyBuffer = "/travel " + guideStepData[guideProgress].travelPosition;
+        GUIUtility.systemCopyBuffer = "[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]";
+    }
+
+    public void CopyGuideTravelPosition()
+    {
+        GUIUtility.systemCopyBuffer = "/travel [" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]";
     }
 
     public void OpenGuideFileStorage()
@@ -234,75 +216,102 @@ public class GuideMenu : MonoBehaviour
     public void LoadGuide(string guideName)
     {
         OpenedGuide = guideName;
-        guideStepData = FileHandler.ReadListFromJSON<GuideEntry>(guidesCurrentPath.Replace(Application.persistentDataPath + "/", "") + guideName + ".json");
-        Debug.Log(guideStepData.Count);
-        guideNameText.text = guideName;
+        string filePath = guidesCurrentPath + guideName + ".json";
+        string jsonToRead = File.ReadAllText(filePath);
+        guideInfos = JsonUtility.FromJson<GuideEntry>(jsonToRead);
 
-        //TODO : LOAD GUIDE PROGRESSION FROM SAVEFILE
-        guideProgress = 0;
-        LoadGuideProgression(guideName);
+        guideProgress = PlayerPrefs.GetInt(guideInfos.id.ToString() + "_currstep", -1);
+        if (guideProgress == -1)
+        {
+            guideProgress = 0;
+            PlayerPrefs.SetInt(guideInfos.id.ToString() + "_currstep", guideProgress);
+        }
 
-        //TODO : LOAD GUIDE DETAILS FROM RIGHT STEP
-        guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-        guideTitleText.text = guideStepData[guideProgress].title;
-        guideDescriptionText.text = guideStepData[guideProgress].description;
-        guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-
-        int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-        int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-        mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
+        guideNameText.text = guideInfos.name;
+        guideCurrID = guideInfos.id.ToString();
+        GoToGuideStep(guideProgress);
     }
 
-    public void GoToStep()
+    public void PublicGoToGuideStep(string guideIndex)
     {
-        int step = int.Parse(guideGoToStepText.text);
-        if (step > 0 && step <= guideStepData.Count)
-        {
-            GoToGuideStep(step - 1);
-        }
+        
+        int step = Int32.Parse(guideIndex);
+        if (step <= guideInfos.steps.Count() && step > 0)
+            GoToGuideStep(step-1);
     }
 
     public void GoToGuideStep(int guideIndex)
     {
+        foreach (Transform child in StepContent.transform) {
+            if (child.name.Contains("Substep"))
+                GameObject.Destroy(child.gameObject);
+        }
         guideProgress = guideIndex;
-        guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-        guideTitleText.text = guideStepData[guideProgress].title;
-        guideDescriptionText.text = guideStepData[guideProgress].description;
-        guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-        SaveGuideProgression();
-        int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-        int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-        mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
+        stepNumberText.text = (guideProgress+1).ToString() + "/" + guideInfos.steps.Count();
+        stepTitleText.text = guideInfos.steps[guideProgress].name;
+        stepTravelPositionText.text = "Position : <color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]</color>";
+        ProcessSubSteps(guideInfos.steps[guideProgress].sub_steps);
+        int posX = guideInfos.steps[guideProgress].pos_x;
+        int posY = guideInfos.steps[guideProgress].pos_y;
+        mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress].map);
+    }
+
+    private void ProcessSubSteps(List<SubstepEntry> subentries)
+    {
+        int substepIndex = 0;
+        Vector3[] v = new Vector3[4];
+        StepContent.GetComponent<RectTransform>().GetWorldCorners(v);
+        Vector3 topCornerPosition = v[1];
+        foreach (SubstepEntry subentry in guideInfos.steps[guideProgress].sub_steps)
+        {
+            if (subentry.text == "")
+                return;
+            // Child gameobject
+            GameObject subStepGameObject = new GameObject
+            {
+                name = "Substep " + (++substepIndex).ToString()
+            };
+            // Assign to parent
+            subStepGameObject.transform.parent = StepContent.transform;
+            // Create TMP Pro component and assign it to child
+            TextMeshProUGUI substepTMP = subStepGameObject.AddComponent<TextMeshProUGUI>();
+            substepTMP.fontSize = 16;
+            ParseText(subentry.text);
+            substepTMP.text = subentry.text;
+            substepTMP.font = textFont;
+            Vector2 textSize = substepTMP.GetPreferredValues();
+            // Essayer de t rouver l'espacement avec la taille de la font+ taille espacement * nombre de lignes?
+            subStepGameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(StepContent.GetComponent<RectTransform>().rect.width, textSize.y);
+            subStepGameObject.transform.position = topCornerPosition + new Vector3(StepContent.GetComponent<RectTransform>().rect.width / 2, - subStepGameObject.GetComponent<RectTransform>().rect.height / 2, 0);
+            topCornerPosition += new Vector3(0, - subStepGameObject.GetComponent<RectTransform>().rect.height, 0);        
+        }
+    }
+
+    private string ParseText(string text)
+    {
+        foreach (char c in text)
+        {
+            if (c == '<')
+            {
+
+            }
+        }
+        return text;
     }
 
     public void NextStep()
     {
-        if (guideProgress < guideStepData.Count - 1)
+        if (guideProgress < guideInfos.steps.Count() - 1)
         {
-            guideProgress++;
-            guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-            guideTitleText.text = guideStepData[guideProgress].title;
-            guideDescriptionText.text = guideStepData[guideProgress].description;
-            guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-            SaveGuideProgression();
-            int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-            int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-            mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
+            GoToGuideStep(++guideProgress);
         }
     }
+
     public void PreviousStep()
     {
         if (guideProgress > 0)
         {
-            guideProgress--;
-            guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
-            guideTitleText.text = guideStepData[guideProgress].title;
-            guideDescriptionText.text = guideStepData[guideProgress].description;
-            guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
-            SaveGuideProgression();
-            int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
-            int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
-            mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
+            GoToGuideStep(--guideProgress);
         }
     }
 }
