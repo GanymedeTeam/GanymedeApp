@@ -28,6 +28,11 @@ public class WindowManager : MonoBehaviour
         AppWindowUtility.SetScreenSize(300, 450);
     }
 
+    public void CloseApp()
+    {
+        Application.Quit();
+    }
+
     private void LoadPlayerPrefs()
     {
         float opacity = PlayerPrefs.GetFloat("opacity", 1);
