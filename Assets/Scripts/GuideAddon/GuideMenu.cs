@@ -52,7 +52,7 @@ public class GuideMenu : MonoBehaviour
     void SaveGuideProgression()
     {
         //TODO : SAVE GUIDE PROGRESSION TO SAVEFILE
-        
+
         string saveFilePath = Application.persistentDataPath + "/guideprogression/" + OpenedGuide + "_progression";
         if (!Directory.Exists(Path.GetDirectoryName(saveFilePath)))
         {
@@ -68,7 +68,7 @@ public class GuideMenu : MonoBehaviour
 
     public void OpenGuideFileStorage()
     {
-        System.Diagnostics.Process.Start("explorer.exe","/open,"+Application.persistentDataPath.Replace('/', '\\') + "\\guides");
+        System.Diagnostics.Process.Start("explorer.exe", "/open," + Application.persistentDataPath.Replace('/', '\\') + "\\guides");
     }
 
     private DirectoryInfo[] GetGuidesFolders()
@@ -140,9 +140,9 @@ public class GuideMenu : MonoBehaviour
             text = text.Remove(text.Length - 1, 1);
             bool isTruncated = false;
             int maxSize = 30;
-            while(text.Length > maxSize)
+            while (text.Length > maxSize)
             {
-                if(text.Split('/').Count() == 1)
+                if (text.Split('/').Count() == 1)
                 {
                     break;
                 }
@@ -190,7 +190,7 @@ public class GuideMenu : MonoBehaviour
     }
 
     void RemoveGuides()
-    {        
+    {
         foreach (Transform child in gridGameobject.transform)
         {
             Destroy(child.gameObject);
@@ -207,7 +207,7 @@ public class GuideMenu : MonoBehaviour
     {
         Debug.Log("Leaving path " + guidesCurrentPath + " for previous folder...");
         string[] split = guidesCurrentPath.Split('/');
-        
+
         if (split[split.Count() - 1] == "")
         {
             split = split.Take(split.Count() - 2).ToArray();
@@ -243,25 +243,29 @@ public class GuideMenu : MonoBehaviour
         LoadGuideProgression(guideName);
 
         //TODO : LOAD GUIDE DETAILS FROM RIGHT STEP
-        guideIDText.text = (guideProgress+1).ToString() + "/" + guideStepData.Count;
+        guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
         guideTitleText.text = guideStepData[guideProgress].title;
         guideDescriptionText.text = guideStepData[guideProgress].description;
         guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
+
+        int posX = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[0]);
+        int posY = int.Parse(guideStepData[guideProgress].travelPosition.Split(',')[1]);
+        mapManager.updateMapFromStep(posX, posY, guideStepData[guideProgress].map);
     }
 
     public void GoToStep()
     {
         int step = int.Parse(guideGoToStepText.text);
-        if(step > 0 && step <= guideStepData.Count)
+        if (step > 0 && step <= guideStepData.Count)
         {
-            GoToGuideStep(step-1);
+            GoToGuideStep(step - 1);
         }
     }
 
     public void GoToGuideStep(int guideIndex)
     {
         guideProgress = guideIndex;
-        guideIDText.text = (guideProgress+1).ToString() + "/" + guideStepData.Count;
+        guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
         guideTitleText.text = guideStepData[guideProgress].title;
         guideDescriptionText.text = guideStepData[guideProgress].description;
         guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
@@ -276,7 +280,7 @@ public class GuideMenu : MonoBehaviour
         if (guideProgress < guideStepData.Count - 1)
         {
             guideProgress++;
-            guideIDText.text = (guideProgress+1).ToString() + "/" + guideStepData.Count;
+            guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
             guideTitleText.text = guideStepData[guideProgress].title;
             guideDescriptionText.text = guideStepData[guideProgress].description;
             guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
@@ -291,7 +295,7 @@ public class GuideMenu : MonoBehaviour
         if (guideProgress > 0)
         {
             guideProgress--;
-            guideIDText.text = (guideProgress+1).ToString() + "/" + guideStepData.Count;
+            guideIDText.text = (guideProgress + 1).ToString() + "/" + guideStepData.Count;
             guideTitleText.text = guideStepData[guideProgress].title;
             guideDescriptionText.text = guideStepData[guideProgress].description;
             guideTravelPositionText.text = "Position : " + guideStepData[guideProgress].travelPosition;
