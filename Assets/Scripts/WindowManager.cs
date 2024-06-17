@@ -16,6 +16,8 @@ public class WindowManager : MonoBehaviour
     public int maxWidth = 1920;
     public TMP_InputField windowWidthText;
     public TMP_InputField windowHeightText;
+    public GameObject MinimizedWindows;
+    public GameObject FullWindows;
     private GameObject SelectedWindow;
     public GameObject MainWindow;
     public GameObject travelWindow;
@@ -35,6 +37,27 @@ public class WindowManager : MonoBehaviour
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
         AppWindowUtility.SetScreenSize(300, 450);
+    }
+
+    public void MinimizeApp()
+    {
+        FullWindows.SetActive(false);
+        MinimizedWindows.SetActive(true);
+        AppWindowUtility.SetScreenSize(50, 50);
+    }
+
+    public void MaximizeApp()
+    {
+        FullWindows.SetActive(true);
+        MinimizedWindows.SetActive(false);
+        if (SelectedWindow == guideWindow)
+        {
+            AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
+        }
+        else
+        {
+            AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        }
     }
 
     public void CloseApp()
@@ -133,30 +156,30 @@ public class WindowManager : MonoBehaviour
     {
         canvasGroup.alpha = opacity;
         PlayerPrefs.SetFloat("opacity", opacity);
-    }    
+    }
 
     public void SetResolution()
     {
         windowWidth = int.Parse(windowWidthText.text);
         windowHeight = int.Parse(windowHeightText.text);
 
-        if(windowWidth < minWidth)
+        if (windowWidth < minWidth)
         {
             windowWidth = minWidth;
         }
-        if(windowWidth > maxWidth)
+        if (windowWidth > maxWidth)
         {
             windowWidth = maxWidth;
         }
-        if(windowHeight < minHeight)
+        if (windowHeight < minHeight)
         {
             windowHeight = minHeight;
         }
-        if(windowHeight > maxHeight)
+        if (windowHeight > maxHeight)
         {
             windowHeight = maxHeight;
         }
-        
+
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
     }
 
