@@ -7,6 +7,15 @@ using TMPro;
 
 public class WindowManager : MonoBehaviour
 {
+    private int windowWidth = 300;
+    private int windowHeight = 450;
+    private int mapHeight = 300;
+    public int minHeight = 450;
+    public int maxHeight = 1080;
+    public int minWidth = 300;
+    public int maxWidth = 1920;
+    public TMP_InputField windowWidthText;
+    public TMP_InputField windowHeightText;
     private GameObject SelectedWindow;
     public GameObject MainWindow;
     public GameObject travelWindow;
@@ -92,12 +101,12 @@ public class WindowManager : MonoBehaviour
 
     public void TwitterButtonClicked()
     {
-        Application.OpenURL("https://twitter.com/Pynx0");
+        Application.OpenURL("https://x.com/GanymedeDofus");
     }
 
     public void WebsiteButtonClicked()
     {
-        Application.OpenURL("https://ganymededofus.com");
+        Application.OpenURL("https://ganymede-dofus.com");
     }
 
     public void ActivateInteractiveMap(bool isActivate)
@@ -107,7 +116,7 @@ public class WindowManager : MonoBehaviour
             if (!isInteractiveMapActive)
             {
                 isInteractiveMapActive = true;
-                AppWindowUtility.SetScreenSize(300, 750);
+                AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
             }
         }
         else
@@ -115,7 +124,7 @@ public class WindowManager : MonoBehaviour
             if (isInteractiveMapActive)
             {
                 isInteractiveMapActive = false;
-                AppWindowUtility.SetScreenSize(300, 450);
+                AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
             }
         }
     }
@@ -124,5 +133,37 @@ public class WindowManager : MonoBehaviour
     {
         canvasGroup.alpha = opacity;
         PlayerPrefs.SetFloat("opacity", opacity);
+    }    
+
+    public void SetResolution()
+    {
+        windowWidth = int.Parse(windowWidthText.text);
+        windowHeight = int.Parse(windowHeightText.text);
+
+        if(windowWidth < minWidth)
+        {
+            windowWidth = minWidth;
+        }
+        if(windowWidth > maxWidth)
+        {
+            windowWidth = maxWidth;
+        }
+        if(windowHeight < minHeight)
+        {
+            windowHeight = minHeight;
+        }
+        if(windowHeight > maxHeight)
+        {
+            windowHeight = maxHeight;
+        }
+        
+        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+    }
+
+    public void ResetAppSize()
+    {
+        windowWidth = 300;
+        windowHeight = 450;
+        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
     }
 }
