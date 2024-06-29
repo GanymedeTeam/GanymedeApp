@@ -7,10 +7,10 @@ using TMPro;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class GuideMenu : MonoBehaviour
 {
-
     public GameObject gridGameobject;
     public GameObject guideUIPrefab;
     public GameObject guideUIFolderPrefab;
@@ -157,7 +157,6 @@ public class GuideMenu : MonoBehaviour
         }
 
         FormatCurrentPath();
-
     }
 
     void RemoveGuides()
@@ -212,22 +211,22 @@ public class GuideMenu : MonoBehaviour
 
     public void PublicGoToGuideStep(string guideIndex)
     {
-        
         int step = Int32.Parse(guideIndex);
         if (step <= guideInfos.steps.Count() && step > 0)
-            GoToGuideStep(step-1);
+            GoToGuideStep(step - 1);
     }
 
     public void GoToGuideStep(int guideIndex)
     {
-        foreach (Transform child in StepContent.transform) {
+        foreach (Transform child in StepContent.transform)
+        {
             if (child.name.Contains("Substep") || child.name.Contains("Checkbox"))
                 GameObject.Destroy(child.gameObject);
         }
         guideProgress = guideIndex;
-        stepNumberText.text = (guideProgress+1).ToString() + "/" + guideInfos.steps.Count();
+        stepNumberText.text = (guideProgress + 1).ToString() + "/" + guideInfos.steps.Count();
         stepTitleText.text = guideInfos.steps[guideProgress].name;
-        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]</color>";
+        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]</color>";
         ProcessSubSteps(guideInfos.steps[guideProgress].sub_steps);
         int posX = guideInfos.steps[guideProgress].pos_x;
         int posY = guideInfos.steps[guideProgress].pos_y;
@@ -249,52 +248,184 @@ public class GuideMenu : MonoBehaviour
         }
 
         int substepIndex = 0;
-        Regex CheckboxRegex = new Regex(@"<checkbox>(.+?)</checkbox>");
-        List<(string, bool)> entities = new List<(string, bool)>();
+        List<(string, bool, string, string)> entities = new List<(string, bool, string, string)>();
         List<GameObject> subStepsList = new List<GameObject>();
+
         foreach (SubstepEntry subentry in subentries)
         {
             string text = subentry.text;
-            foreach (Match checkboxMatch in CheckboxRegex.Matches(subentry.text))
+            Regex CheckboxRegex = new Regex(@"<checkbox>(.+?)</checkbox>");
+            MatchCollection checkboxMatches = CheckboxRegex.Matches(text);
+
+            if (checkboxMatches.Count > 0)
             {
-                string[] disassembled_text = text.Split(new string[] { checkboxMatch.Value }, StringSplitOptions.None);
-                entities.Add((disassembled_text[0], false));
-                entities.Add((checkboxMatch.Groups[1].Value, true));
-                text = text.Replace(disassembled_text[0] + checkboxMatch.Value, "");
+                foreach (Match checkboxMatch in checkboxMatches)
+                {
+                    string[] disassembled_text = text.Split(new string[] { checkboxMatch.Value }, StringSplitOptions.None);
+                    entities.Add((disassembled_text[0], false, null, null));
+                    entities.Add(ParseEntity(checkboxMatch.Groups[1].Value, true));
+                    text = text.Replace(disassembled_text[0] + checkboxMatch.Value, "");
+                }
+                entities.Add((text, false, null, null));
             }
-            entities.Add((text, false));
+            else
+            {
+                // Parse text without checkbox
+                ParseAndAddEntities(text, entities);
+            }
         }
-        foreach ((string, bool) entity in entities)
+
+        foreach ((string text, bool isCheckbox, string imageUrl, string linkUrl) entity in entities)
         {
-            if (entity.Item1 == "")
+            if (entity.text == "")
                 continue;
-            if (entity.Item2 == true)
+
+            if (entity.isCheckbox)
             {
                 GameObject checkboxGameObject = Instantiate(CheckboxPrefab, StepContent.transform);
                 subStepsList.Add(checkboxGameObject);
                 checkboxGameObject.name = "Checkbox " + (++substepIndex).ToString();
-                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
-                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn = Convert.ToBoolean(PlayerPrefs.GetInt(guideInfos.id.ToString() + "_cb" + guideProgress + checkboxGameObject.name[checkboxGameObject.name.Length - 1]));
-                checkboxGameObject.transform.SetParent(StepContent.transform);
-                checkboxGameObject.GetComponent<TMP_Text>().text = entity.Item1;
+                var toggle = checkboxGameObject.GetComponentInChildren<Toggle>();
+                if (toggle != null)
+                {
+                    toggle.onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
+                    toggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt(guideInfos.id.ToString() + "_cb" + guideProgress + checkboxGameObject.name[checkboxGameObject.name.Length - 1]));
+                }
+                var textComponent = checkboxGameObject.GetComponentInChildren<TMP_Text>();
+                if (textComponent != null)
+                {
+                    textComponent.text = entity.text;
+                    if (!string.IsNullOrEmpty(entity.linkUrl))
+                    {
+                        // Ajoute le lien au texte et colore en bleu clair
+                        var button = textComponent.gameObject.AddComponent<Button>();
+                        button.onClick.AddListener(() => Application.OpenURL(entity.linkUrl));
+                        textComponent.text = $"<color=#62ACFF>{entity.text}</color>";
+                    }
+                }
+                if (!string.IsNullOrEmpty(entity.imageUrl))
+                {
+                    StartCoroutine(LoadImageAndSetLink(entity.imageUrl, entity.linkUrl, checkboxGameObject));
+                }
             }
-            else if (entity.Item2 == false)
+            else
             {
                 GameObject subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
                 subStepsList.Add(subStepGameObject);
                 subStepGameObject.name = "Substep " + (++substepIndex).ToString();
-                subStepGameObject.transform.SetParent(StepContent.transform);
-                subStepGameObject.GetComponent<TMP_Text>().text = entity.Item1;
+                var textComponent = subStepGameObject.GetComponentInChildren<TMP_Text>();
+                if (textComponent != null)
+                {
+                    textComponent.text = entity.text;
+                    if (!string.IsNullOrEmpty(entity.linkUrl))
+                    {
+                        // Ajoute le lien au texte et colore en bleu clair
+                        var button = textComponent.gameObject.AddComponent<Button>();
+                        button.onClick.AddListener(() => Application.OpenURL(entity.linkUrl));
+                        textComponent.text = $"<color=#62ACFF>{entity.text}</color>";
+                    }
+                }
             }
         }
+
         StartCoroutine(SetSubStepPosition(subStepsList));
     }
 
-    public void NextStep()
+    private void ParseAndAddEntities(string text, List<(string, bool, string, string)> entities)
     {
-        if (guideProgress < guideInfos.steps.Count() - 1)
+        Regex monsterRegex = new Regex(@"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>");
+        Regex itemRegex = new Regex(@"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>");
+        Regex questRegex = new Regex(@"<quest dofusdb=""(\d+)"">(.+?)</quest>");
+        Regex dungeonRegex = new Regex(@"<dungeon dofusdb=""(\d+)"">(.+?)</dungeon>");
+
+        while (text.Length > 0)
         {
-            GoToGuideStep(++guideProgress);
+            Match monsterMatch = monsterRegex.Match(text);
+            Match itemMatch = itemRegex.Match(text);
+            Match questMatch = questRegex.Match(text);
+            Match dungeonMatch = dungeonRegex.Match(text);
+
+            List<Match> matches = new List<Match> { monsterMatch, itemMatch, questMatch, dungeonMatch };
+            matches = matches.Where(m => m.Success).OrderBy(m => m.Index).ToList();
+
+            if (matches.Count == 0)
+            {
+                entities.Add((text, false, null, null));
+                break;
+            }
+
+            Match firstMatch = matches.First();
+            if (firstMatch.Index > 0)
+            {
+                entities.Add((text.Substring(0, firstMatch.Index), false, null, null));
+            }
+
+            entities.Add(ParseEntity(firstMatch.Value, false));
+            text = text.Substring(firstMatch.Index + firstMatch.Length);
+        }
+    }
+
+    private (string text, bool isCheckbox, string imageUrl, string linkUrl) ParseEntity(string entityText, bool isCheckbox)
+    {
+        string text = entityText;
+        string imageUrl = null;
+        string linkUrl = null;
+
+        Regex monsterRegex = new Regex(@"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>");
+        Regex itemRegex = new Regex(@"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>");
+        Regex questRegex = new Regex(@"<quest dofusdb=""(\d+)"">(.+?)</quest>");
+        Regex dungeonRegex = new Regex(@"<dungeon dofusdb=""(\d+)"">(.+?)</dungeon>");
+
+        if (monsterRegex.IsMatch(entityText))
+        {
+            Match match = monsterRegex.Match(entityText);
+            text = match.Groups[3].Value;
+            imageUrl = match.Groups[2].Value;
+            linkUrl = "https://dofusdb.fr/fr/database/monster/" + match.Groups[1].Value;
+        }
+        else if (itemRegex.IsMatch(entityText))
+        {
+            Match match = itemRegex.Match(entityText);
+            text = match.Groups[3].Value;
+            imageUrl = match.Groups[2].Value;
+            linkUrl = "https://dofusdb.fr/fr/database/object/" + match.Groups[1].Value;
+        }
+        else if (questRegex.IsMatch(entityText))
+        {
+            Match match = questRegex.Match(entityText);
+            text = match.Groups[2].Value;
+            linkUrl = "https://dofusdb.fr/fr/database/quest/" + match.Groups[1].Value;
+        }
+        else if (dungeonRegex.IsMatch(entityText))
+        {
+            Match match = dungeonRegex.Match(entityText);
+            text = match.Groups[2].Value;
+            linkUrl = "https://dofusdb.fr/fr/database/dungeon/" + match.Groups[1].Value;
+        }
+
+        return (text, isCheckbox, imageUrl, linkUrl);
+    }
+
+    private IEnumerator LoadImageAndSetLink(string imageUrl, string linkUrl, GameObject checkboxGameObject)
+    {
+        if (!string.IsNullOrEmpty(imageUrl))
+        {
+            UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
+            yield return request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError(request.error);
+            }
+            else
+            {
+                Texture2D texture = DownloadHandlerTexture.GetContent(request);
+                var rawImage = checkboxGameObject.GetComponentInChildren<RawImage>();
+                if (rawImage != null)
+                {
+                    rawImage.texture = texture;
+                }
+            }
         }
     }
 
@@ -303,7 +434,21 @@ public class GuideMenu : MonoBehaviour
         foreach (Transform child in StepContent.transform)
         {
             if (child.name.Contains("Checkbox"))
-                PlayerPrefs.SetInt(guideInfos.id.ToString() + "_cb" + guideProgress + child.name[child.name.Length - 1], child.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn ? 1 : 0);
+            {
+                var toggle = child.GetComponentInChildren<Toggle>();
+                if (toggle != null)
+                {
+                    PlayerPrefs.SetInt(guideInfos.id.ToString() + "_cb" + guideProgress + child.name[child.name.Length - 1], toggle.isOn ? 1 : 0);
+                }
+            }
+        }
+    }
+
+    public void NextStep()
+    {
+        if (guideProgress < guideInfos.steps.Count() - 1)
+        {
+            GoToGuideStep(++guideProgress);
         }
     }
 
