@@ -98,7 +98,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
-        ToggleInteractiveMap(true);
+        ToggleInteractiveMap(false);
     }
 
     public void MessageWindowClicked()
@@ -135,9 +135,9 @@ public class WindowManager : MonoBehaviour
     public void ToggleInteractiveMap(bool setActive)
     {
         if (setActive)
-            AppWindowUtility.SetScreenSize(300, 750);
+            AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
         else
-            AppWindowUtility.SetScreenSize(300, 450);
+            AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
     }
 
     public void ChangeCanvasOpacity(float opacity)
