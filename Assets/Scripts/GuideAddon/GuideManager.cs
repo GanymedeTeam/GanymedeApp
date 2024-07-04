@@ -3,216 +3,130 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using TMPro;
+using UnityEngine.UI;
 
 public class GuideManager : MonoBehaviour
 {
-    public string guidesCurrentPath;
-
-    private string guidesDraftAndPublicListResponse;
-    private string guidesCertifiedListResponse;
-
-    // API call api/guides dont return private guides
-    public void onClickGuidesDraftAndPublicList(Action<string> callback)
+    [Serializable]
+    public class ApiGuide
     {
-        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=public", callback));
+        public int id;
+        public int user_id;
+        public string user;
+        public string name;
+        public string status;
+        public string description;
+        public string web_description;
+        public string category;
+        public string like;
+        public string dislike;
+        public string created_at;
+        public string updated_at;
+        public string deleted_at;
     }
 
-    public void onClickGuidesCertifiedList(Action<string> callback)
+    [Serializable]
+    public class ApiGuides
     {
-        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=certified", callback));
+        public ApiGuide[] guides;
     }
 
-    private IEnumerator GetGuidesList(string url, Action<string> callback)
+    public GameObject content;
+    public GameObject webGuidePrefab;
+    public GameObject rootMenu;
+    public GameObject scrollView;
+    public GameObject backButton;
+
+    public void onClickGuidesPublicList()
+    {
+        backButton.SetActive(true);
+        rootMenu.SetActive(false);
+        scrollView.SetActive(true);
+        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=public"));
+    }
+
+    public void onClickGuidesDraftList()
+    {
+        backButton.SetActive(true);
+        rootMenu.SetActive(false);
+        scrollView.SetActive(true);
+        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=draft"));
+    }
+
+    public void onClickGuidesCertifiedList()
+    {
+        backButton.SetActive(true);
+        rootMenu.SetActive(false);
+        scrollView.SetActive(true);
+        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=certified"));
+    }
+
+    private IEnumerator GetGuidesList(string url)
     {
         using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
             yield return webRequest.SendWebRequest();
 
-            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError("Error: " + webRequest.error);
-                callback(null);
-            }
-            else
+            if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
                 string jsonResponse = webRequest.downloadHandler.text;
                 Debug.Log("Received Guides List: " + jsonResponse);
 
-                jsonResponse = FilterDownloadedGuides(jsonResponse);
-
-                callback(jsonResponse);
+                ShowAllGuidesInCurrentSection(JsonUtility.FromJson<ApiGuides>("{\"guides\":" + jsonResponse + "}"));
             }
         }
     }
 
-    private string FilterDownloadedGuides(string jsonResponse)
+    private IEnumerator GetGuide(string url, GameObject guideButton)
     {
-        var guides = JArray.Parse(jsonResponse);
-        var localGuideIds = GetLocalGuideIds();
-
-        var filteredGuides = guides.Where(guide => !localGuideIds.Contains(guide["id"].ToString())).ToArray();
-
-        return JArray.FromObject(filteredGuides).ToString();
-    }
-
-    private HashSet<string> GetLocalGuideIds()
-    {
-        var guideIds = new HashSet<string>();
-
-        guidesCurrentPath = Application.persistentDataPath + "/guides/";
-
-        if (Directory.Exists(guidesCurrentPath))
-        {
-            var files = Directory.GetFiles(guidesCurrentPath, "*.json", SearchOption.AllDirectories);
-
-            foreach (var file in files)
-            {
-                try
-                {
-                    var json = File.ReadAllText(file);
-                    var guide = JObject.Parse(json);
-                    var guideId = guide["id"]?.ToString();
-
-                    if (!string.IsNullOrEmpty(guideId))
-                    {
-                        guideIds.Add(guideId);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Failed to read or parse guide file: " + e.Message);
-                }
-            }
-        }
-
-        return guideIds;
-    }
-
-    public void onClickDownloadGuide(int id)
-    {
-        StartCoroutine(DownloadGuide(id));
-    }
-
-    private IEnumerator DownloadGuide(int id)
-    {
-        yield return StartCoroutine(GetGuide(id));
-    }
-
-    public void onClickGuide(int id)
-    {
-        StartCoroutine(OnClickGuideCoroutine(id));
-    }
-
-    private IEnumerator OnClickGuideCoroutine(int id)
-    {
-        yield return StartCoroutine(GetGuide(id));
-    }
-
-    private IEnumerator GetGuide(int id)
-    {
-        using (UnityWebRequest webRequest = UnityWebRequest.Get($"https://ganymede-dofus.com/api/guides/{id}"))
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
             yield return webRequest.SendWebRequest();
 
-            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+            if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError("Error: " + webRequest.error);
-            }
-            else
-            {
-                Debug.Log($"Received Guide {id}: " + webRequest.downloadHandler.text);
-                
-                guidesCurrentPath = Application.persistentDataPath + "/guides/";
-                
-                SaveGuideToFile(webRequest.downloadHandler.text, guidesCurrentPath);
+                string jsonResponse = webRequest.downloadHandler.text;
+                Debug.Log("Received Guide: " + jsonResponse);
+
+                DownloadGuide(url.Split('/')[url.Split('/').Length - 1], jsonResponse);
             }
         }
+        yield return 0;
+        guideButton.GetComponent<Button>().interactable = false;
+        guideButton.GetComponent<Button>().interactable = true;
     }
 
-    private void SaveGuideToFile(string guideJson, string path)
+    public void DownloadGuide(string name, string jsonContent)
     {
-        if (string.IsNullOrEmpty(guideJson))
-        {
-            Debug.LogError("Guide JSON is empty or null.");
-            return;
-        }
+        System.IO.File.WriteAllText(Application.persistentDataPath + "/guides/" + name + ".json", jsonContent);
+    }
 
-        // Parse the JSON to get the guide ID and name
-        var guideObject = JObject.Parse(guideJson);
-        var guideName = guideObject["name"]?.ToString();
-        var guideId = guideObject["id"]?.ToString();
-
-        if (string.IsNullOrEmpty(guideName) || string.IsNullOrEmpty(guideId))
-        {
-            Debug.LogError("Guide name or ID is not found in the JSON.");
-            return;
+    public void ShowAllGuidesInCurrentSection(ApiGuides listOfGuides)
+    {
+        content.GetComponent<GridLayoutGroup>().cellSize = new Vector2(content.GetComponent<RectTransform>().rect.width, content.GetComponent<GridLayoutGroup>().cellSize.y);
+        foreach (Transform child in content.transform) {
+            if (child.name.Contains("guide_"))
+                GameObject.Destroy(child.gameObject);
         }
-
-        // Search for an existing file with the same ID in the /guides directory or its subdirectories
-        string existingFilePath = FindExistingGuideFile(path, guideId);
-
-        string filePath;
-        if (existingFilePath != null)
+        foreach (ApiGuide guide in listOfGuides.guides)
         {
-            filePath = existingFilePath;
-            Debug.Log($"Guide with ID {guideId} already exists, it will be overwritten.");
-        }
-        else
-        {
-            filePath = Path.Combine(path, guideName + ".json");
-        }
-
-        try
-        {
-            Directory.CreateDirectory(path);
-            File.WriteAllText(filePath, guideJson);
-            Debug.Log("Guide saved to " + filePath);
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Failed to save guide: " + e.Message);
+            GameObject webGuide = Instantiate(webGuidePrefab, content.transform);
+            webGuide.name = "guide_" + guide.id.ToString();
+            webGuide.transform.SetParent(content.transform);
+            webGuide.transform.Find("GuideButton/GuideName").GetComponent<TMP_Text>().text = guide.name;
+            webGuide.transform.Find("GuideButton/GuideAuthor").GetComponent<TMP_Text>().text = "de: <color=#87cefa>" +  guide.user + "</color>";
+            webGuide.transform.Find("GuideButton/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  guide.id + "</color>";
+            webGuide.transform.Find("GuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide("https://ganymede-dofus.com/api/guides/" + guide.id, webGuide.transform.Find("GuideButton").gameObject)); });
         }
     }
 
-    private string FindExistingGuideFile(string path, string guideId)
+    public void BackToRootMenu()
     {
-        if (Directory.Exists(path))
-        {
-            var files = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                try
-                {
-                    var json = File.ReadAllText(file);
-                    var guide = JObject.Parse(json);
-                    var existingGuideId = guide["id"]?.ToString();
-
-                    if (existingGuideId == guideId)
-                    {
-                        return file;
-                    }
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Failed to read or parse guide file: " + e.Message);
-                }
-            }
-        }
-
-        return null;
-    }
-
-    // Additional functions to get the stored responses
-    public string GetDraftAndPublicListResponse()
-    {
-        return guidesDraftAndPublicListResponse;
-    }
-
-    public string GetCertifiedListResponse()
-    {
-        return guidesCertifiedListResponse;
+        backButton.SetActive(false);
+        scrollView.SetActive(false);
+        rootMenu.SetActive(true);
     }
 }

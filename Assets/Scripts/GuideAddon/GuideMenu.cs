@@ -61,26 +61,40 @@ public class GuideMenu : MonoBehaviour
         bool RecursiveSearch(DirectoryInfo dir)
         {
             bool matchedSearch = false;
-            string[] files = Directory.GetFiles(@dir.FullName, "*.json", SearchOption.AllDirectories).Select(s => s.ToLowerInvariant()).ToArray();
-            string[] folders = Directory.GetDirectories(@dir.FullName, "*", SearchOption.AllDirectories).Select(s => s.ToLowerInvariant()).ToArray();
-            files = files.Select(e => e.Split('\\').Last()).ToArray();
-            folders = folders.Select(e => e.Split('\\').Last()).ToArray();
+            string[] allFileNames = Directory.GetFiles(@dir.FullName, "*.json", SearchOption.AllDirectories);
+            string[] allDirNames = Directory.GetDirectories(@dir.FullName, "*", SearchOption.AllDirectories);
+            string[] allGuideNameInfo;
+
+            List<string> tmpAllGuideNameInfo = new List<string>();
+
+            foreach (string s in allFileNames)
+            {
+                string fileContent = String.Join("", System.IO.File.ReadAllLines(s));
+                GuideEntry fileContentSerialized = JsonUtility.FromJson<GuideEntry>(fileContent);
+                tmpAllGuideNameInfo.Add(fileContentSerialized.name);
+            }
+            allGuideNameInfo = tmpAllGuideNameInfo.ToArray();
+            Debug.Log("ahahaha " + allGuideNameInfo);
+
+            string[] files = allFileNames.Select(s => s.ToLowerInvariant()).ToArray().Select(e => e.Split('\\').Last()).ToArray();
+            string[] folders = allDirNames.Select(s => s.ToLowerInvariant()).ToArray().Select(e => e.Split('\\').Last()).ToArray();
+
             if (searchBar.text != "")
-                matchedSearch = Array.Exists(files, e => e.Contains(searchBar.text.ToLowerInvariant())) || Array.Exists(folders, e => e.Contains(searchBar.text.ToLowerInvariant()));
+                matchedSearch = Array.Exists(files, e => e.Contains(searchBar.text.ToLowerInvariant())) 
+                || Array.Exists(folders, e => e.Contains(searchBar.text.ToLowerInvariant()))
+                || Array.Exists(allGuideNameInfo, e => e.ToLower().Contains(searchBar.text.ToLowerInvariant()));
             return matchedSearch;
         }
 
         if (!Directory.Exists(Path.GetDirectoryName(guidesCurrentPath)))
             Directory.CreateDirectory(Path.GetDirectoryName(guidesCurrentPath));
 
-        var info = new DirectoryInfo(guidesCurrentPath);
+        DirectoryInfo info = new DirectoryInfo(guidesCurrentPath);
 
-        var dirInfo = info.GetDirectories();
+        DirectoryInfo[] dirInfo = info.GetDirectories();
 
         if (searchBar.text != "")
             dirInfo = dirInfo.Where(e => e.Name.ToLower().Contains(searchBar.text.ToLower()) || RecursiveSearch(e)).ToArray();
-
-        Debug.Log("Folders in guides folder: " + dirInfo.Length);
 
         return dirInfo;
     }
@@ -88,21 +102,46 @@ public class GuideMenu : MonoBehaviour
     private FileInfo[] GetGuidesInFolder()
     {
 
+        FileInfo[] finalFileInfo;
+
         if (!Directory.Exists(Path.GetDirectoryName(guidesCurrentPath)))
             Directory.CreateDirectory(Path.GetDirectoryName(guidesCurrentPath));
 
-        var info = new DirectoryInfo(guidesCurrentPath);
+        DirectoryInfo info = new DirectoryInfo(guidesCurrentPath);
 
-        var fileInfo = info.GetFiles();
+        FileInfo[] fileInfo = info.GetFiles();
+        List<string> guideNameInfo = new List<string>();
+        try
+        {
+            // for old json, use a try/catch
+            foreach (var f in fileInfo)
+            {
+                string fileContent = String.Join("", System.IO.File.ReadAllLines(guidesCurrentPath + f.Name));
+                GuideEntry fileContentSerialized = JsonUtility.FromJson<GuideEntry>(fileContent);
+                guideNameInfo.Add(fileContentSerialized.name);
+            }
+        }
+        catch
+        {
+            guideNameInfo = Enumerable.Repeat(string.Empty, fileInfo.Length).ToList();
+        }
 
-        Debug.Log("Files in guides folder: " + fileInfo.Length);
+        finalFileInfo = fileInfo;
 
         if (searchBar.text != "")
-            fileInfo = fileInfo.Where(e => e.Name.ToLower().Contains(searchBar.text.ToLower())).ToArray();
+        {
+            List<FileInfo> tmpFinalFileInfo = new List<FileInfo>();
+            for (int index = 0; index < fileInfo.Length; index++)
+            {
+                Debug.Log("hehe " + guideNameInfo[index].Contains(searchBar.text.ToLower()));
+                if (fileInfo[index].Name.ToLower().Contains(searchBar.text.ToLower())
+                || guideNameInfo[index].ToLower().Contains(searchBar.text.ToLower()))
+                    tmpFinalFileInfo.Add(fileInfo[index]);
+            }
+            finalFileInfo = tmpFinalFileInfo.ToArray();
+        }
 
-        Debug.Log("Files shown: " + fileInfo.Length);
-
-        return fileInfo;
+        return finalFileInfo;
     }
 
     public void ReloadGuideList()
@@ -152,7 +191,19 @@ public class GuideMenu : MonoBehaviour
                 GameObject newGuideObject = Instantiate(guideUIPrefab, gridGameobject.transform);
 
                 GuideObject guideObject = newGuideObject.GetComponent<GuideObject>();
-                guideObject.Initialize(file.Name.Replace(".json", ""));
+
+                string fileRealName = "";
+                try
+                {
+                    string fileContent = String.Join("", System.IO.File.ReadAllLines(guidesCurrentPath + file.Name));
+                    GuideEntry fileContentSerialized = JsonUtility.FromJson<GuideEntry>(fileContent);
+                    fileRealName = fileContentSerialized.name;
+                }
+                catch
+                {
+                    fileRealName = "<color=\"red\">NOT_SUPPORTED</color>";
+                }
+                guideObject.Initialize(fileRealName, file.Name.Replace(".json", ""));
             }
         }
 

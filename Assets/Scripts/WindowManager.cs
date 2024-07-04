@@ -24,6 +24,7 @@ public class WindowManager : MonoBehaviour
     public GameObject guideWindow;
     public GameObject messageWindow;
     public GameObject settingsWindow;
+    public GameObject downloadWindow;
     public CanvasGroup canvasGroup;
 
     public Slider opacitySlider;
@@ -113,6 +114,14 @@ public class WindowManager : MonoBehaviour
     {
         SelectedWindow.SetActive(false);
         SelectedWindow = settingsWindow;
+        SelectedWindow.SetActive(true);
+        ToggleInteractiveMap(false);
+    }
+
+    public void DownloadWindowClicked()
+    {
+        SelectedWindow.SetActive(false);
+        SelectedWindow = downloadWindow;
         SelectedWindow.SetActive(true);
         ToggleInteractiveMap(false);
     }
