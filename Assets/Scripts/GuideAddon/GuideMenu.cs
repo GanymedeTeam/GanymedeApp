@@ -278,7 +278,7 @@ public class GuideMenu : MonoBehaviour
         guideProgress = guideIndex;
         stepNumberText.text = (guideProgress+1).ToString() + "/" + guideInfos.steps.Count();
         stepTitleText.text = guideInfos.steps[guideProgress].name;
-        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]</color>";
+        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]</color>";
         ProcessSubSteps(guideInfos.steps[guideProgress].sub_steps);
         int posX = guideInfos.steps[guideProgress].pos_x;
         int posY = guideInfos.steps[guideProgress].pos_y;
