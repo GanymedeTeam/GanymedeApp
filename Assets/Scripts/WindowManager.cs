@@ -80,6 +80,8 @@ public class WindowManager : MonoBehaviour
 
     public void MainWindowClicked()
     {
+        if (SelectedWindow == MainWindow)
+            return;
         SelectedWindow.SetActive(false);
         SelectedWindow = MainWindow;
         SelectedWindow.SetActive(true);
@@ -88,6 +90,8 @@ public class WindowManager : MonoBehaviour
 
     public void TravelWindowClicked()
     {
+        if (SelectedWindow == travelWindow)
+            return;
         SelectedWindow.SetActive(false);
         SelectedWindow = travelWindow;
         SelectedWindow.SetActive(true);
@@ -96,6 +100,8 @@ public class WindowManager : MonoBehaviour
 
     public void GuideWindowClicked()
     {
+        if (SelectedWindow == guideWindow)
+            return;
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
@@ -104,6 +110,8 @@ public class WindowManager : MonoBehaviour
 
     public void MessageWindowClicked()
     {
+        if (SelectedWindow == messageWindow)
+            return;
         SelectedWindow.SetActive(false);
         SelectedWindow = messageWindow;
         SelectedWindow.SetActive(true);
@@ -112,6 +120,8 @@ public class WindowManager : MonoBehaviour
 
     public void SettingsWindowClicked()
     {
+        if (SelectedWindow == settingsWindow)
+            return;
         SelectedWindow.SetActive(false);
         SelectedWindow = settingsWindow;
         SelectedWindow.SetActive(true);
@@ -120,6 +130,8 @@ public class WindowManager : MonoBehaviour
 
     public void DownloadWindowClicked()
     {
+        if (SelectedWindow == downloadWindow)
+            return;
         SelectedWindow.SetActive(false);
         SelectedWindow = downloadWindow;
         SelectedWindow.SetActive(true);

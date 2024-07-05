@@ -73,8 +73,6 @@ public class GuideManager : MonoBehaviour
             if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
                 string jsonResponse = webRequest.downloadHandler.text;
-                Debug.Log("Received Guides List: " + jsonResponse);
-
                 ShowAllGuidesInCurrentSection(JsonUtility.FromJson<ApiGuides>("{\"guides\":" + jsonResponse + "}"));
             }
         }
@@ -89,9 +87,22 @@ public class GuideManager : MonoBehaviour
             if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
                 string jsonResponse = webRequest.downloadHandler.text;
-                Debug.Log("Received Guide: " + jsonResponse);
 
                 DownloadGuide(url.Split('/')[url.Split('/').Length - 1], jsonResponse);
+
+                GuideEntry guide = JsonUtility.FromJson<GuideEntry>(jsonResponse);
+
+                // Reset player prefs
+                if (PlayerPrefs.GetInt(url.Split('/')[url.Split('/').Length - 1] + "_currstep") >= guide.steps.Count())
+                    PlayerPrefs.SetInt(url.Split('/')[url.Split('/').Length - 1] + "_currstep", guide.steps.Count() - 1);
+                // Checkboxes
+                for (int stepIndex = 0; stepIndex < guide.steps.Count(); stepIndex++)
+                {
+                    for (int i = 0; i < 50; i++)
+                    {
+                        PlayerPrefs.DeleteKey(url.Split('/')[url.Split('/').Length - 1] + "_cb_" + stepIndex + "_" + i);
+                    }
+                }
             }
         }
         yield return 0;

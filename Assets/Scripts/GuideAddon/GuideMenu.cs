@@ -74,7 +74,6 @@ public class GuideMenu : MonoBehaviour
                 tmpAllGuideNameInfo.Add(fileContentSerialized.name);
             }
             allGuideNameInfo = tmpAllGuideNameInfo.ToArray();
-            Debug.Log("ahahaha " + allGuideNameInfo);
 
             string[] files = allFileNames.Select(s => s.ToLowerInvariant()).ToArray().Select(e => e.Split('\\').Last()).ToArray();
             string[] folders = allDirNames.Select(s => s.ToLowerInvariant()).ToArray().Select(e => e.Split('\\').Last()).ToArray();
@@ -133,7 +132,6 @@ public class GuideMenu : MonoBehaviour
             List<FileInfo> tmpFinalFileInfo = new List<FileInfo>();
             for (int index = 0; index < fileInfo.Length; index++)
             {
-                Debug.Log("hehe " + guideNameInfo[index].Contains(searchBar.text.ToLower()));
                 if (fileInfo[index].Name.ToLower().Contains(searchBar.text.ToLower())
                 || guideNameInfo[index].ToLower().Contains(searchBar.text.ToLower()))
                     tmpFinalFileInfo.Add(fileInfo[index]);
@@ -164,11 +162,9 @@ public class GuideMenu : MonoBehaviour
             text = text.Replace("/", " <b><color=\"yellow\">></b></color> ");
             if (isTruncated)
                 text = "... <b><color=\"yellow\">></b></color> " + text;
-            Debug.Log(text);
             currentPath.text = text;
         }
 
-        Debug.Log("Reloading list of guides!");
         RemoveGuides();
 
         var fileInfo = GetGuidesInFolder();
@@ -176,7 +172,6 @@ public class GuideMenu : MonoBehaviour
 
         foreach (DirectoryInfo dir in dirInfo)
         {
-            Debug.Log(dir);
             GameObject newGuideFolder = Instantiate(guideUIFolderPrefab, gridGameobject.transform);
 
             GuideFolder guideFolder = newGuideFolder.GetComponent<GuideFolder>();
@@ -187,7 +182,6 @@ public class GuideMenu : MonoBehaviour
         {
             if (file.Extension == ".json")
             {
-                Debug.Log(file);
                 GameObject newGuideObject = Instantiate(guideUIPrefab, gridGameobject.transform);
 
                 GuideObject guideObject = newGuideObject.GetComponent<GuideObject>();
@@ -225,7 +219,6 @@ public class GuideMenu : MonoBehaviour
 
     public void BackToPreviousFolder()
     {
-        Debug.Log("Leaving path " + guidesCurrentPath + " for previous folder...");
         string[] split = guidesCurrentPath.Split('/');
 
         if (split[split.Count() - 1] == "")
@@ -240,7 +233,6 @@ public class GuideMenu : MonoBehaviour
         else
             guidesCurrentPath = Application.persistentDataPath + "/guides/";
         ReloadGuideList();
-        Debug.Log("Currently in folder path " + guidesCurrentPath);
     }
 
     public void LoadGuide(string guideName)
@@ -276,6 +268,7 @@ public class GuideMenu : MonoBehaviour
                 GameObject.Destroy(child.gameObject);
         }
         guideProgress = guideIndex;
+        PlayerPrefs.SetInt(guideInfos.id.ToString() + "_currstep", guideProgress);
         stepNumberText.text = (guideProgress+1).ToString() + "/" + guideInfos.steps.Count();
         stepTitleText.text = guideInfos.steps[guideProgress].name;
         stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]</color>";
@@ -300,7 +293,9 @@ public class GuideMenu : MonoBehaviour
         }
 
         int substepIndex = 0;
-        Regex CheckboxRegex = new Regex(@"<checkbox>(.+?)</checkbox>");
+
+        Regex CheckboxRegex = new Regex(@"<checkbox>(.*?)</checkbox>");
+
         List<(string, bool)> entities = new List<(string, bool)>();
         List<GameObject> subStepsList = new List<GameObject>();
         foreach (SubstepEntry subentry in subentries)
@@ -325,7 +320,7 @@ public class GuideMenu : MonoBehaviour
                 subStepsList.Add(checkboxGameObject);
                 checkboxGameObject.name = "Checkbox " + (++substepIndex).ToString();
                 checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
-                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn = Convert.ToBoolean(PlayerPrefs.GetInt(guideInfos.id.ToString() + "_cb" + guideProgress + checkboxGameObject.name[checkboxGameObject.name.Length - 1]));
+                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn = Convert.ToBoolean(PlayerPrefs.GetInt(guideInfos.id.ToString() + "_cb_" + guideProgress + "_" + checkboxGameObject.name[checkboxGameObject.name.Length - 1]));
                 checkboxGameObject.transform.SetParent(StepContent.transform);
                 checkboxGameObject.GetComponent<TMP_Text>().text = entity.Item1;
             }
@@ -354,7 +349,12 @@ public class GuideMenu : MonoBehaviour
         foreach (Transform child in StepContent.transform)
         {
             if (child.name.Contains("Checkbox"))
-                PlayerPrefs.SetInt(guideInfos.id.ToString() + "_cb" + guideProgress + child.name[child.name.Length - 1], child.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn ? 1 : 0);
+            {
+                PlayerPrefs.SetInt(
+                    guideInfos.id.ToString() + "_cb_" + guideProgress + "_" + child.name[child.name.Length - 1],
+                    child.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn ? 1 : 0
+                );
+            }
         }
     }
 
