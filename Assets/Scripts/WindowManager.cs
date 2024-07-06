@@ -22,7 +22,6 @@ public class WindowManager : MonoBehaviour
     public GameObject MainWindow;
     public GameObject travelWindow;
     public GameObject guideWindow;
-    public GameObject messageWindow;
     public GameObject settingsWindow;
     public GameObject downloadWindow;
     public GameObject notepadWindow;
@@ -105,16 +104,6 @@ public class WindowManager : MonoBehaviour
             return;
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
-        SelectedWindow.SetActive(true);
-        ToggleInteractiveMap(false);
-    }
-
-    public void MessageWindowClicked()
-    {
-        if (SelectedWindow == messageWindow)
-            return;
-        SelectedWindow.SetActive(false);
-        SelectedWindow = messageWindow;
         SelectedWindow.SetActive(true);
         ToggleInteractiveMap(false);
     }
