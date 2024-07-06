@@ -25,6 +25,7 @@ public class WindowManager : MonoBehaviour
     public GameObject messageWindow;
     public GameObject settingsWindow;
     public GameObject downloadWindow;
+    public GameObject notepadWindow;
     public CanvasGroup canvasGroup;
 
     public Slider opacitySlider;
@@ -114,6 +115,16 @@ public class WindowManager : MonoBehaviour
             return;
         SelectedWindow.SetActive(false);
         SelectedWindow = messageWindow;
+        SelectedWindow.SetActive(true);
+        ToggleInteractiveMap(false);
+    }
+
+    public void NotepadWindowClicked()
+    {
+        if (SelectedWindow == notepadWindow)
+            return;
+        SelectedWindow.SetActive(false);
+        SelectedWindow = notepadWindow;
         SelectedWindow.SetActive(true);
         ToggleInteractiveMap(false);
     }
