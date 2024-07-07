@@ -37,14 +37,14 @@ public class GuideManager : MonoBehaviour
     public GameObject content;
     public GameObject webGuidePrefab;
     public GameObject rootMenu;
-    public GameObject scrollView;
+    public GameObject dlMenu;
     public GameObject backButton;
 
     public void onClickGuidesPublicList()
     {
         backButton.SetActive(true);
         rootMenu.SetActive(false);
-        scrollView.SetActive(true);
+        dlMenu.SetActive(true);
         StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=public"));
     }
 
@@ -52,7 +52,7 @@ public class GuideManager : MonoBehaviour
     {
         backButton.SetActive(true);
         rootMenu.SetActive(false);
-        scrollView.SetActive(true);
+        dlMenu.SetActive(true);
         StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=draft"));
     }
 
@@ -60,7 +60,7 @@ public class GuideManager : MonoBehaviour
     {
         backButton.SetActive(true);
         rootMenu.SetActive(false);
-        scrollView.SetActive(true);
+        dlMenu.SetActive(true);
         StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=certified"));
     }
 
@@ -137,7 +137,7 @@ public class GuideManager : MonoBehaviour
     public void BackToRootMenu()
     {
         backButton.SetActive(false);
-        scrollView.SetActive(false);
+        dlMenu.SetActive(false);
         rootMenu.SetActive(true);
     }
 }

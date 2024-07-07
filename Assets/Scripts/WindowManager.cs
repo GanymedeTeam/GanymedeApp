@@ -10,10 +10,6 @@ public class WindowManager : MonoBehaviour
     private int windowWidth = 300;
     private int windowHeight = 450;
     private int mapHeight = 300;
-    public int minHeight = 450;
-    public int maxHeight = 1080;
-    public int minWidth = 300;
-    public int maxWidth = 1920;
     public TMP_InputField windowWidthText;
     public TMP_InputField windowHeightText;
     public GameObject MinimizedWindows;
@@ -26,6 +22,8 @@ public class WindowManager : MonoBehaviour
     public GameObject downloadWindow;
     public GameObject notepadWindow;
     public CanvasGroup canvasGroup;
+    public TMP_Text menuTitle;
+    public TMP_Dropdown resolutionDropDown;
 
     public Slider opacitySlider;
 
@@ -37,7 +35,7 @@ public class WindowManager : MonoBehaviour
         AppWindowUtility.Transparent = true;
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
-        AppWindowUtility.SetScreenSize(300, 450);
+        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
     }
 
     public void MinimizeApp()
@@ -82,6 +80,7 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == MainWindow)
             return;
+        menuTitle.text = "Ganymede";
         SelectedWindow.SetActive(false);
         SelectedWindow = MainWindow;
         SelectedWindow.SetActive(true);
@@ -92,6 +91,7 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == travelWindow)
             return;
+        menuTitle.text = "Autopilotage";
         SelectedWindow.SetActive(false);
         SelectedWindow = travelWindow;
         SelectedWindow.SetActive(true);
@@ -102,6 +102,7 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == guideWindow)
             return;
+        menuTitle.text = "Guides";
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
@@ -112,6 +113,7 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == notepadWindow)
             return;
+        menuTitle.text = "Bloc-notes";
         SelectedWindow.SetActive(false);
         SelectedWindow = notepadWindow;
         SelectedWindow.SetActive(true);
@@ -122,6 +124,7 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == settingsWindow)
             return;
+        menuTitle.text = "Options";
         SelectedWindow.SetActive(false);
         SelectedWindow = settingsWindow;
         SelectedWindow.SetActive(true);
@@ -132,6 +135,7 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == downloadWindow)
             return;
+        menuTitle.text = "Téléchargement";
         SelectedWindow.SetActive(false);
         SelectedWindow = downloadWindow;
         SelectedWindow.SetActive(true);
@@ -167,28 +171,15 @@ public class WindowManager : MonoBehaviour
         PlayerPrefs.SetFloat("opacity", opacity);
     }
 
-    public void SetResolution()
+    public void SetXResolution(int x)
     {
-        windowWidth = int.Parse(windowWidthText.text);
-        windowHeight = int.Parse(windowHeightText.text);
-
-        if (windowWidth < minWidth)
-        {
-            windowWidth = minWidth;
-        }
-        if (windowWidth > maxWidth)
-        {
-            windowWidth = maxWidth;
-        }
-        if (windowHeight < minHeight)
-        {
-            windowHeight = minHeight;
-        }
-        if (windowHeight > maxHeight)
-        {
-            windowHeight = maxHeight;
-        }
-
+        windowWidth = 300 + x * 50;
+        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+    }
+    
+    public void SetYResolution(int y)
+    {
+        windowHeight = 450 + y * 50;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
     }
 
