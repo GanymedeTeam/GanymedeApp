@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
+using System.Linq;
 
 
 public class GuideSubstep : MonoBehaviour, IPointerClickHandler
@@ -43,8 +44,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/monster/" 
             + monsterMatch.Groups[1].Value + ">" + monsterMatch.Groups[3].Value + "</link>";
-            StartCoroutine(AddImageFromLink(monsterMatch.Groups[2].Value, monsterMatch.Index));
             tmp_text.text = tmp_text.text.Replace(monsterMatch.Value, textToWrite);
+            StartCoroutine(AddImageFromLink(monsterMatch.Groups[2].Value, monsterMatch.Groups[3].Value));
         }
 
         foreach (Match itemMatch in itemRegex.Matches(tmp_text.text))
@@ -52,8 +53,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/object/" 
             + itemMatch.Groups[1].Value + ">" + itemMatch.Groups[3].Value + "</link>";
-            StartCoroutine(AddImageFromLink(itemMatch.Groups[2].Value, itemMatch.Index));
             tmp_text.text = tmp_text.text.Replace(itemMatch.Value, textToWrite);
+            StartCoroutine(AddImageFromLink(itemMatch.Groups[2].Value, itemMatch.Groups[3].Value));
         }
 
         foreach (Match questMatch in questRegex.Matches(tmp_text.text))
@@ -61,8 +62,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/quest/" 
             + questMatch.Groups[1].Value + ">" + questMatch.Groups[3].Value + "</link>";
-            StartCoroutine(AddImageFromLink(questMatch.Groups[2].Value, questMatch.Index));
             tmp_text.text = tmp_text.text.Replace(questMatch.Value, textToWrite);
+            StartCoroutine(AddImageFromLink(questMatch.Groups[2].Value, questMatch.Groups[3].Value));
         }
 
         foreach (Match dungeonMatch in dungeonRegex.Matches(tmp_text.text))
@@ -70,13 +71,28 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/dungeon/" 
             + dungeonMatch.Groups[1].Value + ">" + dungeonMatch.Groups[3].Value + "</link>";
-            StartCoroutine(AddImageFromLink(dungeonMatch.Groups[2].Value, dungeonMatch.Index));
             tmp_text.text = tmp_text.text.Replace(dungeonMatch.Value, textToWrite);
+            StartCoroutine(AddImageFromLink(dungeonMatch.Groups[2].Value, dungeonMatch.Groups[3].Value));
+
         }
     }
 
-    private IEnumerator AddImageFromLink(string imageUrl, int indexForImage)
+    private IEnumerator AddImageFromLink(string imageUrl, string sChar)
     {
+        yield return 0;
+        Vector3 position = tmp_text.textInfo.characterInfo[tmp_text.GetParsedText().IndexOf(sChar)].bottomLeft;
+        Debug.Log(sChar + ":" + position);
+
+        if (position.x < -110)
+        {
+            // Text is too close
+            int index = tmp_text.text.IndexOf(sChar);
+            if (index != 0)
+                tmp_text.text = tmp_text.text.Insert(index, "<br>    ");
+                yield return 0;
+                position = tmp_text.textInfo.characterInfo[tmp_text.GetParsedText().IndexOf(sChar)].bottomLeft;
+        }
+
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
         yield return request.SendWebRequest();
         if (request.result == UnityWebRequest.Result.Success)
@@ -89,7 +105,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.5f);
             rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0.5f);
             rawImage.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-            rawImage.GetComponent<RectTransform>().anchoredPosition = tmp_text.textInfo.characterInfo[indexForImage].bottomLeft + transform.position + new Vector3(9, 6, 0);
+            rawImage.GetComponent<RectTransform>().anchoredPosition = position + transform.position + new Vector3(-10, 5, 0);
             sprite.transform.SetParent(tmp_text.transform);
         }
     }

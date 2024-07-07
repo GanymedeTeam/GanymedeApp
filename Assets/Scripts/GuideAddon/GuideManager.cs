@@ -10,12 +10,21 @@ using UnityEngine.UI;
 
 public class GuideManager : MonoBehaviour
 {
+
+    [Serializable]
+    public class UserGuide
+    {
+        public int id;
+        public string name;
+        public int is_admin;
+        public int is_certified;
+    }
+
     [Serializable]
     public class ApiGuide
     {
         public int id;
         public int user_id;
-        public string user;
         public string name;
         public string status;
         public string description;
@@ -26,6 +35,7 @@ public class GuideManager : MonoBehaviour
         public string created_at;
         public string updated_at;
         public string deleted_at;
+        public UserGuide user;
     }
 
     [Serializable]
@@ -39,6 +49,7 @@ public class GuideManager : MonoBehaviour
     public GameObject rootMenu;
     public GameObject dlMenu;
     public GameObject backButton;
+    public Sprite spriteCertified;
 
     public void onClickGuidesPublicList()
     {
@@ -128,10 +139,30 @@ public class GuideManager : MonoBehaviour
             webGuide.name = "guide_" + guide.id.ToString();
             webGuide.transform.SetParent(content.transform);
             webGuide.transform.Find("GuideButton/GuideName").GetComponent<TMP_Text>().text = guide.name;
-            webGuide.transform.Find("GuideButton/GuideAuthor").GetComponent<TMP_Text>().text = "de: <color=#87cefa>" +  guide.user + "</color>";
+            webGuide.transform.Find("GuideButton/GuideAuthor").GetComponent<TMP_Text>().text = "de: <color=#87cefa>" +  guide.user.name + "</color>";
+            if (guide.user.is_certified == 1 || guide.user.is_admin == 1)
+            {
+                StartCoroutine(SetCertification(webGuide.transform.Find("GuideButton/GuideAuthor").GetComponent<TMP_Text>()));
+            }
             webGuide.transform.Find("GuideButton/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  guide.id + "</color>";
             webGuide.transform.Find("GuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide("https://ganymede-dofus.com/api/guides/" + guide.id, webGuide.transform.Find("GuideButton").gameObject)); });
         }
+    }
+
+    public IEnumerator SetCertification(TMP_Text text)
+    {
+        yield return 0;
+        GameObject certification = new GameObject("Certification");
+        Image certifImage = certification.AddComponent<Image>();
+        certifImage.sprite = spriteCertified;
+        RectTransform certifRT = certification.GetComponent<RectTransform>();
+        certification.transform.SetParent(text.transform);
+        certifRT.sizeDelta = new Vector2(12, 12);
+        certifRT.anchoredPosition = new Vector3(
+            text.textInfo.characterInfo[text.textInfo.characterCount - 1].bottomRight.x + 8,
+            0,
+            0
+        );
     }
 
     public void BackToRootMenu()

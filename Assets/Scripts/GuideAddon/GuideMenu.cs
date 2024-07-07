@@ -352,7 +352,7 @@ public class GuideMenu : MonoBehaviour
             {
                 PlayerPrefs.SetInt(
                     guideInfos.id.ToString() + "_cb_" + guideProgress + "_" + child.name[child.name.Length - 1],
-                    child.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn ? 1 : 0
+                    child.transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn ? 1 : 0
                 );
             }
         }
