@@ -23,11 +23,10 @@ public class WindowManager : MonoBehaviour
     public GameObject notepadWindow;
     public CanvasGroup canvasGroup;
     public TMP_Text menuTitle;
-    public TMP_Dropdown resolutionDropDown;
 
     public Slider opacitySlider;
 
-    public bool isInteractiveMapActive = false;
+    public bool isInteractiveMapActive;
 
     void Start()
     {
@@ -36,6 +35,7 @@ public class WindowManager : MonoBehaviour
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        isInteractiveMapActive = true;
     }
 
     public void MinimizeApp()
@@ -157,9 +157,24 @@ public class WindowManager : MonoBehaviour
         Application.OpenURL("https://ganymede-dofus.com");
     }
 
+    public void SetMapFullscale(bool full)
+    {
+        if (full)
+            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
+        else
+            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
+    }
+
+    public void ToggleGuideInteractiveMap()
+    {
+        isInteractiveMapActive = !isInteractiveMapActive;
+        SetMapFullscale(isInteractiveMapActive);
+        ToggleInteractiveMap(isInteractiveMapActive);
+    }
+
     public void ToggleInteractiveMap(bool setActive)
     {
-        if (setActive)
+        if (setActive && guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin == new Vector2(0f, 300f))
             AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
         else
             AppWindowUtility.SetScreenSize(windowWidth, windowHeight);

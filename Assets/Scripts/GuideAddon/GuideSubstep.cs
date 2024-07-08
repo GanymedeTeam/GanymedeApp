@@ -81,7 +81,6 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     {
         yield return 0;
         Vector3 position = tmp_text.textInfo.characterInfo[tmp_text.GetParsedText().IndexOf(sChar)].bottomLeft;
-        Debug.Log(sChar + ":" + position);
 
         if (position.x < -110)
         {

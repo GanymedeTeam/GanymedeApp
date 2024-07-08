@@ -401,6 +401,7 @@ public class MapManager : MonoBehaviour
         for (int i = 0; i < numberOfCellInMapMaskSizeWidth * numberOfCellInMapMaskSizeHeight; i++)
         {
             GameObject newMapButton = Instantiate(ButtontilePrefab, ButtonTileGrid.transform);
+            newMapButton.GetComponent<Button>().onClick.AddListener(delegate { FindObjectOfType<GuideMenu>().CopyTravelPosition(); });
             newMapButton.GetComponentInChildren<TMP_Text>().text = "[" + (i % numberOfCellInMapMaskSizeWidth + firstCoordinateX) + "," + ((i / numberOfCellInMapMaskSizeWidth) + firstCoordinateY) + "]";
             if(newMapButton.GetComponentInChildren<TMP_Text>().text == "[" + x + "," + y + "]")
             {
