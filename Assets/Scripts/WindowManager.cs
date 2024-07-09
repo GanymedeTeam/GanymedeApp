@@ -127,7 +127,7 @@ public class WindowManager : MonoBehaviour
         menuTitle.text = "Options";
         SelectedWindow.SetActive(false);
         SelectedWindow = settingsWindow;
-        SelectedWindow.SetActive(true);
+        SelectedWindow.SetActive(true);            
         ToggleInteractiveMap(false);
     }
 

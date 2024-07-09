@@ -41,6 +41,12 @@ public class GuideMenu : MonoBehaviour
         ReloadGuideList();
     }
 
+    public void OnEnable() 
+    {
+        if (!transform.Find("GuideSelectionMenu").gameObject.activeInHierarchy)
+            LoadGuide(guideInfos.id.ToString());
+    }
+
     public void CopyTravelPosition()
     {
         GUIUtility.systemCopyBuffer = "[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]";

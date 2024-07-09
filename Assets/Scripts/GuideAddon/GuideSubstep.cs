@@ -80,16 +80,31 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     private IEnumerator AddImageFromLink(string imageUrl, string sChar)
     {
         yield return 0;
-        Vector3 position = tmp_text.textInfo.characterInfo[tmp_text.GetParsedText().IndexOf(sChar)].bottomLeft;
+        int targetIndex = tmp_text.GetParsedText().IndexOf(sChar);
+        int realTargetIndex = tmp_text.text.IndexOf(sChar);
+        Vector3 position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
+        Vector3[] v = new Vector3[4];
+        gameObject.GetComponent<RectTransform>().GetWorldCorners(v);
+        // Debug.Log(Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x));
 
-        if (position.x < -110)
+        if(Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x) < 20)
         {
-            // Text is too close
-            int index = tmp_text.text.IndexOf(sChar);
-            if (index != 0)
-                tmp_text.text = tmp_text.text.Insert(index, "<br>    ");
-                yield return 0;
-                position = tmp_text.textInfo.characterInfo[tmp_text.GetParsedText().IndexOf(sChar)].bottomLeft;
+            string base_text = tmp_text.text;
+            tmp_text.text = tmp_text.text.Insert(realTargetIndex, "\t");
+
+            yield return 0;
+            targetIndex += "\t".Count();
+            position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
+
+            // If adding 4 whitespace made it return to line, it deserved to return to line
+            if (Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x) < 20)
+            {
+                tmp_text.text = base_text.Insert(realTargetIndex, "\n\t");
+                targetIndex += "\n\t".Count() - 1;
+            }
+
+            yield return 0;
+            position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
         }
 
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
@@ -104,7 +119,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.5f);
             rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0.5f);
             rawImage.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-            rawImage.GetComponent<RectTransform>().anchoredPosition = position + transform.position + new Vector3(-10, 5, 0);
+            rawImage.GetComponent<RectTransform>().anchoredPosition = position + transform.position + new Vector3(-9.5f, 5f, 0f);
             sprite.transform.SetParent(tmp_text.transform);
         }
     }
