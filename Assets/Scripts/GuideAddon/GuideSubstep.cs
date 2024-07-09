@@ -21,6 +21,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     Regex questRegex = new Regex(@"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>");
     Regex dungeonRegex = new Regex(@"<dungeon dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</dungeon>");
 
+    private bool NonConcurrenceFlag = false;
+
     void Start()
     {
         tmp_text = transform.GetComponent<TMP_Text>();
@@ -63,6 +65,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/quest/" 
             + questMatch.Groups[1].Value + ">" + questMatch.Groups[3].Value + "</link>";
             tmp_text.text = tmp_text.text.Replace(questMatch.Value, textToWrite);
+            Debug.Log("start " + questMatch.Groups[3].Value);
             StartCoroutine(AddImageFromLink(questMatch.Groups[2].Value, questMatch.Groups[3].Value));
         }
 
@@ -79,13 +82,15 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator AddImageFromLink(string imageUrl, string sChar)
     {
+        while (NonConcurrenceFlag == true)
+            yield return 0;
+        NonConcurrenceFlag = true;
         yield return 0;
         int targetIndex = tmp_text.GetParsedText().IndexOf(sChar);
         int realTargetIndex = tmp_text.text.IndexOf(sChar);
         Vector3 position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
         Vector3[] v = new Vector3[4];
         gameObject.GetComponent<RectTransform>().GetWorldCorners(v);
-        // Debug.Log(Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x));
 
         if(Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x) < 20)
         {
@@ -102,11 +107,9 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 tmp_text.text = base_text.Insert(realTargetIndex, "\n\t");
                 targetIndex += "\n\t".Count() - 1;
             }
-
             yield return 0;
             position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
         }
-
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(imageUrl);
         yield return request.SendWebRequest();
         if (request.result == UnityWebRequest.Result.Success)
@@ -122,5 +125,6 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             rawImage.GetComponent<RectTransform>().anchoredPosition = position + transform.position + new Vector3(-9.5f, 5f, 0f);
             sprite.transform.SetParent(tmp_text.transform);
         }
+        NonConcurrenceFlag = false;
     }
 }
