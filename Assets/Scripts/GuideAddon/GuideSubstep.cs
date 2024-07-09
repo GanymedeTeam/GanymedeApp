@@ -23,8 +23,21 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     private bool NonConcurrenceFlag = false;
 
+    private Canvas _canvas;
+    private Camera _camera;
+
+    private int _targetedSharpColorIndex = -1;
+
+    private const string hoveredLinkColor = "7ABBFF";
+    private const string unhoveredLinkColor = "64F1FF";
+
     void Start()
     {
+        _canvas = GetComponentInParent<Canvas>();
+        if (_canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+            _camera = null;
+        else
+            _camera = _canvas.worldCamera;
         tmp_text = transform.GetComponent<TMP_Text>();
         ParseCustomBrackets();
     }
@@ -45,7 +58,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         {
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/monster/" 
-            + monsterMatch.Groups[1].Value + ">" + monsterMatch.Groups[3].Value + "</link>";
+            + monsterMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + monsterMatch.Groups[3].Value + "</color></link>";
             tmp_text.text = tmp_text.text.Replace(monsterMatch.Value, textToWrite);
             StartCoroutine(AddImageFromLink(monsterMatch.Groups[2].Value, monsterMatch.Groups[3].Value));
         }
@@ -54,7 +67,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         {
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/object/" 
-            + itemMatch.Groups[1].Value + ">" + itemMatch.Groups[3].Value + "</link>";
+            + itemMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + itemMatch.Groups[3].Value + "</color></link>";
             tmp_text.text = tmp_text.text.Replace(itemMatch.Value, textToWrite);
             StartCoroutine(AddImageFromLink(itemMatch.Groups[2].Value, itemMatch.Groups[3].Value));
         }
@@ -63,9 +76,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         {
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/quest/" 
-            + questMatch.Groups[1].Value + ">" + questMatch.Groups[3].Value + "</link>";
+            + questMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + questMatch.Groups[3].Value + "</color></link>";
             tmp_text.text = tmp_text.text.Replace(questMatch.Value, textToWrite);
-            Debug.Log("start " + questMatch.Groups[3].Value);
             StartCoroutine(AddImageFromLink(questMatch.Groups[2].Value, questMatch.Groups[3].Value));
         }
 
@@ -73,7 +85,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         {
             // Spaces are for image
             string textToWrite = "    <link=https://dofusdb.fr/fr/database/dungeon/" 
-            + dungeonMatch.Groups[1].Value + ">" + dungeonMatch.Groups[3].Value + "</link>";
+            + dungeonMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + dungeonMatch.Groups[3].Value + "</color></link>";
             tmp_text.text = tmp_text.text.Replace(dungeonMatch.Value, textToWrite);
             StartCoroutine(AddImageFromLink(dungeonMatch.Groups[2].Value, dungeonMatch.Groups[3].Value));
 
@@ -126,5 +138,60 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             sprite.transform.SetParent(tmp_text.transform);
         }
         NonConcurrenceFlag = false;
+    }
+
+    public void ColorLinks()
+    {
+        void ApplyColorToTargetedLink(string hexcolor)
+        {
+            if (_targetedSharpColorIndex != -1)
+            {
+                tmp_text.text = tmp_text.text.Remove(_targetedSharpColorIndex + 1, 6).Insert(_targetedSharpColorIndex + 1, hexcolor);
+            }
+        }
+
+        Vector3 mousePosition = new Vector3(Input.mousePosition.x, Input.mousePosition.y);
+
+        bool isIntersectingRectTransform = TMP_TextUtilities.IsIntersectingRectTransform(tmp_text.GetComponent<RectTransform>(), mousePosition, _camera);
+
+        if (!isIntersectingRectTransform)
+        {
+            // reset previous targetet link color to unhovered
+            ApplyColorToTargetedLink(unhoveredLinkColor);
+            _targetedSharpColorIndex = -1;
+            return;
+        }
+
+        int intersectingLink = TMP_TextUtilities.FindIntersectingLink(tmp_text, mousePosition, _camera);
+
+        if (intersectingLink == -1)
+        {
+            // reset previous targetet link color to unhovered
+            ApplyColorToTargetedLink(unhoveredLinkColor);
+            _targetedSharpColorIndex = -1;
+            return;
+        }
+
+        if (_targetedSharpColorIndex == -1)
+        {
+            // find targeted link to set its color
+            TMP_LinkInfo linkInfo = tmp_text.textInfo.linkInfo[intersectingLink];
+
+            _targetedSharpColorIndex = tmp_text.text.IndexOf(linkInfo.GetLinkText());
+            while (tmp_text.text[_targetedSharpColorIndex] != '#')
+            {
+                if (_targetedSharpColorIndex == 0)
+                    break;
+                _targetedSharpColorIndex--;
+            }
+
+            // set its color to hovered
+            ApplyColorToTargetedLink(hoveredLinkColor);
+        }
+    }
+
+    void Update()
+    {
+        ColorLinks();
     }
 }
