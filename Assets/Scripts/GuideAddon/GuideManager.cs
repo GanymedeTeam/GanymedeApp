@@ -51,12 +51,45 @@ public class GuideManager : MonoBehaviour
     public GameObject backButton;
     public Sprite spriteCertified;
 
+    private const string guides_url = "https://ganymede-dofus.com/api/guides?status=";
+    private string currentMenu = "root";
+
+    public void OnEnable()
+    {
+        content.GetComponent<GridLayoutGroup>().cellSize = new Vector2(content.GetComponent<RectTransform>().rect.width, content.GetComponent<GridLayoutGroup>().cellSize.y);
+        if (currentMenu != "root")
+            StartCoroutine(GetGuidesList(guides_url + currentMenu));
+    }
+
+    public void OnDisable() 
+    {
+        DeleteGuidesFromView();
+    }
+
+    public void Update() 
+    {
+        if (!content.activeInHierarchy)
+            DeleteGuidesFromView();
+    }
+
+    public void DeleteGuidesFromView()
+    {
+        foreach (Transform child in content.transform)
+        {
+            if (child.name.Contains("guide_"))
+            {
+                Destroy(child.gameObject);
+            }
+        }
+    }
+
     public void onClickGuidesPublicList()
     {
         backButton.SetActive(true);
         rootMenu.SetActive(false);
         dlMenu.SetActive(true);
-        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=public"));
+        currentMenu = "public";
+        StartCoroutine(GetGuidesList(guides_url + currentMenu));
     }
 
     public void onClickGuidesDraftList()
@@ -64,7 +97,8 @@ public class GuideManager : MonoBehaviour
         backButton.SetActive(true);
         rootMenu.SetActive(false);
         dlMenu.SetActive(true);
-        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=draft"));
+        currentMenu = "draft";
+        StartCoroutine(GetGuidesList(guides_url + currentMenu));
     }
 
     public void onClickGuidesCertifiedList()
@@ -72,7 +106,16 @@ public class GuideManager : MonoBehaviour
         backButton.SetActive(true);
         rootMenu.SetActive(false);
         dlMenu.SetActive(true);
-        StartCoroutine(GetGuidesList("https://ganymede-dofus.com/api/guides?status=certified"));
+        currentMenu = "certified";
+        StartCoroutine(GetGuidesList(guides_url + currentMenu));
+    }
+
+    public void BackToRootMenu()
+    {
+        backButton.SetActive(false);
+        dlMenu.SetActive(false);
+        rootMenu.SetActive(true);
+        currentMenu = "root";
     }
 
     private IEnumerator GetGuidesList(string url)
@@ -163,12 +206,5 @@ public class GuideManager : MonoBehaviour
             0,
             0
         );
-    }
-
-    public void BackToRootMenu()
-    {
-        backButton.SetActive(false);
-        dlMenu.SetActive(false);
-        rootMenu.SetActive(true);
     }
 }

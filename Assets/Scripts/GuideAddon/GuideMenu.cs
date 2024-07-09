@@ -35,16 +35,27 @@ public class GuideMenu : MonoBehaviour
     [SerializeField]
     private GuideEntry guideInfos;
 
-    void Start()
+    void Awake()
     {
         guidesCurrentPath = Application.persistentDataPath + "/guides/";
         ReloadGuideList();
     }
 
-    public void OnEnable() 
+    public void OnEnable()
     {
-        if (!transform.Find("GuideSelectionMenu").gameObject.activeInHierarchy)
-            LoadGuide(guideInfos.id.ToString());
+        gridGameobject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(gridGameobject.GetComponent<RectTransform>().rect.width, gridGameobject.GetComponent<GridLayoutGroup>().cellSize.y);
+        ReloadGuideList();
+    }
+
+    public void DeleteGuidesFromView()
+    {
+        foreach (Transform child in gridGameobject.transform)
+        {
+            if (child.name.Contains("guide_") || child.name.Contains("folder_"))
+            {
+                Destroy(child.gameObject);
+            }
+        }
     }
 
     public void CopyTravelPosition()
@@ -175,13 +186,19 @@ public class GuideMenu : MonoBehaviour
 
         var fileInfo = GetGuidesInFolder();
         var dirInfo = GetGuidesFolders();
-
+        int iFolder = 1;
         foreach (DirectoryInfo dir in dirInfo)
         {
             GameObject newGuideFolder = Instantiate(guideUIFolderPrefab, gridGameobject.transform);
+            newGuideFolder.name = "folder_" + iFolder++.ToString();
 
             GuideFolder guideFolder = newGuideFolder.GetComponent<GuideFolder>();
             guideFolder.Initialize(dir.Name);
+            newGuideFolder.transform.Find("GuideButton").GetComponent<Button>().onClick.AddListener(
+                    delegate {
+                        newGuideFolder.GetComponent<GuideFolder>().OpenFolder();
+                    }
+                );
         }
 
         foreach (FileInfo file in fileInfo)
@@ -189,10 +206,10 @@ public class GuideMenu : MonoBehaviour
             if (file.Extension == ".json")
             {
                 GameObject newGuideObject = Instantiate(guideUIPrefab, gridGameobject.transform);
+                newGuideObject.name = "guide_" + file.Name.Replace(".json", "");
+                newGuideObject.transform.SetParent(gridGameobject.transform);
 
-                GuideObject guideObject = newGuideObject.GetComponent<GuideObject>();
-
-                string fileRealName = "";
+                string fileRealName;
                 try
                 {
                     string fileContent = String.Join("", System.IO.File.ReadAllLines(guidesCurrentPath + file.Name));
@@ -203,8 +220,16 @@ public class GuideMenu : MonoBehaviour
                 {
                     fileRealName = "<color=\"red\">NOT_SUPPORTED</color>";
                 }
-                guideObject.Initialize(fileRealName, file.Name.Replace(".json", ""));
+                newGuideObject.GetComponent<GuideObject>().Initialize(fileRealName, file.Name.Replace(".json", ""));
+                
+                newGuideObject.transform.Find("GuideButton/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  file.Name.Replace(".json", "") + "</color>";
+                newGuideObject.transform.Find("GuideButton").GetComponent<Button>().onClick.AddListener(
+                    delegate {
+                        newGuideObject.GetComponent<GuideObject>().OpenGuide();
+                    }
+                );
             }
+
         }
 
         FormatCurrentPath();
