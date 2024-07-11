@@ -9,17 +9,21 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using System.Linq;
+using UnityEngine.Assertions.Must;
 
 
 public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 {
 
     private TMP_Text tmp_text;
-
-    Regex monsterRegex = new Regex(@"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>");
-    Regex itemRegex = new Regex(@"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>");
-    Regex questRegex = new Regex(@"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>");
-    Regex dungeonRegex = new Regex(@"<dungeon dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</dungeon>");
+    
+    Dictionary<string, Regex> bracketPatterns = new Dictionary<string, Regex>()
+    {
+        { "monster", new Regex(@"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>") },
+        { "item", new Regex(@"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>") },
+        { "quest", new Regex(@"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>") },
+        { "dungeon", new Regex(@"<dungeon dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</dungeon>") },
+    };
 
     private bool NonConcurrenceFlag = false;
 
@@ -54,70 +58,79 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     public void ParseCustomBrackets()
     {
-        foreach (Match monsterMatch in monsterRegex.Matches(tmp_text.text))
+        // prevent user from adding links manually
+        if (tmp_text.text.Contains("</link>"))
         {
-            // Spaces are for image
-            string textToWrite = "    <link=https://dofusdb.fr/fr/database/monster/" 
-            + monsterMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + monsterMatch.Groups[3].Value + "</color></link>";
-            tmp_text.text = tmp_text.text.Replace(monsterMatch.Value, textToWrite);
-            StartCoroutine(AddImageFromLink(monsterMatch.Groups[2].Value, monsterMatch.Groups[3].Value));
+            tmp_text.text = "<color=\"red\">Suspect link detected in step</color>";
+            return;
         }
 
-        foreach (Match itemMatch in itemRegex.Matches(tmp_text.text))
+        int endCursor;
+        bool isFirst;
+        
+        foreach ( string pattern in bracketPatterns.Keys)
         {
-            // Spaces are for image
-            string textToWrite = "    <link=https://dofusdb.fr/fr/database/object/" 
-            + itemMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + itemMatch.Groups[3].Value + "</color></link>";
-            tmp_text.text = tmp_text.text.Replace(itemMatch.Value, textToWrite);
-            StartCoroutine(AddImageFromLink(itemMatch.Groups[2].Value, itemMatch.Groups[3].Value));
-        }
-
-        foreach (Match questMatch in questRegex.Matches(tmp_text.text))
-        {
-            // Spaces are for image
-            string textToWrite = "    <link=https://dofusdb.fr/fr/database/quest/" 
-            + questMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + questMatch.Groups[3].Value + "</color></link>";
-            tmp_text.text = tmp_text.text.Replace(questMatch.Value, textToWrite);
-            StartCoroutine(AddImageFromLink(questMatch.Groups[2].Value, questMatch.Groups[3].Value));
-        }
-
-        foreach (Match dungeonMatch in dungeonRegex.Matches(tmp_text.text))
-        {
-            // Spaces are for image
-            string textToWrite = "    <link=https://dofusdb.fr/fr/database/dungeon/" 
-            + dungeonMatch.Groups[1].Value + "><color=#" + unhoveredLinkColor + ">" + dungeonMatch.Groups[3].Value + "</color></link>";
-            tmp_text.text = tmp_text.text.Replace(dungeonMatch.Value, textToWrite);
-            StartCoroutine(AddImageFromLink(dungeonMatch.Groups[2].Value, dungeonMatch.Groups[3].Value));
-
+            foreach (Match patternMatch in bracketPatterns[pattern].Matches(tmp_text.text))
+            {
+                isFirst = false;
+                if (patternMatch.Index == 0)
+                    isFirst = true;
+                // Spaces are for image
+                string textToWrite = (
+                    "    <link=https://dofusdb.fr/fr/database/" 
+                    + pattern + "/" 
+                    + patternMatch.Groups[1].Value 
+                    + "><color=#" + unhoveredLinkColor + ">" 
+                    + patternMatch.Groups[3].Value + "</color></link>"
+                );
+                tmp_text.text = tmp_text.text.Replace(patternMatch.Value, textToWrite);
+                endCursor = patternMatch.Index + textToWrite.Count();
+                StartCoroutine(AddImageFromLink(patternMatch.Groups[2].Value, patternMatch.Groups[3].Value, endCursor, isFirst));
+            }
         }
     }
 
-    private IEnumerator AddImageFromLink(string imageUrl, string sChar)
+    private IEnumerable<int> AllIndexesOfText(string text, string searchstring)
+    {
+        int minIndex = text.IndexOf(searchstring);
+        while (minIndex != -1)
+        {
+            yield return minIndex;
+            minIndex = text.IndexOf(searchstring, minIndex + searchstring.Length);
+        }
+    }
+
+    private IEnumerator AddImageFromLink(string imageUrl, string sChar, int endcursor, bool isfirst)
     {
         while (NonConcurrenceFlag == true)
             yield return 0;
         NonConcurrenceFlag = true;
         yield return 0;
-        int targetIndex = tmp_text.GetParsedText().IndexOf(sChar);
-        int realTargetIndex = tmp_text.text.IndexOf(sChar);
+
+        int realTargetIndex = AllIndexesOfText(tmp_text.text.Substring(0, endcursor), sChar).Last();
+        int targetIndex = AllIndexesOfText(
+            tmp_text.GetParsedText(), sChar).ElementAt(
+                AllIndexesOfText(tmp_text.text.Substring(0, endcursor), sChar
+            ).Count() - 1
+        );
         Vector3 position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
         Vector3[] v = new Vector3[4];
         gameObject.GetComponent<RectTransform>().GetWorldCorners(v);
 
-        if(Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x) < 20)
+        if (Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x) < 20 && !isfirst)
         {
             string base_text = tmp_text.text;
-            tmp_text.text = tmp_text.text.Insert(realTargetIndex, "\t");
+            tmp_text.text = tmp_text.text.Insert(realTargetIndex, "    ");
 
             yield return 0;
-            targetIndex += "\t".Count();
+            targetIndex += "    ".Count();
             position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
 
             // If adding 4 whitespace made it return to line, it deserved to return to line
             if (Mathf.Abs(transform.InverseTransformPoint(v[0]).x - position.x) < 20)
             {
-                tmp_text.text = base_text.Insert(realTargetIndex, "\n\t");
-                targetIndex += "\n\t".Count() - 1;
+                tmp_text.text = base_text.Insert(realTargetIndex, "\n    ");
+                targetIndex += 1;
             }
             yield return 0;
             position = tmp_text.textInfo.characterInfo[targetIndex].bottomLeft;
@@ -134,7 +147,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.5f);
             rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0.5f);
             rawImage.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
-            rawImage.GetComponent<RectTransform>().anchoredPosition = position + transform.position + new Vector3(-9.5f, 5f, 0f);
+            rawImage.GetComponent<RectTransform>().anchoredPosition = position + transform.position + new Vector3(-10f, 6f, 0f);
             sprite.transform.SetParent(tmp_text.transform);
         }
         NonConcurrenceFlag = false;
