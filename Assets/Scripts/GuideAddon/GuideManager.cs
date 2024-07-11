@@ -142,7 +142,7 @@ public class GuideManager : MonoBehaviour
             {
                 string jsonResponse = webRequest.downloadHandler.text;
 
-                DownloadGuide(url.Split('/')[url.Split('/').Length - 1], jsonResponse);
+                string path = Application.persistentDataPath + "/guides/" + url.Split('/')[url.Split('/').Length - 1] + ".json" ;
 
                 GuideEntry guide = JsonUtility.FromJson<GuideEntry>(jsonResponse);
 
@@ -157,6 +157,21 @@ public class GuideManager : MonoBehaviour
                         PlayerPrefs.DeleteKey(url.Split('/')[url.Split('/').Length - 1] + "_cb_" + stepIndex + "_" + i);
                     }
                 }
+
+                DownloadGuide(path, jsonResponse);
+                yield return new WaitForSeconds(2);
+                int protection = 10;
+                while (
+                    !System.IO.File.Exists(path) ||
+                    (DateTime.Today - System.IO.File.GetLastWriteTime(path)).TotalSeconds > 5 ||
+                    protection > 0
+                )
+                {
+                    protection++;
+                    Debug.Log("Failed to download " + path + ", retrying...");
+                    DownloadGuide(path, jsonResponse);
+                    yield return new WaitForSeconds(2);
+                }
             }
         }
         yield return 0;
@@ -164,9 +179,9 @@ public class GuideManager : MonoBehaviour
         guideButton.GetComponent<Button>().interactable = true;
     }
 
-    public void DownloadGuide(string name, string jsonContent)
+    public void DownloadGuide(string path, string jsonContent)
     {
-        System.IO.File.WriteAllText(Application.persistentDataPath + "/guides/" + name + ".json", jsonContent);
+        System.IO.File.WriteAllText(path, jsonContent);
     }
 
     public void ShowAllGuidesInCurrentSection(ApiGuides listOfGuides)
