@@ -163,11 +163,11 @@ public class GuideManager : MonoBehaviour
                 int protection = 10;
                 while (
                     !System.IO.File.Exists(path) ||
-                    (DateTime.Today - System.IO.File.GetLastWriteTime(path)).TotalSeconds > 5 ||
-                    protection > 0
+                    (DateTime.Today - System.IO.File.GetLastWriteTime(path)).TotalSeconds > 5
                 )
                 {
-                    protection++;
+                    if (protection-- == 0)
+                        break;
                     Debug.Log("Failed to download " + path + ", retrying...");
                     DownloadGuide(path, jsonResponse);
                     yield return new WaitForSeconds(2);
