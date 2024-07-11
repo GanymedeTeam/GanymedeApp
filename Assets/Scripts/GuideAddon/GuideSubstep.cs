@@ -20,7 +20,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     Dictionary<string, Regex> bracketPatterns = new Dictionary<string, Regex>()
     {
         { "monster", new Regex(@"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>") },
-        { "item", new Regex(@"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>") },
+        { "object", new Regex(@"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>") },
         { "quest", new Regex(@"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>") },
         { "dungeon", new Regex(@"<dungeon dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</dungeon>") },
     };
