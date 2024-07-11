@@ -244,6 +244,7 @@ public class GuideMenu : MonoBehaviour
 
     public void BackToGuideSelection()
     {
+        FindObjectOfType<WindowManager>().ToggleInteractiveMap(false);
         GuideDetailsMenu.SetActive(false);
         GuideSelectionMenu.SetActive(true);
     }
