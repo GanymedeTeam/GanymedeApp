@@ -307,6 +307,7 @@ public class GuideMenu : MonoBehaviour
         int posX = guideInfos.steps[guideProgress].pos_x;
         int posY = guideInfos.steps[guideProgress].pos_y;
         mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress].map);
+        StepContent.transform.parent.parent.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 1f;
     }
 
     private void ProcessSubSteps(List<SubstepEntry> subentries)
