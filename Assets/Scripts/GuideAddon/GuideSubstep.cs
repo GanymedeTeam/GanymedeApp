@@ -31,9 +31,13 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     private Camera _camera;
 
     private int _targetedSharpColorIndex = -1;
+    private string _previousTypeOfColor = "";
 
-    private const string hoveredLinkColor = "7ABBFF";
-    private const string unhoveredLinkColor = "64F1FF";
+    List<(string, string, string)> colors = new List<(string, string, string)>
+    {
+        {("links", "64F1FF", "7ABBFF")},
+        {("pos", "E9FF56", "BDD900")}
+    };
 
     void Start()
     {
@@ -52,7 +56,13 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         {
             int index = TMP_TextUtilities.FindIntersectingLink(tmp_text, Input.mousePosition, null);
             if (index > -1)
-                Application.OpenURL(tmp_text.textInfo.linkInfo[index].GetLinkID());
+            {
+                string text = tmp_text.textInfo.linkInfo[index].GetLinkID();
+                if (text.Contains("http://") || text.Contains("https://"))
+                    Application.OpenURL(text);
+                if (Regex.Matches(text, @"\[(.*?),(.*?)\]").Count > 0)
+                    GUIUtility.systemCopyBuffer = text;
+            }
         }
     }
 
@@ -64,10 +74,21 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             tmp_text.text = "<color=\"red\">Suspect link detected in step</color>";
             return;
         }
-
-        int endCursor;
-        bool isFirst;
         
+
+        Regex posRegex = new Regex(@"\[(.*?),(.*?)\]");
+        MatchCollection matches = posRegex.Matches(tmp_text.text);
+        IEnumerable<string> uniqueMatches = matches.OfType<Match>().Select(m => m.Value).Distinct();
+        
+        foreach ( string posMatch in uniqueMatches)
+        {
+            string textToWrite = "<link=\"" + posMatch + "\"><color=#" + colors[1].Item2 + ">" + posMatch + "</color></link>";
+            tmp_text.text = tmp_text.text.Replace(posMatch, textToWrite);
+        }
+
+        bool isFirst;
+        int endCursor;
+
         foreach ( string pattern in bracketPatterns.Keys)
         {
             foreach (Match patternMatch in bracketPatterns[pattern].Matches(tmp_text.text))
@@ -80,7 +101,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                     "    <link=https://dofusdb.fr/fr/database/" 
                     + pattern + "/" 
                     + patternMatch.Groups[1].Value 
-                    + "><color=#" + unhoveredLinkColor + ">" 
+                    + "><color=#" + colors[0].Item2 + ">" 
                     + patternMatch.Groups[3].Value + "</color></link>"
                 );
                 tmp_text.text = tmp_text.text.Replace(patternMatch.Value, textToWrite);
@@ -170,8 +191,12 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         if (!isIntersectingRectTransform)
         {
             // reset previous targetet link color to unhovered
-            ApplyColorToTargetedLink(unhoveredLinkColor);
+            if (_previousTypeOfColor == "pos")
+                ApplyColorToTargetedLink(colors[1].Item2);
+            else
+                ApplyColorToTargetedLink(colors[0].Item2);
             _targetedSharpColorIndex = -1;
+            _previousTypeOfColor = "";
             return;
         }
 
@@ -180,8 +205,12 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         if (intersectingLink == -1)
         {
             // reset previous targetet link color to unhovered
-            ApplyColorToTargetedLink(unhoveredLinkColor);
+            if (_previousTypeOfColor == "pos")
+                ApplyColorToTargetedLink(colors[1].Item2);
+            else
+                ApplyColorToTargetedLink(colors[0].Item2);
             _targetedSharpColorIndex = -1;
+            _previousTypeOfColor = "";
             return;
         }
 
@@ -190,16 +219,28 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             // find targeted link to set its color
             TMP_LinkInfo linkInfo = tmp_text.textInfo.linkInfo[intersectingLink];
 
-            _targetedSharpColorIndex = tmp_text.text.IndexOf(linkInfo.GetLinkText());
-            while (tmp_text.text[_targetedSharpColorIndex] != '#')
+            _targetedSharpColorIndex = linkInfo.linkIdFirstCharacterIndex;
+            if (Regex.Matches(linkInfo.GetLinkText(), @"\[(.*?),(.*?)\]").Count > 0)
+                _previousTypeOfColor = "pos";
+            else
+                _previousTypeOfColor = "links";
+            
+            try
             {
-                if (_targetedSharpColorIndex == 0)
-                    break;
-                _targetedSharpColorIndex--;
+                while (tmp_text.text[_targetedSharpColorIndex] != '#')
+                    _targetedSharpColorIndex++;
+            }
+            catch
+            {
+                Debug.Log("Couldn't find link to apply color");
             }
 
+
             // set its color to hovered
-            ApplyColorToTargetedLink(hoveredLinkColor);
+            if (_previousTypeOfColor == "pos")
+                ApplyColorToTargetedLink(colors[1].Item3);
+            else
+                ApplyColorToTargetedLink(colors[0].Item3);
         }
     }
 
