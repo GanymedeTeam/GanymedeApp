@@ -194,7 +194,7 @@ public class GuideMenu : MonoBehaviour
 
             GuideFolder guideFolder = newGuideFolder.GetComponent<GuideFolder>();
             guideFolder.Initialize(dir.Name);
-            newGuideFolder.transform.Find("GuideButton").GetComponent<Button>().onClick.AddListener(
+            newGuideFolder.transform.Find("FolderButton/OpenFolderButton").GetComponent<Button>().onClick.AddListener(
                     delegate {
                         newGuideFolder.GetComponent<GuideFolder>().OpenFolder();
                     }
@@ -209,25 +209,29 @@ public class GuideMenu : MonoBehaviour
                 newGuideObject.name = "guide_" + file.Name.Replace(".json", "");
                 newGuideObject.transform.SetParent(gridGameobject.transform);
 
-                string fileRealName;
                 try
                 {
                     string fileContent = String.Join("", System.IO.File.ReadAllLines(guidesCurrentPath + file.Name));
                     GuideEntry fileContentSerialized = JsonUtility.FromJson<GuideEntry>(fileContent);
-                    fileRealName = fileContentSerialized.name;
+                    int stepProgress = PlayerPrefs.GetInt(fileContentSerialized.id.ToString() + "_currstep", 0) + 1;
+                    int totalSteps = fileContentSerialized.steps.Count();
+                    newGuideObject.GetComponent<GuideObject>().Initialize(fileContentSerialized.name, file.Name.Replace(".json", ""), guidesCurrentPath);
+                    newGuideObject.transform.Find("GuideInfo/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  file.Name.Replace(".json", "") + "</color>";
+                    newGuideObject.transform.Find("GuideInfo/GuideProgress").GetComponent<TMP_Text>().text = "<color=yellow>" +  stepProgress + "</color>" + "/" + totalSteps;
+                    newGuideObject.transform.Find("GuideInfo/OpenGuideButton").GetComponent<Button>().onClick.AddListener(
+                        delegate {
+                            newGuideObject.GetComponent<GuideObject>().OpenGuide();
+                        }
+                    );
+                    newGuideObject.transform.Find("GuideInfo/UpdateGuideButton").GetComponent<Button>().onClick.AddListener(
+                        delegate {
+                            newGuideObject.GetComponent<GuideObject>().UpdateGuideButton();
+                        }
+                    );
                 }
                 catch
                 {
-                    fileRealName = "<color=\"red\">NOT_SUPPORTED</color>";
                 }
-                newGuideObject.GetComponent<GuideObject>().Initialize(fileRealName, file.Name.Replace(".json", ""));
-                
-                newGuideObject.transform.Find("GuideButton/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  file.Name.Replace(".json", "") + "</color>";
-                newGuideObject.transform.Find("GuideButton").GetComponent<Button>().onClick.AddListener(
-                    delegate {
-                        newGuideObject.GetComponent<GuideObject>().OpenGuide();
-                    }
-                );
             }
 
         }
@@ -245,6 +249,7 @@ public class GuideMenu : MonoBehaviour
     public void BackToGuideSelection()
     {
         FindObjectOfType<WindowManager>().ToggleInteractiveMap(false);
+        ReloadGuideList();
         GuideDetailsMenu.SetActive(false);
         GuideSelectionMenu.SetActive(true);
     }
