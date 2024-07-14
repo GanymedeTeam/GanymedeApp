@@ -58,14 +58,9 @@ public class GuideMenu : MonoBehaviour
         }
     }
 
-    public void CopyTravelPosition()
+    public void CopyPosition()
     {
-        GUIUtility.systemCopyBuffer = "[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]";
-    }
-
-    public void CopyGuideTravelPosition()
-    {
-        GUIUtility.systemCopyBuffer = "/travel [" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]";
+        GUIUtility.systemCopyBuffer = (Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1)) ? "/travel " : "") + "[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_x + "]";
     }
 
     public void OpenGuideFileStorage()

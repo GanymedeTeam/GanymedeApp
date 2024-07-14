@@ -61,7 +61,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 if (text.Contains("http://") || text.Contains("https://"))
                     Application.OpenURL(text);
                 if (Regex.Matches(text, @"\[(.*?),(.*?)\]").Count > 0)
-                    GUIUtility.systemCopyBuffer = text;
+                    GUIUtility.systemCopyBuffer = (Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1)) ? "/travel " : "") + text;
             }
         }
     }

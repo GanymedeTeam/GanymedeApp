@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using System;
 
 public class TravelPositionObject : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class TravelPositionObject : MonoBehaviour
     public string travelPositionName;
     public void CopyToClipboard()
     {
-        GUIUtility.systemCopyBuffer = "/travel " + travelPosition;
+        GUIUtility.systemCopyBuffer = (Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1)) ? "/travel " : "") + travelPosition;
     }
 
     public void Initialize(string travelPositionName, string travelPosition)

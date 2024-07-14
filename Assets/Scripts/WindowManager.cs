@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using System;
 
 public class WindowManager : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class WindowManager : MonoBehaviour
     public GameObject notepadWindow;
     public CanvasGroup canvasGroup;
     public GameObject GuideBg;
+    public Toggle TravelCheckbox;
     public TMP_Text menuTitle;
 
     public Slider opacitySlider;
@@ -70,10 +72,11 @@ public class WindowManager : MonoBehaviour
     {
         float opacity = PlayerPrefs.GetFloat("opacity", 1);
         float guideBgOpacity = PlayerPrefs.GetFloat("guideBgOpacity", 1);
+        TravelCheckbox.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1));
         opacitySlider.value = opacity;
         BgOpacitySlider.value = opacity;
         ChangeCanvasOpacity(opacity);
-        ChangeBgOpacity(opacity);
+        ChangeBgOpacity(guideBgOpacity);
     }
 
     public void ToggleWindow()
@@ -197,6 +200,11 @@ public class WindowManager : MonoBehaviour
         tempColor.a = opacity;
         GuideBg.GetComponent<Image>().color = tempColor;
         PlayerPrefs.SetFloat("guideBgOpacity", opacity);
+    }
+
+    public void CopyTravelPositionSetting(bool wantTravel)
+    {
+        PlayerPrefs.SetInt("wantTravel", wantTravel ? 1 : 0);
     }
 
     public void SetXResolution(int x)
