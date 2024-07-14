@@ -22,9 +22,11 @@ public class WindowManager : MonoBehaviour
     public GameObject downloadWindow;
     public GameObject notepadWindow;
     public CanvasGroup canvasGroup;
+    public GameObject GuideBg;
     public TMP_Text menuTitle;
 
     public Slider opacitySlider;
+    public Slider BgOpacitySlider;
 
     public bool isInteractiveMapActive;
 
@@ -67,8 +69,11 @@ public class WindowManager : MonoBehaviour
     private void LoadPlayerPrefs()
     {
         float opacity = PlayerPrefs.GetFloat("opacity", 1);
+        float guideBgOpacity = PlayerPrefs.GetFloat("guideBgOpacity", 1);
         opacitySlider.value = opacity;
+        BgOpacitySlider.value = opacity;
         ChangeCanvasOpacity(opacity);
+        ChangeBgOpacity(opacity);
     }
 
     public void ToggleWindow()
@@ -184,6 +189,14 @@ public class WindowManager : MonoBehaviour
     {
         canvasGroup.alpha = opacity;
         PlayerPrefs.SetFloat("opacity", opacity);
+    }
+
+    public void ChangeBgOpacity(float opacity)
+    {
+        var tempColor = GuideBg.GetComponent<Image>().color;
+        tempColor.a = opacity;
+        GuideBg.GetComponent<Image>().color = tempColor;
+        PlayerPrefs.SetFloat("guideBgOpacity", opacity);
     }
 
     public void SetXResolution(int x)
