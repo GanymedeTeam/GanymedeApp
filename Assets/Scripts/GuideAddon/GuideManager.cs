@@ -175,8 +175,7 @@ public class GuideManager : MonoBehaviour
             }
         }
         yield return 0;
-        guideButton.GetComponent<Button>().interactable = false;
-        guideButton.GetComponent<Button>().interactable = true;
+        StartCoroutine(GetGuidesList(guides_url + currentMenu));
     }
 
     public void DownloadGuide(string path, string jsonContent)
@@ -186,6 +185,10 @@ public class GuideManager : MonoBehaviour
 
     public void ShowAllGuidesInCurrentSection(ApiGuides listOfGuides)
     {
+        string[] listOfLocalGuides = Directory.GetFiles(Application.persistentDataPath + "/guides/", "*.json", SearchOption.AllDirectories);
+        for (int i = 0; i < listOfLocalGuides.Length; i++)
+            listOfLocalGuides[i] = listOfLocalGuides[i].Split('/').Last().Replace(".json", "");
+
         content.GetComponent<GridLayoutGroup>().cellSize = new Vector2(content.GetComponent<RectTransform>().rect.width, content.GetComponent<GridLayoutGroup>().cellSize.y);
         foreach (Transform child in content.transform) {
             if (child.name.Contains("guide_"))
@@ -193,6 +196,8 @@ public class GuideManager : MonoBehaviour
         }
         foreach (ApiGuide guide in listOfGuides.guides)
         {
+            if (listOfLocalGuides.Contains(guide.id.ToString()))
+                continue;
             GameObject webGuide = Instantiate(webGuidePrefab, content.transform);
             webGuide.name = "guide_" + guide.id.ToString();
             webGuide.transform.SetParent(content.transform);
