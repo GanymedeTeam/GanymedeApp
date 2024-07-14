@@ -173,6 +173,12 @@ public class WindowManager : MonoBehaviour
             guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
     }
 
+    public void RefreshGuideInteractiveMap()
+    {
+        SetMapFullscale(isInteractiveMapActive);
+        ToggleInteractiveMap(isInteractiveMapActive);
+    }
+
     public void ToggleGuideInteractiveMap()
     {
         isInteractiveMapActive = !isInteractiveMapActive;

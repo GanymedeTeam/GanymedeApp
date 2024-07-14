@@ -27,10 +27,10 @@ public class GuideMenu : MonoBehaviour
     public TMP_InputField searchBar;
     public string guidesCurrentPath;
     public TMP_Text guideNameText;
-    public TMP_Text stepNumberText;
+    public TMP_Text stepMaxNumberText;
     public TMP_Text stepTravelPositionText;
-    public TMP_Text stepTitleText;
     public TMP_FontAsset textFont;
+    public TMP_InputField inputStep;
 
     [SerializeField]
     private GuideEntry guideInfos;
@@ -287,10 +287,16 @@ public class GuideMenu : MonoBehaviour
 
     public void PublicGoToGuideStep(string guideIndex)
     {
-        
-        int step = Int32.Parse(guideIndex);
-        if (step <= guideInfos.steps.Count() && step > 0)
-            GoToGuideStep(step-1);
+        try
+        {
+            int step = Int32.Parse(guideIndex);
+            if (step <= guideInfos.steps.Count() && step > 0)
+                GoToGuideStep(step-1);
+        }
+        catch
+        {
+            return;
+        }
     }
 
     public void GoToGuideStep(int guideIndex)
@@ -301,14 +307,15 @@ public class GuideMenu : MonoBehaviour
         }
         guideProgress = guideIndex;
         PlayerPrefs.SetInt(guideInfos.id.ToString() + "_currstep", guideProgress);
-        stepNumberText.text = (guideProgress+1).ToString() + "/" + guideInfos.steps.Count();
-        stepTitleText.text = guideInfos.steps[guideProgress].name;
+        inputStep.text = (guideProgress + 1).ToString();
+        stepMaxNumberText.text = guideInfos.steps.Count().ToString();
         stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]</color>";
         ProcessSubSteps(guideInfos.steps[guideProgress].sub_steps);
         int posX = guideInfos.steps[guideProgress].pos_x;
         int posY = guideInfos.steps[guideProgress].pos_y;
         mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress].map);
         StepContent.transform.parent.parent.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 1f;
+        FindObjectOfType<WindowManager>().RefreshGuideInteractiveMap();
     }
 
     private void ProcessSubSteps(List<SubstepEntry> subentries)
@@ -395,5 +402,13 @@ public class GuideMenu : MonoBehaviour
     {
         if (guideProgress > 0)
             GoToGuideStep(--guideProgress);
+    }
+
+    void Update()
+    {
+        if (!inputStep.isFocused && inputStep.text != (guideProgress + 1).ToString())
+        {
+            inputStep.text = (guideProgress + 1).ToString();
+        }
     }
 }
