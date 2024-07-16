@@ -38,13 +38,17 @@ public class GuideMenu : MonoBehaviour
     void Awake()
     {
         guidesCurrentPath = Application.persistentDataPath + "/guides/";
-        ReloadGuideList();
     }
 
     public void OnEnable()
     {
         gridGameobject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(gridGameobject.GetComponent<RectTransform>().rect.width, gridGameobject.GetComponent<GridLayoutGroup>().cellSize.y);
-        ReloadGuideList();
+        gameObject.GetComponent<PaginationHandler>().enabled = true;
+        StartCoroutine(ReloadGuideList());
+    }
+
+    public void OnDisable() {
+        gameObject.GetComponent<PaginationHandler>().enabled = false;
     }
 
     public void DeleteGuidesFromView()
@@ -154,10 +158,16 @@ public class GuideMenu : MonoBehaviour
         return finalFileInfo;
     }
 
-    public void ReloadGuideList()
+    public void OnClickReloadGuideList()
+    {
+        StartCoroutine(ReloadGuideList());
+    }
+
+    public IEnumerator ReloadGuideList()
     {
         void FormatCurrentPath()
         {
+            Debug.Log(guidesCurrentPath);
             string text = guidesCurrentPath;
             text = text.Replace(Application.persistentDataPath, "");
             text = text.Remove(0, 1);
@@ -179,13 +189,29 @@ public class GuideMenu : MonoBehaviour
 
         RemoveGuides();
 
+        yield return 0;
+
         var fileInfo = GetGuidesInFolder();
         var dirInfo = GetGuidesFolders();
-        int iFolder = 1;
+
+
+        // Use these for pagination
+        gameObject.GetComponent<PaginationHandler>().totalElements = dirInfo.Count() + fileInfo.Count();
+        int maxElementsInPage = PaginationHandler.maxElementsInPage;
+        int indexFirstElement = ( gameObject.GetComponent<PaginationHandler>().currentPage - 1 ) * maxElementsInPage;
+        int indexLastElement = indexFirstElement + maxElementsInPage;
+        int currentObjIndex = 0;
+        //
         foreach (DirectoryInfo dir in dirInfo)
         {
+            if (currentObjIndex > indexLastElement || currentObjIndex < indexFirstElement)
+            {
+                currentObjIndex++;
+                continue;
+            }
+            currentObjIndex++;
             GameObject newGuideFolder = Instantiate(guideUIFolderPrefab, gridGameobject.transform);
-            newGuideFolder.name = "folder_" + iFolder++.ToString();
+            newGuideFolder.name = "folder_" + currentObjIndex.ToString();
 
             GuideFolder guideFolder = newGuideFolder.GetComponent<GuideFolder>();
             guideFolder.Initialize(dir.Name);
@@ -200,10 +226,16 @@ public class GuideMenu : MonoBehaviour
         {
             if (file.Extension == ".json")
             {
+                if (currentObjIndex >= indexLastElement || currentObjIndex < indexFirstElement)
+                {
+                    currentObjIndex++;
+                    continue;
+                }
+                currentObjIndex++;
                 GameObject newGuideObject = Instantiate(guideUIPrefab, gridGameobject.transform);
                 newGuideObject.name = "guide_" + file.Name.Replace(".json", "");
                 newGuideObject.transform.SetParent(gridGameobject.transform);
-
+ 
                 try
                 {
                     string fileContent = String.Join("", System.IO.File.ReadAllLines(guidesCurrentPath + file.Name));
@@ -228,10 +260,10 @@ public class GuideMenu : MonoBehaviour
                 {
                 }
             }
-
         }
-
         FormatCurrentPath();
+
+        yield return 0;
 
     }
 
@@ -244,7 +276,7 @@ public class GuideMenu : MonoBehaviour
     public void BackToGuideSelection()
     {
         FindObjectOfType<WindowManager>().ToggleInteractiveMap(false);
-        ReloadGuideList();
+        StartCoroutine(ReloadGuideList());
         GuideDetailsMenu.SetActive(false);
         GuideSelectionMenu.SetActive(true);
     }
@@ -264,7 +296,7 @@ public class GuideMenu : MonoBehaviour
             guidesCurrentPath = newPath;
         else
             guidesCurrentPath = Application.persistentDataPath + "/guides/";
-        ReloadGuideList();
+        StartCoroutine(ReloadGuideList());
     }
 
     public void LoadGuide(string guideName)
@@ -406,6 +438,11 @@ public class GuideMenu : MonoBehaviour
 
     void Update()
     {
+        if ( transform.Find("GuideSelectionMenu").gameObject.activeSelf )
+            gameObject.GetComponent<PaginationHandler>().enabled = true;
+        else
+            gameObject.GetComponent<PaginationHandler>().enabled = false;
+
         if (!inputStep.isFocused && inputStep.text != (guideProgress + 1).ToString())
         {
             inputStep.text = (guideProgress + 1).ToString();

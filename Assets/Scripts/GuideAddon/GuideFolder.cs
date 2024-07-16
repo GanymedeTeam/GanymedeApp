@@ -18,6 +18,6 @@ public class GuideFolder : MonoBehaviour
     {
         GuideMenu guideMenu = FindObjectOfType<GuideMenu>();
         guideMenu.guidesCurrentPath += guideFolderName + "/";
-        guideMenu.ReloadGuideList();
+        guideMenu.OnClickReloadGuideList();
     }
 }

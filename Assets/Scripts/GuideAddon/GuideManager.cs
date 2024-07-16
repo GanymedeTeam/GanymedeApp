@@ -58,7 +58,7 @@ public class GuideManager : MonoBehaviour
     {
         content.GetComponent<GridLayoutGroup>().cellSize = new Vector2(content.GetComponent<RectTransform>().rect.width, content.GetComponent<GridLayoutGroup>().cellSize.y);
         if (currentMenu != "root")
-            StartCoroutine(GetGuidesList(guides_url + currentMenu));
+            StartCoroutine(GetGuidesList());
     }
 
     public void OnDisable() 
@@ -89,7 +89,7 @@ public class GuideManager : MonoBehaviour
         rootMenu.SetActive(false);
         dlMenu.SetActive(true);
         currentMenu = "public";
-        StartCoroutine(GetGuidesList(guides_url + currentMenu));
+        StartCoroutine(GetGuidesList());
     }
 
     public void onClickGuidesDraftList()
@@ -98,7 +98,7 @@ public class GuideManager : MonoBehaviour
         rootMenu.SetActive(false);
         dlMenu.SetActive(true);
         currentMenu = "draft";
-        StartCoroutine(GetGuidesList(guides_url + currentMenu));
+        StartCoroutine(GetGuidesList());
     }
 
     public void onClickGuidesCertifiedList()
@@ -107,7 +107,7 @@ public class GuideManager : MonoBehaviour
         rootMenu.SetActive(false);
         dlMenu.SetActive(true);
         currentMenu = "certified";
-        StartCoroutine(GetGuidesList(guides_url + currentMenu));
+        StartCoroutine(GetGuidesList());
     }
 
     public void BackToRootMenu()
@@ -118,8 +118,9 @@ public class GuideManager : MonoBehaviour
         currentMenu = "root";
     }
 
-    private IEnumerator GetGuidesList(string url)
+    public IEnumerator GetGuidesList()
     {
+        string url = guides_url + currentMenu;
         using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
             yield return webRequest.SendWebRequest();
@@ -175,7 +176,7 @@ public class GuideManager : MonoBehaviour
             }
         }
         yield return 0;
-        StartCoroutine(GetGuidesList(guides_url + currentMenu));
+        StartCoroutine(GetGuidesList());
     }
 
     public void DownloadGuide(string path, string jsonContent)
