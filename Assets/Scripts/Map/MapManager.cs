@@ -118,33 +118,33 @@ public class MapManager : MonoBehaviour
     public RectTransform MapMask;
     public int whereToGoX = 0;
     public int whereToGoY = 0;
-    public WorldMap douze = new WorldMap("Douze", 6480, 4944, 69.5f, 49.7000008f, 10000, 8000, 1.0f);
+    public WorldMap douze = new WorldMap("Douze", 6480, 4944, 69.5f, 49.7000008f, 10000, 8000, 1.3f);
     public WorldMap incarnam = new WorldMap("Incarnam", 1800, 1940, 380, 260, 4750, 3904, 0.3f);
-    public WorldMap minotoror = new WorldMap("LabyMino", 9130, 2980, 210f, 150f, 2463, 1820, 1.0f);
-    public WorldMap dragonCochon = new WorldMap("LabyDC", 900, -4330, 211f, 150f, 3200, 2000, 1.0f);
-    public WorldMap maitreCorbac = new WorldMap("BibliMC", 3770, 9900, 210f, 150f, 2100, 2100, 1.0f);
-    public WorldMap caverneGivrefoux = new WorldMap("Givrefoux", 17214, 11845, 210f, 150f, 1800, 1400, 1.0f);
-    public WorldMap canauxMephitiques = new WorldMap("CanauxMephitiques", 9860, 11200, 260f, 184f, 2840, 2162, 1.0f);
-    public WorldMap egoutsBrakmar = new WorldMap("EgoutsBrakmar", 7454, -5652, 257f, 182f, 2840, 2162, 1.0f);
-    public WorldMap canopee = new WorldMap("Canopee", 12855, -1225, 209f, 150f, 3559, 2804, 1.0f);
-    public WorldMap harebourg = new WorldMap("ChateauHarebourg", 6882, 6108, 91.5f, 65.5f, 2500, 1904, 1.0f);
-    public WorldMap enutrosor = new WorldMap("Enutrosor", 2678, 1925, 204f, 147f, 4089, 2589, 1.0f);
-    public WorldMap srambad = new WorldMap("Srambad", 1050, 1440, 204f, 147f, 4750, 3904, 1.0f);
-    public WorldMap xelorium = new WorldMap("Xelorium", 1248, 1543, 204f, 147f, 4171, 3576, 1.0f);
-    public WorldMap ecaflipus = new WorldMap("Ecaflipus", 3200, 4200, 203f, 146f, 5069, 5584, 1.0f);
-    public WorldMap abysses = new WorldMap("Abysses", -1810, -2950, 150f, 122f, 3333, 1719, 1.0f);
-    public WorldMap pyramide = new WorldMap("PyramideTalKasha", -3000, 17820, 415f, 225f, 3529, 2357, 1.0f);
-    public WorldMap epave = new WorldMap("EpavesSilencieuses", 8385, 10700, 150f, 122f, 3333, 1719, 1.0f);
-    public WorldMap pwak = new WorldMap("Pwak", 2268, 2565, 286f, 205f, 3560, 2802, 1.0f);
-    public WorldMap crocuzko = new WorldMap("Crocuzko", 14604, 2635, 164f, 114f, 2016, 1719, 1.0f);
+    public WorldMap minotoror = new WorldMap("LabyMino", 9130, 2980, 210f, 150f, 2463, 1820, 0.5f);
+    public WorldMap dragonCochon = new WorldMap("LabyDC", 900, -4330, 211f, 150f, 3200, 2000, 0.5f);
+    public WorldMap maitreCorbac = new WorldMap("BibliMC", 3770, 9900, 210f, 150f, 2100, 2100, 0.5f);
+    public WorldMap caverneGivrefoux = new WorldMap("Givrefoux", 17214, 11845, 210f, 150f, 1800, 1400, 0.5f);
+    public WorldMap canauxMephitiques = new WorldMap("CanauxMephitiques", 9860, 11200, 260f, 184f, 2840, 2162, 0.3f);
+    public WorldMap egoutsBrakmar = new WorldMap("EgoutsBrakmar", 7454, -5652, 257f, 182f, 2840, 2162, 0.3f);
+    public WorldMap canopee = new WorldMap("Canopee", 12855, -1225, 209f, 150f, 3559, 2804, 0.5f);
+    public WorldMap harebourg = new WorldMap("ChateauHarebourg", 6882, 6108, 91.5f, 65.5f, 2500, 1904, 1.1f);
+    public WorldMap enutrosor = new WorldMap("Enutrosor", 2678, 1925, 204f, 147f, 4089, 2589, 0.5f);
+    public WorldMap srambad = new WorldMap("Srambad", 1050, 1440, 204f, 147f, 4750, 3904, 0.5f);
+    public WorldMap xelorium = new WorldMap("Xelorium", 1248, 1543, 204f, 147f, 4171, 3576, 0.5f);
+    public WorldMap ecaflipus = new WorldMap("Ecaflipus", 3200, 4200, 203f, 146f, 5069, 5584, 0.5f);
+    public WorldMap abysses = new WorldMap("Abysses", -1810, -2950, 150f, 122f, 3333, 1719, 0.6f);
+    public WorldMap pyramide = new WorldMap("PyramideTalKasha", -3000, 17820, 415f, 225f, 3529, 2357, 0.3f);
+    public WorldMap epave = new WorldMap("EpavesSilencieuses", 8385, 10700, 150f, 122f, 3333, 1719, 0.8f);
+    public WorldMap pwak = new WorldMap("Pwak", 2268, 2565, 286f, 205f, 3560, 2802, 0.3f);
+    public WorldMap crocuzko = new WorldMap("Crocuzko", 14604, 2635, 164f, 114f, 2016, 1719, 0.7f);
     public WorldMap songes = new WorldMap("Songes", 1208, 800, 91.5f, 65.5f, 2500, 1904, 1.0f);
-    public WorldMap guerre = new WorldMap("Guerre", 790, 1165, 289f, 195f, 2840, 2170, 1.0f);
-    public WorldMap corruption = new WorldMap("Corrupiton", 775, 718, 260f, 182f, 2840, 2162, 1.0f);
-    public WorldMap misere = new WorldMap("Misere", 770, 717, 258f, 185f, 2840, 2170, 1.0f);
-    public WorldMap servitude = new WorldMap("Servitude", 775, 1266, 257f, 183f, 2840, 2162, 1.0f);
-    public WorldMap encrePapier = new WorldMap("EncrePapier", 1960, 1390, 352f, 251.699997f, 4000, 2900, 1.0f);
-    public WorldMap cauchemar = new WorldMap("Cauchemar", 773, 532, 257f, 183f, 2840, 2162, 1.0f);
-    public WorldMap ereboria = new WorldMap("Ereboria", -6953, 13663, 257.5f, 185f, 2840, 2881, 1.0f);
+    public WorldMap guerre = new WorldMap("Guerre", 790, 1165, 289f, 195f, 2840, 2170, 0.5f);
+    public WorldMap corruption = new WorldMap("Corrupiton", 775, 718, 260f, 182f, 2840, 2162, 0.5f);
+    public WorldMap misere = new WorldMap("Misere", 770, 717, 258f, 185f, 2840, 2170, 0.5f);
+    public WorldMap servitude = new WorldMap("Servitude", 775, 1266, 257f, 183f, 2840, 2162, 0.5f);
+    public WorldMap encrePapier = new WorldMap("EncrePapier", 1960, 1390, 352f, 251.699997f, 4000, 2900, 0.3f);
+    public WorldMap cauchemar = new WorldMap("Cauchemar", 773, 532, 257f, 183f, 2840, 2162, 0.5f);
+    public WorldMap ereboria = new WorldMap("Ereboria", -6953, 13663, 257.5f, 185f, 2840, 2881, 0.4f);
     public GameObject tilePrefab;
     public GameObject TileGrid;
     public Sprite[] incarnamScaleOneTileSprites;
@@ -201,23 +201,23 @@ public class MapManager : MonoBehaviour
         {
             CenterMapAround(x, y, minotoror, minotororScaleOneTileSprites);
         }
-        else if (mapName == "DragonCochon")
+        else if (mapName == "Dragon Cochon")
         {
             CenterMapAround(x, y, dragonCochon, dragonCochonScaleOneTileSprites);
         }
-        else if (mapName == "MaitreCorbac")
+        else if (mapName == "Maitre Corbac")
         {
             CenterMapAround(x, y, maitreCorbac, maitreCorbacScaleOneTileSprites);
         }
-        else if (mapName == "CaverneGivrefoux")
+        else if (mapName == "Caverne Givrefoux")
         {
             CenterMapAround(x, y, caverneGivrefoux, caverneGivrefouxScaleOneTileSprites);
         }
-        else if (mapName == "CanauxMephitiques")
+        else if (mapName == "Canaux Mephitiques")
         {
             CenterMapAround(x, y, canauxMephitiques, canauxMephitiquesScaleOneTileSprites);
         }
-        else if (mapName == "EgoutsBrakmar")
+        else if (mapName == "Egouts Brakmar")
         {
             CenterMapAround(x, y, egoutsBrakmar, egoutsBrakmarScaleOneTileSprites);
         }
@@ -285,7 +285,7 @@ public class MapManager : MonoBehaviour
         {
             CenterMapAround(x, y, servitude, servitudeScaleOneTileSprites);
         }
-        else if (mapName == "EncrePapier")
+        else if (mapName == "Encre Papier")
         {
             CenterMapAround(x, y, encrePapier, encrePapierScaleOneTileSprites);
         }
@@ -297,7 +297,7 @@ public class MapManager : MonoBehaviour
         {
             CenterMapAround(x, y, ereboria, ereboriaScaleOneTileSprites);
         }
-        
+
     }
 
     void Update()

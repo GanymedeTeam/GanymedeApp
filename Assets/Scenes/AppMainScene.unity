@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -24684,7 +24684,7 @@ MonoBehaviour:
     gridOffsetY: 26.000076
     firstPositionX: -94
     firstPositionY: -100
-    mapParentScale: 1
+    mapParentScale: 1.3
   incarnam:
     mapName: Incarnam
     origineX: 1800
@@ -24718,7 +24718,7 @@ MonoBehaviour:
     gridOffsetY: 20
     firstPositionX: -44
     firstPositionY: -20
-    mapParentScale: 1
+    mapParentScale: 0.5
   dragonCochon:
     mapName: LabyDC
     origineX: 900
@@ -24735,7 +24735,7 @@ MonoBehaviour:
     gridOffsetY: 280
     firstPositionX: -5
     firstPositionY: 27
-    mapParentScale: 1
+    mapParentScale: 0.5
   maitreCorbac:
     mapName: BibliMC
     origineX: 3770
@@ -24752,7 +24752,7 @@ MonoBehaviour:
     gridOffsetY: 0
     firstPositionX: -18
     firstPositionY: -66
-    mapParentScale: 1
+    mapParentScale: 0.5
   caverneGivrefoux:
     mapName: Givrefoux
     origineX: 17214
@@ -24769,7 +24769,7 @@ MonoBehaviour:
     gridOffsetY: 5
     firstPositionX: -82
     firstPositionY: -79
-    mapParentScale: 1
+    mapParentScale: 0.5
   canauxMephitiques:
     mapName: CanauxMephitiques
     origineX: 9860
@@ -24786,7 +24786,7 @@ MonoBehaviour:
     gridOffsetY: 24
     firstPositionX: -38
     firstPositionY: -61
-    mapParentScale: 1
+    mapParentScale: 0.3
   egoutsBrakmar:
     mapName: EgoutsBrakmar
     origineX: 7454
@@ -24803,7 +24803,7 @@ MonoBehaviour:
     gridOffsetY: 192
     firstPositionX: -30
     firstPositionY: 30
-    mapParentScale: 1
+    mapParentScale: 0.3
   canopee:
     mapName: Canopee
     origineX: 12855
@@ -24820,7 +24820,7 @@ MonoBehaviour:
     gridOffsetY: 175
     firstPositionX: -62
     firstPositionY: 7
-    mapParentScale: 1
+    mapParentScale: 0.5
   harebourg:
     mapName: ChateauHarebourg
     origineX: 6882
@@ -24837,7 +24837,7 @@ MonoBehaviour:
     gridOffsetY: 49
     firstPositionX: -76
     firstPositionY: -94
-    mapParentScale: 1
+    mapParentScale: 1.1
   enutrosor:
     mapName: Enutrosor
     origineX: 2678
@@ -24854,7 +24854,7 @@ MonoBehaviour:
     gridOffsetY: 133
     firstPositionX: -14
     firstPositionY: -14
-    mapParentScale: 1
+    mapParentScale: 0.5
   srambad:
     mapName: Srambad
     origineX: 1050
@@ -24871,7 +24871,7 @@ MonoBehaviour:
     gridOffsetY: 30
     firstPositionX: -6
     firstPositionY: -10
-    mapParentScale: 1
+    mapParentScale: 0.5
   xelorium:
     mapName: Xelorium
     origineX: 1248
@@ -24888,7 +24888,7 @@ MonoBehaviour:
     gridOffsetY: 74
     firstPositionX: -7
     firstPositionY: -11
-    mapParentScale: 1
+    mapParentScale: 0.5
   ecaflipus:
     mapName: Ecaflipus
     origineX: 3200
@@ -24905,7 +24905,7 @@ MonoBehaviour:
     gridOffsetY: 34
     firstPositionX: -16
     firstPositionY: -29
-    mapParentScale: 1
+    mapParentScale: 0.5
   abysses:
     mapName: Abysses
     origineX: -1810
@@ -24922,7 +24922,7 @@ MonoBehaviour:
     gridOffsetY: 144
     firstPositionX: 11
     firstPositionY: 23
-    mapParentScale: 1
+    mapParentScale: 0.6
   pyramide:
     mapName: PyramideTalKasha
     origineX: -3000
@@ -24939,7 +24939,7 @@ MonoBehaviour:
     gridOffsetY: 180
     firstPositionX: 6
     firstPositionY: -80
-    mapParentScale: 1
+    mapParentScale: 0.3
   epave:
     mapName: EpavesSilencieuses
     origineX: 8385
@@ -24956,7 +24956,7 @@ MonoBehaviour:
     gridOffsetY: 36
     firstPositionX: -56
     firstPositionY: -88
-    mapParentScale: 1
+    mapParentScale: 0.8
   pwak:
     mapName: Pwak
     origineX: 2268
@@ -24973,7 +24973,7 @@ MonoBehaviour:
     gridOffsetY: 100
     firstPositionX: -8
     firstPositionY: -13
-    mapParentScale: 1
+    mapParentScale: 0.3
   crocuzko:
     mapName: Crocuzko
     origineX: 14604
@@ -24990,7 +24990,7 @@ MonoBehaviour:
     gridOffsetY: 101
     firstPositionX: -90
     firstPositionY: -24
-    mapParentScale: 1
+    mapParentScale: 0.7
   songes:
     mapName: Songes
     origineX: 1208
@@ -25024,7 +25024,7 @@ MonoBehaviour:
     gridOffsetY: 5
     firstPositionX: -3
     firstPositionY: -6
-    mapParentScale: 1
+    mapParentScale: 0.5
   corruption:
     mapName: Corrupiton
     origineX: 775
@@ -25041,7 +25041,7 @@ MonoBehaviour:
     gridOffsetY: 10
     firstPositionX: -3
     firstPositionY: -4
-    mapParentScale: 1
+    mapParentScale: 0.5
   misere:
     mapName: Misere
     origineX: 770
@@ -25058,7 +25058,7 @@ MonoBehaviour:
     gridOffsetY: 23
     firstPositionX: -3
     firstPositionY: -4
-    mapParentScale: 1
+    mapParentScale: 0.5
   servitude:
     mapName: Servitude
     origineX: 775
@@ -25075,7 +25075,7 @@ MonoBehaviour:
     gridOffsetY: 15
     firstPositionX: -4
     firstPositionY: -7
-    mapParentScale: 1
+    mapParentScale: 0.5
   encrePapier:
     mapName: EncrePapier
     origineX: 1960
@@ -25092,7 +25092,7 @@ MonoBehaviour:
     gridOffsetY: 120.19998
     firstPositionX: -6
     firstPositionY: -6
-    mapParentScale: 1
+    mapParentScale: 0.5
   cauchemar:
     mapName: Cauchemar
     origineX: 773
@@ -25109,7 +25109,7 @@ MonoBehaviour:
     gridOffsetY: 17
     firstPositionX: -4
     firstPositionY: -3
-    mapParentScale: 1
+    mapParentScale: 0.5
   ereboria:
     mapName: Ereboria
     origineX: -6953
@@ -25126,7 +25126,7 @@ MonoBehaviour:
     gridOffsetY: 27
     firstPositionX: 26
     firstPositionY: -74
-    mapParentScale: 1
+    mapParentScale: 0.4
   tilePrefab: {fileID: 9046392563983847684, guid: 980cb88a699dc15429eb5c5798ace2d5, type: 3}
   TileGrid: {fileID: 1493813756558819321}
   incarnamScaleOneTileSprites:
