@@ -9,8 +9,7 @@ using System;
 
 public class PaginationHandler : MonoBehaviour
 {
-    [NonSerialized]
-    public const int maxElementsInPage = 5;
+    public int maxElementsInPage;
     [NonSerialized]
     public int totalElements;
     [NonSerialized]
@@ -101,11 +100,11 @@ public class PaginationHandler : MonoBehaviour
 
     void TriggerReload()
     {
-        if (gameObject.name == "GuideWindow")
+        if (this.name == "GuideWindow")
         {
             StartCoroutine(gameObject.GetComponent<GuideMenu>().ReloadGuideList());
         }
-        else if (gameObject.name == "DownloadWindow")
+        else if (this.name == "DownloadWindow")
         {
             StartCoroutine(gameObject.GetComponent<GuideManager>().GetGuidesList());
         }

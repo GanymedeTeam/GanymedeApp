@@ -202,14 +202,14 @@ public class GuideMenu : MonoBehaviour
 
         // Use these for pagination
         gameObject.GetComponent<PaginationHandler>().totalElements = dirInfo.Count() + fileInfo.Count();
-        int maxElementsInPage = PaginationHandler.maxElementsInPage;
+        int maxElementsInPage = gameObject.GetComponent<PaginationHandler>().maxElementsInPage;
         int indexFirstElement = ( gameObject.GetComponent<PaginationHandler>().currentPage - 1 ) * maxElementsInPage;
         int indexLastElement = indexFirstElement + maxElementsInPage;
         int currentObjIndex = 0;
         //
         foreach (DirectoryInfo dir in dirInfo)
         {
-            if (currentObjIndex > indexLastElement || currentObjIndex < indexFirstElement)
+            if (currentObjIndex >= indexLastElement || currentObjIndex < indexFirstElement)
             {
                 currentObjIndex++;
                 continue;

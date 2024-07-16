@@ -50,6 +50,7 @@ public class GuideManager : MonoBehaviour
     public GameObject dlMenu;
     public GameObject backButton;
     public Sprite spriteCertified;
+    public TMP_InputField searchBar;
 
     private const string guides_url = "https://ganymede-dofus.com/api/guides?status=";
     private string currentMenu = "root";
@@ -69,7 +70,12 @@ public class GuideManager : MonoBehaviour
     public void Update() 
     {
         if (!content.activeInHierarchy)
+        {
             DeleteGuidesFromView();
+            gameObject.GetComponent<PaginationHandler>().enabled = false;
+        }
+        else
+            gameObject.GetComponent<PaginationHandler>().enabled = true;
     }
 
     public void DeleteGuidesFromView()
@@ -107,6 +113,11 @@ public class GuideManager : MonoBehaviour
         rootMenu.SetActive(false);
         dlMenu.SetActive(true);
         currentMenu = "certified";
+        StartCoroutine(GetGuidesList());
+    }
+
+    public void onClickReloadGuides()
+    {
         StartCoroutine(GetGuidesList());
     }
 
@@ -184,6 +195,11 @@ public class GuideManager : MonoBehaviour
         System.IO.File.WriteAllText(path, jsonContent);
     }
 
+    public void OnSearchBarValueChange()
+    {
+        gameObject.GetComponent<PaginationHandler>().currentPage = 1;
+    }
+
     public void ShowAllGuidesInCurrentSection(ApiGuides listOfGuides)
     {
         string[] listOfLocalGuides = Directory.GetFiles(Application.persistentDataPath + "/guides/", "*.json", SearchOption.AllDirectories);
@@ -195,21 +211,53 @@ public class GuideManager : MonoBehaviour
             if (child.name.Contains("guide_"))
                 GameObject.Destroy(child.gameObject);
         }
-        foreach (ApiGuide guide in listOfGuides.guides)
+
+        //filter list of downloadables
+        List<ApiGuide> listOfShownGuides = new List<ApiGuide>();
+        foreach (ApiGuide apiguide in listOfGuides.guides)
         {
-            if (listOfLocalGuides.Contains(guide.id.ToString()))
+            if (listOfLocalGuides.Contains(apiguide.id.ToString()))
                 continue;
+            if (searchBar.text == "")
+                listOfShownGuides.Add(apiguide);
+            else
+            {
+                if (
+                    apiguide.id.ToString().ToLower().Contains(searchBar.text.ToLower()) ||
+                    apiguide.name.ToLower().Contains(searchBar.text.ToLower()) ||
+                    apiguide.user.name.ToLower().Contains(searchBar.text.ToLower())
+                )
+                    listOfShownGuides.Add(apiguide);
+            }
+        }
+
+        // Use these for pagination
+        gameObject.GetComponent<PaginationHandler>().totalElements = listOfShownGuides.Count();
+        int maxElementsInPage = gameObject.GetComponent<PaginationHandler>().maxElementsInPage;
+        int indexFirstElement = ( gameObject.GetComponent<PaginationHandler>().currentPage - 1 ) * maxElementsInPage;
+        int indexLastElement = indexFirstElement + maxElementsInPage;
+        int currentObjIndex = 0;
+        //
+
+        foreach (ApiGuide guide in listOfShownGuides)
+        {
+            if (currentObjIndex >= indexLastElement || currentObjIndex < indexFirstElement)
+            {
+                currentObjIndex++;
+                continue;
+            }
+            currentObjIndex++;
             GameObject webGuide = Instantiate(webGuidePrefab, content.transform);
             webGuide.name = "guide_" + guide.id.ToString();
             webGuide.transform.SetParent(content.transform);
-            webGuide.transform.Find("GuideButton/GuideName").GetComponent<TMP_Text>().text = guide.name;
-            webGuide.transform.Find("GuideButton/GuideAuthor").GetComponent<TMP_Text>().text = "de: <color=#87cefa>" +  guide.user.name + "</color>";
+            webGuide.transform.Find("GuideInfo/GuideName").GetComponent<TMP_Text>().text = guide.name;
+            webGuide.transform.Find("GuideInfo/GuideAuthor").GetComponent<TMP_Text>().text = "de: <color=#87cefa>" +  guide.user.name + "</color>";
             if (guide.user.is_certified == 1 || guide.user.is_admin == 1)
             {
-                StartCoroutine(SetCertification(webGuide.transform.Find("GuideButton/GuideAuthor").GetComponent<TMP_Text>()));
+                StartCoroutine(SetCertification(webGuide.transform.Find("GuideInfo/GuideAuthor").GetComponent<TMP_Text>()));
             }
-            webGuide.transform.Find("GuideButton/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  guide.id + "</color>";
-            webGuide.transform.Find("GuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide("https://ganymede-dofus.com/api/guides/" + guide.id, webGuide.transform.Find("GuideButton").gameObject)); });
+            webGuide.transform.Find("GuideInfo/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  guide.id + "</color>";
+            webGuide.transform.Find("GuideInfo/DownloadGuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide("https://ganymede-dofus.com/api/guides/" + guide.id, webGuide.transform.Find("GuideInfo").gameObject)); });
         }
     }
 
