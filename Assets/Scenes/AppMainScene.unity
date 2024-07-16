@@ -25092,7 +25092,7 @@ MonoBehaviour:
     gridOffsetY: 120.19998
     firstPositionX: -6
     firstPositionY: -6
-    mapParentScale: 0.5
+    mapParentScale: 0.3
   cauchemar:
     mapName: Cauchemar
     origineX: 773
