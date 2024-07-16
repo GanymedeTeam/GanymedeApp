@@ -163,6 +163,11 @@ public class GuideMenu : MonoBehaviour
         StartCoroutine(ReloadGuideList());
     }
 
+    public void OnSearchBarValueChange()
+    {
+        gameObject.GetComponent<PaginationHandler>().currentPage = 1;
+    }
+
     public IEnumerator ReloadGuideList()
     {
         void FormatCurrentPath()
