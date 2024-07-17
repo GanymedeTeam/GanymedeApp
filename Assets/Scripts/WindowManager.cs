@@ -33,6 +33,10 @@ public class WindowManager : MonoBehaviour
     public Sprite UnlockSprite;
     bool isAppLocked = false;
 
+    // Resolution fields
+    public GameObject Xresolution;
+    public GameObject Yresolution;
+
     public Slider opacitySlider;
     public Slider BgOpacitySlider;
 
@@ -76,13 +80,25 @@ public class WindowManager : MonoBehaviour
 
     private void LoadPlayerPrefs()
     {
-        float opacity = PlayerPrefs.GetFloat("opacity", 1);
-        float guideBgOpacity = PlayerPrefs.GetFloat("guideBgOpacity", 1);
+        // Want travel in pos checkbox
         TravelCheckbox.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1));
+
+        // Global opacity
+        float opacity = PlayerPrefs.GetFloat("opacity", 1);
         opacitySlider.value = opacity;
-        BgOpacitySlider.value = opacity;
         ChangeCanvasOpacity(opacity);
+
+        // Guide Background Opacity
+        float guideBgOpacity = PlayerPrefs.GetFloat("guideBgOpacity", 1);
+        BgOpacitySlider.value = opacity;
         ChangeBgOpacity(guideBgOpacity);
+
+        // Resolution
+        windowWidth = PlayerPrefs.GetInt("XResolution", 0) * 50 + 300;
+        windowHeight = PlayerPrefs.GetInt("YResolution", 0) * 50 + 450;
+        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        Xresolution.GetComponent<TMP_Dropdown>().value = PlayerPrefs.GetInt("XResolution", 0);
+        Yresolution.GetComponent<TMP_Dropdown>().value = PlayerPrefs.GetInt("YResolution", 0);
     }
 
     public void ToggleWindow()
@@ -223,12 +239,14 @@ public class WindowManager : MonoBehaviour
     {
         windowWidth = 300 + x * 50;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        PlayerPrefs.SetInt("XResolution", x);
     }
     
     public void SetYResolution(int y)
     {
         windowHeight = 450 + y * 50;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        PlayerPrefs.SetInt("YResolution", y);
     }
 
     public void ResetAppSize()
