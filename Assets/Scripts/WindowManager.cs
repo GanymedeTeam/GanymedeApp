@@ -27,6 +27,12 @@ public class WindowManager : MonoBehaviour
     public Toggle TravelCheckbox;
     public TMP_Text menuTitle;
 
+    // Lock button
+    public GameObject LockButton;
+    public Sprite LockSprite;
+    public Sprite UnlockSprite;
+    bool isAppLocked = false;
+
     public Slider opacitySlider;
     public Slider BgOpacitySlider;
 
@@ -230,5 +236,25 @@ public class WindowManager : MonoBehaviour
         windowWidth = 300;
         windowHeight = 450;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+    }
+
+    public void LockUnlockApp()
+    {
+        if ( isAppLocked )
+        {
+            // Unlock it
+            this.GetComponent<WindowGrabber>().enabled = true;
+            LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = LockSprite;
+            isAppLocked = false;
+        }
+        else
+        {
+            // Lock it
+            this.GetComponent<WindowGrabber>().enabled = false;
+            LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = UnlockSprite;
+            isAppLocked = true;
+        }
+        LockButton.GetComponent<Button>().interactable = false;
+        LockButton.GetComponent<Button>().interactable = true;
     }
 }
