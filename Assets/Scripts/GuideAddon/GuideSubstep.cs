@@ -16,16 +16,12 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 {
 
     private TMP_Text tmp_text;
-    
-    Dictionary<string, Regex> bracketPatterns = new Dictionary<string, Regex>()
-    {
-        { "monster", new Regex(@"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>") },
-        { "object", new Regex(@"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>") },
-        { "quest", new Regex(@"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>") },
-        { "dungeon", new Regex(@"<dungeon dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</dungeon>") },
-    };
 
-    private bool NonConcurrenceFlag = false;
+    // monster : @"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>")
+    // object : @"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>"
+    // quest : @"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>"
+    // dungeon : @"<dungeon dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</dungeon>"
+    readonly Regex Pattern = new Regex(@"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>");
 
     private Canvas _canvas;
     private Camera _camera;
@@ -47,7 +43,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         else
             _camera = _canvas.worldCamera;
         tmp_text = transform.GetComponent<TMP_Text>();
-        ParseCustomBrackets();
+        StartCoroutine(ParseCustomBrackets());
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -66,13 +62,13 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void ParseCustomBrackets()
+    public IEnumerator ParseCustomBrackets()
     {
         // prevent user from adding links manually
         if (tmp_text.text.Contains("</link>"))
         {
             tmp_text.text = "<color=\"red\">Suspect link detected in step</color>";
-            return;
+            yield break;
         }
         
         Regex posRegex = new Regex(@"\[-?\d+,-?\d+\]");
@@ -87,26 +83,28 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
         bool isFirst;
         int endCursor;
-
-        foreach ( string pattern in bracketPatterns.Keys)
+        int protection = 0;
+        while (Pattern.Matches(tmp_text.text).Count != 0)
         {
-            foreach (Match patternMatch in bracketPatterns[pattern].Matches(tmp_text.text))
-            {
-                isFirst = false;
-                if (patternMatch.Index == 0)
-                    isFirst = true;
-                // Spaces are for image
-                string textToWrite = (
-                    "    <link=https://dofusdb.fr/fr/database/" 
-                    + pattern + "/" 
-                    + patternMatch.Groups[1].Value 
-                    + "><color=#" + colors[0].Item2 + ">" 
-                    + patternMatch.Groups[3].Value + "</color></link>"
-                );
-                tmp_text.text = tmp_text.text.Replace(patternMatch.Value, textToWrite);
-                endCursor = patternMatch.Index + textToWrite.Count();
-                StartCoroutine(AddImageFromLink(patternMatch.Groups[2].Value, patternMatch.Groups[3].Value, endCursor, isFirst));
-            }
+            if (protection > 100)
+                break;
+            protection++;
+            Match patternMatch = Pattern.Matches(tmp_text.text)[0];
+            string patternName = patternMatch.Groups[1].Value;
+            string dofusdbId = patternMatch.Groups[2].Value;
+            string imgUrl = patternMatch.Groups[3].Value;
+            string sChar = patternMatch.Groups[4].Value;
+            isFirst = false;
+            if (patternMatch.Index == 0)
+                isFirst = true;
+            // Spaces are for image
+            string textToWrite = (
+                "    <link=https://dofusdb.fr/fr/database/" + patternName + "/" + dofusdbId +
+                "><color=#" + colors[0].Item2 + ">" + sChar + "</color></link>"
+            );
+            tmp_text.text = tmp_text.text.Replace(patternMatch.Value, textToWrite);
+            endCursor = patternMatch.Index + textToWrite.Length;
+            yield return AddImageFromLink(imgUrl, sChar, endCursor, isFirst);
         }
     }
 
@@ -122,11 +120,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator AddImageFromLink(string imageUrl, string sChar, int endcursor, bool isfirst)
     {
-        while (NonConcurrenceFlag == true)
-            yield return 0;
-        NonConcurrenceFlag = true;
         yield return 0;
-
+        char[] k = tmp_text.text.ToCharArray();
         int realTargetIndex = AllIndexesOfText(tmp_text.text.Substring(0, endcursor), sChar).Last();
         int targetIndex = AllIndexesOfText(
             tmp_text.GetParsedText(), sChar).ElementAt(
@@ -164,13 +159,12 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             RawImage rawImage = sprite.AddComponent(typeof(RawImage)) as RawImage;
             rawImage.texture = texture;
             rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
-            rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 0.5f);
-            rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 0.5f);
+            rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1f);
+            rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1f);
             rawImage.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
             rawImage.GetComponent<RectTransform>().anchoredPosition = position + transform.position + new Vector3(-10f, 6f, 0f);
             sprite.transform.SetParent(tmp_text.transform);
         }
-        NonConcurrenceFlag = false;
     }
 
     public void ColorLinks()
