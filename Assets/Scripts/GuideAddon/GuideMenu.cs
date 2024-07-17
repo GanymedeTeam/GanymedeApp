@@ -172,7 +172,6 @@ public class GuideMenu : MonoBehaviour
     {
         void FormatCurrentPath()
         {
-            Debug.Log(guidesCurrentPath);
             string text = guidesCurrentPath;
             text = text.Replace(Application.persistentDataPath, "");
             text = text.Remove(0, 1);

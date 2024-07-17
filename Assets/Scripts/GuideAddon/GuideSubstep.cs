@@ -17,6 +17,11 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     private TMP_Text tmp_text;
 
+    readonly List<string> linksWhitelist = new List<string>
+    {
+        "https://www.dofuspourlesnoobs.com/"
+    };
+
     // monster : @"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>")
     // object : @"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>"
     // quest : @"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>"
@@ -62,28 +67,36 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    string ReplaceCoordinates(Match match)
+    {
+        string x = match.Groups[1].Value;
+        string y = match.Groups[2].Value;
+        string coordinate = $"[{x},{y}]";
+        // return $"<link=\"{coordinate}\"><color=#12345>{coordinate}</color></link>";
+        return $"<link=\"{coordinate}\"><color=#" + colors[1].Item2 + $">{coordinate}</color></link>";
+
+    }
+
     public IEnumerator ParseCustomBrackets()
     {
+        int protection = 0;
         // prevent user from adding links manually
-        if (tmp_text.text.Contains("</link>"))
+        Regex linkRegex = new Regex(@"<link=""([^""]+)"">([^<]+)<\/link>");
+        while (linkRegex.Matches(tmp_text.text).Count != 0 &&
+        linksWhitelist.All(url => linkRegex.Matches(tmp_text.text)[0].Value.StartsWith(url)))
         {
-            tmp_text.text = "<color=\"red\">Suspect link detected in step</color>";
-            yield break;
+            string textToWrite = "<color=\"red\">[lien suspect]</color>";
+            tmp_text.text = tmp_text.text.Replace(linkRegex.Matches(tmp_text.text)[0].Value, textToWrite);
+            yield return 0;
         }
-        
-        Regex posRegex = new Regex(@"\[-?\d+,-?\d+\]");
-        MatchCollection matches = posRegex.Matches(tmp_text.text);
-        IEnumerable<string> uniqueMatches = matches.OfType<Match>().Select(m => m.Value).Distinct();
-        
-        foreach ( string posMatch in uniqueMatches)
-        {
-            string textToWrite = "<link=\"" + posMatch + "\"><color=#" + colors[1].Item2 + ">" + posMatch + "</color></link>";
-            tmp_text.text = tmp_text.text.Replace(posMatch, textToWrite);
-        }
+ 
+        Regex coordRegex = new Regex(@"\[(-?\d+),(-?\d+)\]");
+        tmp_text.text = coordRegex.Replace(tmp_text.text, new MatchEvaluator(ReplaceCoordinates));
+        yield return 0;
 
         bool isFirst;
         int endCursor;
-        int protection = 0;
+        protection = 0;
         while (Pattern.Matches(tmp_text.text).Count != 0)
         {
             if (protection > 100)
