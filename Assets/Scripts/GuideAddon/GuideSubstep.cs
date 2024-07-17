@@ -75,8 +75,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             return;
         }
         
-
-        Regex posRegex = new Regex(@"\[(.*?),(.*?)\]");
+        Regex posRegex = new Regex(@"\[-?\d+,-?\d+\]");
         MatchCollection matches = posRegex.Matches(tmp_text.text);
         IEnumerable<string> uniqueMatches = matches.OfType<Match>().Select(m => m.Value).Distinct();
         
