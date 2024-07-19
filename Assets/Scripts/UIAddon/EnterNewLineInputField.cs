@@ -8,30 +8,30 @@ using TMPro;
 
 public class EnterNewLineInputField : MonoBehaviour
 {
-    TMP_InputField inputfield;
+    TMP_InputField inputField;
  
     private void Awake()
     {
-        inputfield = GetComponent<TMP_InputField>();
+        inputField = GetComponent<TMP_InputField>();
+        inputField.lineType = TMP_InputField.LineType.MultiLineNewline;
     }
  
-    IEnumerator FieldFix()
+    void HandleEndEdit(string text)
     {
-        inputfield.ActivateInputField();
- 
-        yield return null;
-        inputfield.text += "\n";
-        inputfield.MoveTextEnd(true);
-    }
-
-    void Update () 
-    {
-        if (EventSystem.current.currentSelectedGameObject == inputfield.gameObject)
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
         {
-            if(Input.GetKeyUp(KeyCode.Return))
-            {
-                StartCoroutine(FieldFix());
-            }
+            // Empêche le comportement par défaut de l'InputField
+            EventSystem.current.SetSelectedGameObject(null);
+
+            // Ajoute un retour à la ligne sans désélectionner l'InputField
+            inputField.text += "\n";
+
+            // Replace le curseur à la fin du texte
+            inputField.caretPosition = inputField.text.Length;
+
+            // Réactive l'InputField
+            EventSystem.current.SetSelectedGameObject(inputField.gameObject);
+            inputField.ActivateInputField();
         }
-   }
+    }
 }
