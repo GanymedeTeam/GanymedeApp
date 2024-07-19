@@ -72,19 +72,21 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         while (linkRegex.Matches(tmp_text.text).Count != 0)
         {
             string textToWrite;
-            if (linksWhitelist.All(url => linkRegex.Matches(tmp_text.text)[0].Value.StartsWith(url)))
-            {
-                textToWrite = "<color=\"red\">[lien suspect]</color>";
-                tmp_text.text = tmp_text.text.Replace(linkRegex.Matches(tmp_text.text)[0].Value, textToWrite);
-                tmp_text.ForceMeshUpdate();
-            }
-            else
+            if (linksWhitelist.Any(url => linkRegex.Matches(tmp_text.text)[0].Groups[1].Value.StartsWith(url)))
             {
                 Match m = linkRegex.Matches(tmp_text.text)[0];
                 var cd = gameObject.GetComponent<ColorLinkHandler>().ColorDictionary;
                 textToWrite = $"<link={m.Groups[1].Value}><color={cd["classic_link"].UnhoverColor}>{m.Groups[2].Value}</color></link>";
                 tmp_text.text = tmp_text.text.Replace(linkRegex.Matches(tmp_text.text)[0].Value, textToWrite);
             }
+            else
+            {
+                textToWrite = "<color=\"red\">[lien suspect]</color>";
+                // Debug.Log(linkRegex.Matches(tmp_text.text)[0].Value);
+                tmp_text.text = tmp_text.text.Replace(linkRegex.Matches(tmp_text.text)[0].Value, textToWrite);
+                tmp_text.ForceMeshUpdate();
+            }
+
         }
  
         Regex coordRegex = new Regex(@"\[(-?\d+),(-?\d+)\]");
