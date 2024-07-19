@@ -42,9 +42,13 @@ public class WindowManager : MonoBehaviour
 
     public bool isInteractiveMapActive;
 
-    void Start()
+    void Awake()
     {
         LoadPlayerPrefs();
+    }
+
+    void Start()
+    {
         AppWindowUtility.Transparent = true;
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
@@ -93,10 +97,9 @@ public class WindowManager : MonoBehaviour
         BgOpacitySlider.value = opacity;
         ChangeBgOpacity(guideBgOpacity);
 
-        // Resolution
+        //Resolution
         windowWidth = PlayerPrefs.GetInt("XResolution", 0) * 50 + 300;
         windowHeight = PlayerPrefs.GetInt("YResolution", 0) * 50 + 450;
-        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
         Xresolution.GetComponent<TMP_Dropdown>().value = PlayerPrefs.GetInt("XResolution", 0);
         Yresolution.GetComponent<TMP_Dropdown>().value = PlayerPrefs.GetInt("YResolution", 0);
     }
