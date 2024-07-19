@@ -134,4 +134,14 @@ public class GuideObject : MonoBehaviour
         yield return new WaitForSeconds(60);
         StartCoroutine(CheckForUpdate());
     }
+
+    void Update()
+    {
+        // Check if guide is finished
+        string[] steps = transform.Find("GuideInfo/GuideProgress").GetComponent<TMP_Text>().GetParsedText().Split('/');
+        if (steps[0] == steps[1])
+            transform.Find("GuideInfo/GuideFinishedImage").gameObject.SetActive(true);
+        else
+            transform.Find("GuideInfo/GuideFinishedImage").gameObject.SetActive(false);
+    }
 }
