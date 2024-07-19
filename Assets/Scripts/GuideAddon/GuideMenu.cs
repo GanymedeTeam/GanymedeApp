@@ -18,7 +18,6 @@ public class GuideMenu : MonoBehaviour
     public GameObject GuideSelectionMenu;
     public GameObject StepContent;
     public GameObject SubstepPrefab;
-    public GameObject CheckboxPrefab;
     public string OpenedGuide;
     public TMP_Text currentPath;
     public int guideProgress = 0;
@@ -338,7 +337,7 @@ public class GuideMenu : MonoBehaviour
     public void GoToGuideStep(int guideIndex)
     {
         foreach (Transform child in StepContent.transform) {
-            if (child.name.Contains("Substep") || child.name.Contains("Checkbox"))
+            if (child.name.Contains("Substep"))
                 GameObject.Destroy(child.gameObject);
         }
         guideProgress = guideIndex;
@@ -356,24 +355,11 @@ public class GuideMenu : MonoBehaviour
 
     private void ProcessSubSteps(List<SubstepEntry> subentries)
     {
-        IEnumerator SetSubStepPosition(List<GameObject> substepList)
-        {
-            yield return 0;
-            float offsetSubstepPosition = 0f;
-            foreach (GameObject substep in substepList)
-            {
-                substep.transform.position += new Vector3(0, offsetSubstepPosition, 0);
-                offsetSubstepPosition -= substep.GetComponent<RectTransform>().rect.height;
-            }
-            StepContent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, -offsetSubstepPosition);
-        }
-
         int substepIndex = 0;
 
         Regex CheckboxRegex = new Regex(@"<checkbox>(.*?)</checkbox>");
 
         List<(string, bool)> entities = new List<(string, bool)>();
-        List<GameObject> subStepsList = new List<GameObject>();
         foreach (SubstepEntry subentry in subentries)
         {
             string text = subentry.text;
@@ -390,26 +376,19 @@ public class GuideMenu : MonoBehaviour
         {
             if (entity.Item1 == "")
                 continue;
-            if (entity.Item2 == true)
+            GameObject subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
+            subStepGameObject.name = "Substep " + (++substepIndex).ToString();
+            subStepGameObject.transform.SetParent(StepContent.transform);
+            subStepGameObject.transform.Find("Text").GetComponent<TMP_Text>().text = entity.Item1;
+            if ( entity.Item2 == true )
             {
-                GameObject checkboxGameObject = Instantiate(CheckboxPrefab, StepContent.transform);
-                subStepsList.Add(checkboxGameObject);
-                checkboxGameObject.name = "Checkbox " + (++substepIndex).ToString();
-                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
-                checkboxGameObject.transform.GetChild(0).gameObject.GetComponent<Toggle>().isOn = Convert.ToBoolean(PlayerPrefs.GetInt(guideInfos.id.ToString() + "_cb_" + guideProgress + "_" + checkboxGameObject.name[checkboxGameObject.name.Length - 1]));
-                checkboxGameObject.transform.SetParent(StepContent.transform);
-                checkboxGameObject.GetComponent<TMP_Text>().text = entity.Item1;
-            }
-            else if (entity.Item2 == false)
-            {
-                GameObject subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
-                subStepsList.Add(subStepGameObject);
-                subStepGameObject.name = "Substep " + (++substepIndex).ToString();
-                subStepGameObject.transform.SetParent(StepContent.transform);
-                subStepGameObject.GetComponent<TMP_Text>().text = entity.Item1;
+                // Enable checkbox
+                subStepGameObject.transform.Find("Toggle").gameObject.SetActive(true);
+                subStepGameObject.transform.Find("Toggle").gameObject.GetComponent<Toggle>().onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
+                subStepGameObject.transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn = 
+                Convert.ToBoolean(PlayerPrefs.GetInt($"{guideInfos.id}_cb_{guideProgress}_{subStepGameObject.name[subStepGameObject.name.Length - 1]}"));
             }
         }
-        StartCoroutine(SetSubStepPosition(subStepsList));
     }
 
     public void NextStep()
@@ -424,10 +403,10 @@ public class GuideMenu : MonoBehaviour
     {
         foreach (Transform child in StepContent.transform)
         {
-            if (child.name.Contains("Checkbox"))
+            if (child.Find("Toggle").gameObject.activeSelf)
             {
                 PlayerPrefs.SetInt(
-                    guideInfos.id.ToString() + "_cb_" + guideProgress + "_" + child.name[child.name.Length - 1],
+                    $"{guideInfos.id}_cb_{guideProgress}_{child.name[child.name.Length - 1]}",
                     child.transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn ? 1 : 0
                 );
             }
