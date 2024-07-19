@@ -24,7 +24,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     readonly List<string> linksWhitelist = new List<string>
     {
-        "https://www.dofuspourlesnoobs.com/"
+        "https://www.dofuspourlesnoobs.com/",
+        "https://huzounet.fr/"
     };
 
     // monster : @"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>")
