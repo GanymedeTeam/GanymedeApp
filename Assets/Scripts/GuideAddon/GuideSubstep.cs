@@ -28,7 +28,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         "https://huzounet.fr/"
     };
 
-    readonly string customLinksPattern = @"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>";
+    readonly string dofusdbLinksPattern = @"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>";
+    readonly string selfGuideLinksPattern = @"<guide id=""(\d+)"" step=""(\d+)"">([^<]+)<\/guide>";
 
     void Start()
     {
@@ -112,6 +113,13 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         return $"<link=\"{gotoGuide}\"><color={cd["gotoguide"].UnhoverColor}>{guideName}</color></link>";
     }
 
+    private void ParseNoLogoObjects()
+    {
+        Regex coordRegex = new Regex(@"\[(-?\d+),(-?\d+)\]");
+        tmp_text.text = coordRegex.Replace(tmp_text.text, new MatchEvaluator(ReplaceCoordinates));
+        tmp_text.ForceMeshUpdate();
+    }
+
     public void ParseCustomBrackets()
     {
         // prevent user from adding links manually
@@ -134,15 +142,9 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             }
 
         }
- 
-        Regex coordRegex = new Regex(@"\[(-?\d+),(-?\d+)\]");
-        tmp_text.text = coordRegex.Replace(tmp_text.text, new MatchEvaluator(ReplaceCoordinates));
-        tmp_text.ForceMeshUpdate();
 
-        Regex goToGuideRegex = new Regex(@"<guide id=""(\d+)"" step=""(\d+)"">([^<]+)<\/guide>");
-        tmp_text.text = goToGuideRegex.Replace(tmp_text.text, new MatchEvaluator(ReplaceGoToGuides));
-        tmp_text.ForceMeshUpdate();
-        ParseCustomLinks();
+        ParseNoLogoObjects();
+        ParseLogoObjects();
     }
 
     private IEnumerator DownloadImageAndSetSprite(int id, string url)
@@ -155,7 +157,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             GameObject sprite = new GameObject($"CustomLinkSprite_{id}");
             RawImage rawImage = sprite.AddComponent(typeof(RawImage)) as RawImage;
             rawImage.texture = texture;
-            rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(18, 18);
+            rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(15, 15);
             rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1f);
             rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1f);
             rawImage.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
@@ -181,7 +183,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                     int indexOfCharacter = linkPositions[int.Parse(customLinkSprite.name.Split('_').Last())];
                     Vector3 position = tmp_text.textInfo.characterInfo[indexOfCharacter].bottomLeft;
                     Vector3 worldPosition = tmp_text.rectTransform.TransformPoint(position);
-                    rawImage.GetComponent<RectTransform>().position = worldPosition + new Vector3(9.4f, 6f, 0f);;
+                    rawImage.GetComponent<RectTransform>().position = worldPosition + new Vector3(8.5f, 6f, 0f);;
                 }
             }
         }
@@ -197,7 +199,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    private void ParseCustomLinks()
+    private void ParseLogoObjects()
     {
         StringBuilder output = new StringBuilder(tmp_text.text);
 
@@ -217,11 +219,15 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
         int imageId = 0;
 
-        MatchCollection customLinksPatternMatches = Regex.Matches(tmp_text.text, customLinksPattern);
-        stateOfCoroutines = new List<bool>();
-        nbOfCustomLinks = customLinksPatternMatches.Count;
+        MatchCollection dofusdbLinksPatternMatches = Regex.Matches(tmp_text.text, dofusdbLinksPattern);
+        MatchCollection selfGuideLinksPatternMatches = Regex.Matches(tmp_text.text, selfGuideLinksPattern);
+        var combinedMatches = dofusdbLinksPatternMatches.Cast<Match>().Concat(selfGuideLinksPatternMatches.Cast<Match>()).ToList();
 
-        foreach (Match match in customLinksPatternMatches)
+
+        stateOfCoroutines = new List<bool>();
+        nbOfCustomLinks = combinedMatches.Count;
+
+        foreach (Match match in combinedMatches)
         {
             int matchStartIndex = match.Index + offset;
 
@@ -230,13 +236,26 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 continue;
 
             stateOfCoroutines.Add(false);
-            StartCoroutine(DownloadImageAndSetSprite(imageId++, match.Groups[3].Value));
             string patternName = match.Groups[1].Value.Replace("item", "object");
-            string dofusdbId = match.Groups[2].Value;
-            string url = $"https://dofusdb.fr/fr/database/{patternName}/{dofusdbId}";
-            string name = match.Groups[4].Value;
             var cd = gameObject.GetComponent<ColorLinkHandler>().ColorDictionary;
-            string replacement = $"<link={url}><color={cd[patternName].UnhoverColor}>{name}</color></link>";
+            string replacement = "";
+            if (match.Value.StartsWith("<guide"))
+            {
+                StartCoroutine(DownloadImageAndSetSprite(imageId++, "https://api.dofusdb.fr/img/items/1000/25010.png"));
+                string id = match.Groups[1].Value;
+                string step = match.Groups[2].Value;
+                string name = match.Groups[3].Value;
+                string url = $"guide_{id}_step_{step}";
+                replacement = $"<link={url}><color={cd["gotoguide"].UnhoverColor}>{name}</color></link>";
+            }
+            else
+            {
+                StartCoroutine(DownloadImageAndSetSprite(imageId++, match.Groups[3].Value));
+                string dofusdbId = match.Groups[2].Value;
+                string url = $"https://dofusdb.fr/fr/database/{patternName}/{dofusdbId}";
+                string name = match.Groups[4].Value;
+                replacement = $"<link={url}><color={cd[patternName].UnhoverColor}>{name}</color></link>";
+            }
 
             output.Remove(matchStartIndex, match.Length);
             output.Insert(matchStartIndex, replacement);
@@ -263,17 +282,17 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         // Recuperer les index des links pour construire les images
         linkPositions = new List<int>();
         Dictionary<string, int> occurrenceCount = new Dictionary<string, int>();
-        foreach (Match match in customLinksPatternMatches)
+        foreach (Match match in combinedMatches)
         {
-            string linkTxt = match.Groups[4].Value;
-            if (occurrenceCount.ContainsKey(linkTxt))
-            {
-                occurrenceCount[linkTxt]++;
-            }
+            string linkTxt;
+            if (match.Value.StartsWith("<guide"))
+                linkTxt = match.Groups[3].Value;
             else
-            {
+                linkTxt = match.Groups[4].Value;
+            if (occurrenceCount.ContainsKey(linkTxt))
+                occurrenceCount[linkTxt]++;
+            else
                 occurrenceCount[linkTxt] = 1;
-            }
             int index = AllIndexesOfText(tmp_text.GetParsedText(), $"\u00A0\u00A0\u00A0\u00A0{linkTxt}").ElementAt(occurrenceCount[linkTxt] - 1);
             linkPositions.Add(index);
         }
