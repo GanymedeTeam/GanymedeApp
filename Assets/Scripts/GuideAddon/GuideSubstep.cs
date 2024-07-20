@@ -66,7 +66,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             string path = listOfIdGuides[0];
 
             // We need to update it
-            using UnityWebRequest webRequest = UnityWebRequest.Get($"https://ganymede-dofus.com/api/guides/{id}");
+            using UnityWebRequest webRequest = UnityWebRequest.Get($"{Constants.ganymedeWebGuidesUrl}/{id}");
             yield return webRequest.SendWebRequest();
             if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
@@ -78,7 +78,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         {
             // It is not downloaded yet
             // Download it and place it in root folder
-            using UnityWebRequest webRequest = UnityWebRequest.Get($"https://ganymede-dofus.com/api/guides/{id}");
+            using UnityWebRequest webRequest = UnityWebRequest.Get($"{Constants.ganymedeWebGuidesUrl}/{id}");
             yield return webRequest.SendWebRequest();
             if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {

@@ -52,7 +52,7 @@ public class GuideManager : MonoBehaviour
     public Sprite spriteCertified;
     public TMP_InputField searchBar;
 
-    private const string guides_url = "https://ganymede-dofus.com/api/guides?status=";
+    private string guides_url = $"{Constants.ganymedeWebUrl}/api/guides?status=";
     private string currentMenu = "root";
 
     public void OnEnable()
@@ -257,7 +257,7 @@ public class GuideManager : MonoBehaviour
                 StartCoroutine(SetCertification(webGuide.transform.Find("GuideInfo/GuideAuthor").GetComponent<TMP_Text>()));
             }
             webGuide.transform.Find("GuideInfo/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  guide.id + "</color>";
-            webGuide.transform.Find("GuideInfo/DownloadGuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide("https://ganymede-dofus.com/api/guides/" + guide.id)); });
+            webGuide.transform.Find("GuideInfo/DownloadGuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide($"{Constants.ganymedeWebGuidesUrl}/{guide.id}")); });
         }
     }
 

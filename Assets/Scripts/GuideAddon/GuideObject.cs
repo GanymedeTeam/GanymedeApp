@@ -55,7 +55,7 @@ public class GuideObject : MonoBehaviour
         {
             yield break;
         }
-        using UnityWebRequest webRequest = UnityWebRequest.Get("https://ganymede-dofus.com/api/guides/" + id);
+        using UnityWebRequest webRequest = UnityWebRequest.Get($"{Constants.ganymedeWebGuidesUrl}/{id}");
         yield return webRequest.SendWebRequest();
 
         if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
@@ -113,7 +113,7 @@ public class GuideObject : MonoBehaviour
             yield break;
         }
 
-        using UnityWebRequest webRequest = UnityWebRequest.Get("https://ganymede-dofus.com/api/guides/" + id);
+        using UnityWebRequest webRequest = UnityWebRequest.Get($"{Constants.ganymedeWebGuidesUrl}/{id}");
         yield return webRequest.SendWebRequest();
 
         if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
