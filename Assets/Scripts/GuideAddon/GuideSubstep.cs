@@ -83,8 +83,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
                 string jsonResponse = webRequest.downloadHandler.text;
-                string path = Application.persistentDataPath + "/guides/";
-                System.IO.File.WriteAllText($"{path}{id}.json", jsonResponse);
+                string path = Application.persistentDataPath + "/guides";
+                System.IO.File.WriteAllText($"{path}/{id}.json", jsonResponse);
             }
         }
         // We set the step where we want to go
@@ -155,7 +155,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             GameObject sprite = new GameObject($"CustomLinkSprite_{id}");
             RawImage rawImage = sprite.AddComponent(typeof(RawImage)) as RawImage;
             rawImage.texture = texture;
-            rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);
+            rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(18, 18);
             rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1f);
             rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1f);
             rawImage.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
@@ -181,7 +181,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                     int indexOfCharacter = linkPositions[int.Parse(customLinkSprite.name.Split('_').Last())];
                     Vector3 position = tmp_text.textInfo.characterInfo[indexOfCharacter].bottomLeft;
                     Vector3 worldPosition = tmp_text.rectTransform.TransformPoint(position);
-                    rawImage.GetComponent<RectTransform>().position = worldPosition + new Vector3(10f, 6f, 0f);;
+                    rawImage.GetComponent<RectTransform>().position = worldPosition + new Vector3(9.4f, 6f, 0f);;
                 }
             }
         }
