@@ -26,6 +26,7 @@ public class WindowManager : MonoBehaviour
     public CanvasGroup canvasGroup;
     public GameObject GuideBg;
     public Toggle TravelCheckbox;
+    public Toggle ShowCompletedGuidesCheckbox;
     public TMP_Text menuTitle;
 
     // Lock button
@@ -93,7 +94,16 @@ public class WindowManager : MonoBehaviour
     private void LoadPlayerPrefs()
     {
         // Want travel in pos checkbox
-        TravelCheckbox.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1));
+        if (PlayerPrefs.HasKey("wantTravel"))
+            TravelCheckbox.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1));
+        else
+            PlayerPrefs.SetInt("wantTravel", TravelCheckbox.isOn ? 1 : 0);
+
+        // Want to show or not completed guides
+        if (PlayerPrefs.HasKey("showCompletedGuides"))
+            ShowCompletedGuidesCheckbox.isOn = Convert.ToBoolean(PlayerPrefs.GetInt("showCompletedGuides", 1));
+        else
+            PlayerPrefs.SetInt("showCompletedGuides", ShowCompletedGuidesCheckbox.isOn ? 1 : 0);
 
         // Global opacity
         float opacity = PlayerPrefs.GetFloat("opacity", 1);
@@ -244,6 +254,11 @@ public class WindowManager : MonoBehaviour
     public void CopyTravelPositionSetting(bool wantTravel)
     {
         PlayerPrefs.SetInt("wantTravel", wantTravel ? 1 : 0);
+    }
+
+    public void ShowCompletedGuidesSetting(bool wantToShow)
+    {
+        PlayerPrefs.SetInt("showCompletedGuides", wantToShow ? 1 : 0);
     }
 
     public void SetXResolution(int x)

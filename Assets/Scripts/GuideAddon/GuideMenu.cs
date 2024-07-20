@@ -234,17 +234,19 @@ public class GuideMenu : MonoBehaviour
                     currentObjIndex++;
                     continue;
                 }
-                currentObjIndex++;
-                GameObject newGuideObject = Instantiate(guideUIPrefab, gridGameobject.transform);
-                newGuideObject.name = "guide_" + file.Name.Replace(".json", "");
-                newGuideObject.transform.SetParent(gridGameobject.transform);
- 
                 try
                 {
                     string fileContent = String.Join("", System.IO.File.ReadAllLines(guidesCurrentPath + file.Name));
                     GuideEntry fileContentSerialized = JsonUtility.FromJson<GuideEntry>(fileContent);
                     int stepProgress = PlayerPrefs.GetInt(fileContentSerialized.id.ToString() + "_currstep", 0) + 1;
                     int totalSteps = fileContentSerialized.steps.Count();
+                    if (stepProgress == totalSteps && PlayerPrefs.GetInt("showCompletedGuides", 1) == 0)
+                        continue;
+                    currentObjIndex++;
+                    // Instanciate gameobject guide
+                    GameObject newGuideObject = Instantiate(guideUIPrefab, gridGameobject.transform);
+                    newGuideObject.name = "guide_" + file.Name.Replace(".json", "");
+                    newGuideObject.transform.SetParent(gridGameobject.transform);
                     newGuideObject.GetComponent<GuideObject>().Initialize(fileContentSerialized.name, file.Name.Replace(".json", ""), guidesCurrentPath);
                     newGuideObject.transform.Find("GuideInfo/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  file.Name.Replace(".json", "") + "</color>";
                     newGuideObject.transform.Find("GuideInfo/GuideProgress").GetComponent<TMP_Text>().text = "<color=yellow>" +  stepProgress + "</color>" + "/" + totalSteps;
