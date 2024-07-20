@@ -34,6 +34,7 @@ public class ColorLinkHandler : MonoBehaviour
         { "monster", new ColorPair("#F04352", "#F01023")},
         { "dungeon", new ColorPair("#0B9629", "#007419")},
         { "pos", new ColorPair("#FFFE9C", "#FFFD01")},
+        { "gotoguide", new ColorPair("#D14DEB", "#9E0FBA")},
     };
 
     void Start()

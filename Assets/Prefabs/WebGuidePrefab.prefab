@@ -667,7 +667,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6704260888158335515}
-  - component: {fileID: 8152404748505117013}
   m_Layer: 5
   m_Name: webGuidePrefab
   m_TagString: Untagged
@@ -695,23 +694,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 626}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &8152404748505117013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6460030823931836847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95bf78d2cdab89e409e79406429f634e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  guideNameText: {fileID: 479751398519565735}
-  guideName: 
-  id: 
-  updtImage: {fileID: 0}
-  path: 
 --- !u!1 &6712797840527477804
 GameObject:
   m_ObjectHideFlags: 0

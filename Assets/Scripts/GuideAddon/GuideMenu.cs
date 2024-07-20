@@ -305,7 +305,10 @@ public class GuideMenu : MonoBehaviour
     public void LoadGuide(string guideName)
     {
         OpenedGuide = guideName;
-        string filePath = guidesCurrentPath + guideName + ".json";
+        string[] listOfIdGuides = Directory.GetFiles(Application.persistentDataPath + "/guides/", $"{guideName}.json", SearchOption.AllDirectories);
+        if (listOfIdGuides.Count() == 0)
+            return;
+        string filePath = listOfIdGuides[0];
         string jsonToRead = File.ReadAllText(filePath);
         guideInfos = JsonUtility.FromJson<GuideEntry>(jsonToRead);
 
@@ -336,6 +339,8 @@ public class GuideMenu : MonoBehaviour
 
     public void GoToGuideStep(int guideIndex)
     {
+        if (guideInfos.steps.Count() < guideProgress + 1)
+            return;
         foreach (Transform child in StepContent.transform) {
             if (child.name.Contains("Substep"))
                 GameObject.Destroy(child.gameObject);

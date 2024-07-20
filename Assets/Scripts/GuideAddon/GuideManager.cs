@@ -144,7 +144,7 @@ public class GuideManager : MonoBehaviour
         }
     }
 
-    private IEnumerator GetGuide(string url, GameObject guideButton)
+    private IEnumerator GetGuide(string url)
     {
         using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
@@ -257,7 +257,7 @@ public class GuideManager : MonoBehaviour
                 StartCoroutine(SetCertification(webGuide.transform.Find("GuideInfo/GuideAuthor").GetComponent<TMP_Text>()));
             }
             webGuide.transform.Find("GuideInfo/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  guide.id + "</color>";
-            webGuide.transform.Find("GuideInfo/DownloadGuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide("https://ganymede-dofus.com/api/guides/" + guide.id, webGuide.transform.Find("GuideInfo").gameObject)); });
+            webGuide.transform.Find("GuideInfo/DownloadGuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide("https://ganymede-dofus.com/api/guides/" + guide.id)); });
         }
     }
 

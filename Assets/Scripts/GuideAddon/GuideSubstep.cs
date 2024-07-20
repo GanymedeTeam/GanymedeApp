@@ -28,11 +28,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         "https://huzounet.fr/"
     };
 
-    // monster : @"<monster dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</monster>")
-    // object : @"<item dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</item>"
-    // quest : @"<quest dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</quest>"
-    // dungeon : @"<dungeon dofusdb=""(\d+)"" imageurl=""(.+?)"">(.+?)</dungeon>"
-    string sPattern = @"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>";
+    readonly string customLinksPattern = @"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>";
 
     void Start()
     {
@@ -52,8 +48,49 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                     Application.OpenURL(text);
                 if (Regex.Matches(text, @"\[(.*?),(.*?)\]").Count > 0)
                     GUIUtility.systemCopyBuffer = (Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1)) ? "/travel " : "") + text;
+                if (Regex.Matches(text, @"guide_(\d+)_step_(\d+)").Count > 0)
+                    StartCoroutine(ChangeGuide(
+                        int.Parse(Regex.Match(text, @"guide_(\d+)_step_(\d+)").Groups[1].Value),
+                        int.Parse(Regex.Match(text, @"guide_(\d+)_step_(\d+)").Groups[2].Value)
+                    ));
             }
         }
+    }
+
+    private IEnumerator ChangeGuide(int id, int step)
+    {
+        string[] listOfIdGuides = Directory.GetFiles(Application.persistentDataPath + "/guides/", $"{id}.json", SearchOption.AllDirectories);
+        if (listOfIdGuides.Count() > 0)
+        {
+            // Guide is downloaded and is somewhere in path
+            string path = listOfIdGuides[0];
+
+            // We need to update it
+            using UnityWebRequest webRequest = UnityWebRequest.Get($"https://ganymede-dofus.com/api/guides/{id}");
+            yield return webRequest.SendWebRequest();
+            if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
+            {
+                string jsonResponse = webRequest.downloadHandler.text;
+                System.IO.File.WriteAllText(path, jsonResponse);
+            }
+        }
+        else
+        {
+            // It is not downloaded yet
+            // Download it and place it in root folder
+            using UnityWebRequest webRequest = UnityWebRequest.Get($"https://ganymede-dofus.com/api/guides/{id}");
+            yield return webRequest.SendWebRequest();
+            if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
+            {
+                string jsonResponse = webRequest.downloadHandler.text;
+                string path = Application.persistentDataPath + "/guides/";
+                System.IO.File.WriteAllText($"{path}{id}.json", jsonResponse);
+            }
+        }
+        // We set the step where we want to go
+        PlayerPrefs.SetInt($"{id}_currstep", step - 1);
+        // We open it
+        FindObjectOfType<GuideMenu>().LoadGuide(id.ToString());
     }
 
     string ReplaceCoordinates(Match match)
@@ -63,6 +100,16 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         string coordinate = $"[{x},{y}]";
         var cd = gameObject.GetComponent<ColorLinkHandler>().ColorDictionary;
         return $"<link=\"{coordinate}\"><color={cd["pos"].UnhoverColor}>{coordinate}</color></link>";
+    }
+
+    string ReplaceGoToGuides(Match match)
+    {
+        string id = match.Groups[1].Value;
+        string step = match.Groups[2].Value;
+        string guideName = match.Groups[3].Value;
+        string gotoGuide = $"guide_{id}_step_{step}";
+        var cd = gameObject.GetComponent<ColorLinkHandler>().ColorDictionary;
+        return $"<link=\"{gotoGuide}\"><color={cd["gotoguide"].UnhoverColor}>{guideName}</color></link>";
     }
 
     public void ParseCustomBrackets()
@@ -82,7 +129,6 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             else
             {
                 textToWrite = "<color=\"red\">[lien suspect]</color>";
-                // Debug.Log(linkRegex.Matches(tmp_text.text)[0].Value);
                 tmp_text.text = tmp_text.text.Replace(linkRegex.Matches(tmp_text.text)[0].Value, textToWrite);
                 tmp_text.ForceMeshUpdate();
             }
@@ -91,6 +137,10 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
  
         Regex coordRegex = new Regex(@"\[(-?\d+),(-?\d+)\]");
         tmp_text.text = coordRegex.Replace(tmp_text.text, new MatchEvaluator(ReplaceCoordinates));
+        tmp_text.ForceMeshUpdate();
+
+        Regex goToGuideRegex = new Regex(@"<guide id=""(\d+)"" step=""(\d+)"">([^<]+)<\/guide>");
+        tmp_text.text = goToGuideRegex.Replace(tmp_text.text, new MatchEvaluator(ReplaceGoToGuides));
         tmp_text.ForceMeshUpdate();
         ParseCustomLinks();
     }
@@ -167,11 +217,11 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
         int imageId = 0;
 
-        MatchCollection sPatternMatches = Regex.Matches(tmp_text.text, sPattern);
+        MatchCollection customLinksPatternMatches = Regex.Matches(tmp_text.text, customLinksPattern);
         stateOfCoroutines = new List<bool>();
-        nbOfCustomLinks = sPatternMatches.Count;
+        nbOfCustomLinks = customLinksPatternMatches.Count;
 
-        foreach (Match match in sPatternMatches)
+        foreach (Match match in customLinksPatternMatches)
         {
             int matchStartIndex = match.Index + offset;
 
@@ -213,7 +263,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         // Recuperer les index des links pour construire les images
         linkPositions = new List<int>();
         Dictionary<string, int> occurrenceCount = new Dictionary<string, int>();
-        foreach (Match match in sPatternMatches)
+        foreach (Match match in customLinksPatternMatches)
         {
             string linkTxt = match.Groups[4].Value;
             if (occurrenceCount.ContainsKey(linkTxt))

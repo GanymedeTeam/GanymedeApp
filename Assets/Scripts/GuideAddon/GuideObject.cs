@@ -40,10 +40,10 @@ public class GuideObject : MonoBehaviour
 
     public void UpdateGuideButton()
     {
-        StartCoroutine(UpdateMyGuide());
+        StartCoroutine(UpdateMyGuide(path, id));
     }
 
-    public IEnumerator UpdateMyGuide()
+    public IEnumerator UpdateMyGuide(string path, string id)
     {
         GuideEntry localGuide;
         try
