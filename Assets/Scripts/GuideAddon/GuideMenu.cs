@@ -18,6 +18,7 @@ public class GuideMenu : MonoBehaviour
     public GameObject GuideSelectionMenu;
     public GameObject StepContent;
     public GameObject SubstepPrefab;
+    public GameObject SubstepImagePrefab;
     public string OpenedGuide;
     public TMP_Text currentPath;
     public int guideProgress = 0;
@@ -363,42 +364,108 @@ public class GuideMenu : MonoBehaviour
     private void ProcessSubSteps(List<SubstepEntry> subentries)
     {
         int substepIndex = 0;
+        Regex CombinedRegex = new Regex(@"<checkbox>(.*?)</checkbox>|<image url=""([^""]+)"" ratio=""([\d.]+)"">");
 
-        Regex CheckboxRegex = new Regex(@"<checkbox>(.*?)</checkbox>");
+        List<(string content, string type, float ratio)> entities = new List<(string content, string type, float ratio)>();
 
-        List<(string, bool)> entities = new List<(string, bool)>();
         foreach (SubstepEntry subentry in subentries)
         {
-            string text = subentry.text;
-            foreach (Match checkboxMatch in CheckboxRegex.Matches(subentry.text))
-            {
-                string[] disassembled_text = text.Split(new string[] { checkboxMatch.Value }, StringSplitOptions.None);
-                entities.Add((disassembled_text[0], false));
-                entities.Add((checkboxMatch.Groups[1].Value, true));
-                text = text.Replace(disassembled_text[0] + checkboxMatch.Value, "");
-            }
-            entities.Add((text, false));
+            ExtractEntitiesFromText(subentry.text, entities);
         }
-        foreach ((string, bool) entity in entities)
+
+        InstantiateSubstepGameObjects(entities, ref substepIndex);
+
+        void ExtractEntitiesFromText(string text, List<(string content, string type, float ratio)> entities)
         {
-            if (entity.Item1 == "")
-                continue;
-            GameObject subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
-            subStepGameObject.name = "Substep " + (++substepIndex).ToString();
-            subStepGameObject.transform.Find("Text").GetComponent<GuideSubstep>().guideId = guideInfos.id;
-            subStepGameObject.transform.SetParent(StepContent.transform);
-            subStepGameObject.transform.Find("Text").GetComponent<TMP_Text>().text = entity.Item1;
-            if ( entity.Item2 == true )
+            int lastIndex = 0;
+
+            foreach (Match match in CombinedRegex.Matches(text))
             {
-                // Enable checkbox
-                subStepGameObject.transform.Find("Toggle").gameObject.SetActive(true);
-                subStepGameObject.transform.Find("Toggle").gameObject.GetComponent<Toggle>().onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
-                subStepGameObject.transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn = 
-                Convert.ToBoolean(PlayerPrefs.GetInt($"{guideInfos.id}_cb_{guideProgress}_{subStepGameObject.name[subStepGameObject.name.Length - 1]}"));
+                AddTextBeforeMatch(text, match, entities, ref lastIndex);
+
+                if (match.Groups[1].Success) // Checkbox
+                {
+                    entities.Add((match.Groups[1].Value, "checkbox", 0f));
+                }
+                else if (match.Groups[2].Success && match.Groups[3].Success) // Image with ratio
+                {
+                    entities.Add((match.Groups[2].Value, "image", float.Parse(match.Groups[3].Value)));
+                }
+
+                lastIndex = match.Index + match.Length;
             }
+
+            AddRemainingText(text, lastIndex, entities);
+        }
+
+        void AddTextBeforeMatch(string text, Match match, List<(string content, string type, float ratio)> entities, ref int lastIndex)
+        {
+            string contentBeforeMatch = text.Substring(lastIndex, match.Index - lastIndex);
+            if (!string.IsNullOrEmpty(contentBeforeMatch))
+            {
+                entities.Add((contentBeforeMatch, "text", 0f));
+            }
+        }
+
+        void AddRemainingText(string text, int lastIndex, List<(string content, string type, float ratio)> entities)
+        {
+            string remainingText = text.Substring(lastIndex);
+            if (!string.IsNullOrEmpty(remainingText))
+            {
+                entities.Add((remainingText, "text", 0f));
+            }
+        }
+
+        void InstantiateSubstepGameObjects(List<(string content, string type, float ratio)> entities, ref int substepIndex)
+        {
+            foreach (var (content, type, ratio) in entities)
+            {
+                if (string.IsNullOrEmpty(content) && type != "image")
+                {
+                    continue;
+                }
+
+                GameObject subStepGameObject = InstantiateGameObject(content, type, ratio, ref substepIndex);
+                if (type == "checkbox")
+                {
+                    ConfigureCheckbox(subStepGameObject, substepIndex);
+                }
+            }
+        }
+
+        GameObject InstantiateGameObject(string content, string type, float ratio, ref int substepIndex)
+        {
+            GameObject subStepGameObject;
+
+            if (type == "image")
+            {
+                subStepGameObject = Instantiate(SubstepImagePrefab, StepContent.transform);
+                var imageComponent = subStepGameObject.GetComponent<GuideSubstepImage>();
+                imageComponent.SetImageUrl(content);
+                imageComponent.SetImageRatio(ratio);
+            }
+            else
+            {
+                subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
+                subStepGameObject.name = $"Substep {++substepIndex}";
+                subStepGameObject.transform.Find("Text").GetComponent<TMP_Text>().text = content;
+            }
+
+            return subStepGameObject;
+        }
+
+        void ConfigureCheckbox(GameObject subStepGameObject, int substepIndex)
+        {
+            var toggleObject = subStepGameObject.transform.Find("Toggle").gameObject;
+            toggleObject.SetActive(true);
+
+            var toggle = toggleObject.GetComponent<Toggle>();
+            toggle.onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
+
+            string playerPrefKey = $"{guideInfos.id}_cb_{guideProgress}_{substepIndex}";
+            toggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt(playerPrefKey, 0));
         }
     }
-
     public void NextStep()
     {
         if (guideProgress < guideInfos.steps.Count() - 1)
