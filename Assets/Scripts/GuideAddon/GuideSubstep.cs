@@ -47,14 +47,27 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             {
                 string text = tmp_text.textInfo.linkInfo[index].GetLinkID();
                 if (text.Contains("http://") || text.Contains("https://"))
-                    Application.OpenURL(text);
+                {
+                    if (Input.GetKey(KeyCode.LeftControl))
+                    {
+                        GUIUtility.systemCopyBuffer = tmp_text.textInfo.linkInfo[index].GetLinkText();
+                    }
+                    else
+                    {
+                        Application.OpenURL(text);
+                    }
+                }
                 if (Regex.Matches(text, @"\[(.*?),(.*?)\]").Count > 0)
+                {
                     GUIUtility.systemCopyBuffer = (Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1)) ? "/travel " : "") + text;
+                }
                 if (Regex.Matches(text, @"guide_(\d+)_step_(\d+)").Count > 0)
+                {
                     StartCoroutine(ChangeGuide(
                         int.Parse(Regex.Match(text, @"guide_(\d+)_step_(\d+)").Groups[1].Value),
                         int.Parse(Regex.Match(text, @"guide_(\d+)_step_(\d+)").Groups[2].Value)
                     ));
+                }
             }
         }
     }
