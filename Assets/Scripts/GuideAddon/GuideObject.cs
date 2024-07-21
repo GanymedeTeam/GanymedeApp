@@ -98,6 +98,7 @@ public class GuideObject : MonoBehaviour
                 Debug.Log("Guide " + id + " does not need update.");
             }
         }
+        FindObjectOfType<GuideMenu>().OnClickReloadGuideList();
     }
 
     public IEnumerator CheckForUpdate()
