@@ -16,6 +16,7 @@ using UnityEngine.Assertions.Must;
 
 public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 {
+    public int guideId;
     private TMP_Text tmp_text;
     List<int> linkPositions = new List<int>();
 
@@ -60,6 +61,11 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator ChangeGuide(int id, int step)
     {
+        if (guideId == id)
+        {
+            FindObjectOfType<GuideMenu>().GoToGuideStep(step - 1);
+            yield break;
+        }
         string[] listOfIdGuides = Directory.GetFiles(Application.persistentDataPath + "/guides/", $"{id}.json", SearchOption.AllDirectories);
         if (listOfIdGuides.Count() > 0)
         {
@@ -88,8 +94,11 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 System.IO.File.WriteAllText($"{path}/{id}.json", jsonResponse);
             }
         }
-        // We set the step where we want to go
-        PlayerPrefs.SetInt($"{id}_currstep", step - 1);
+        if (step != 0)
+        {
+            // We set the step where we want to go
+            PlayerPrefs.SetInt($"{id}_currstep", step - 1);
+        }
         // We open it
         FindObjectOfType<GuideMenu>().LoadGuide(id.ToString());
     }

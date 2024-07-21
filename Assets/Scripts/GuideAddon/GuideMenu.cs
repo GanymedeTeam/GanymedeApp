@@ -385,6 +385,7 @@ public class GuideMenu : MonoBehaviour
                 continue;
             GameObject subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
             subStepGameObject.name = "Substep " + (++substepIndex).ToString();
+            subStepGameObject.transform.Find("Text").GetComponent<GuideSubstep>().guideId = guideInfos.id;
             subStepGameObject.transform.SetParent(StepContent.transform);
             subStepGameObject.transform.Find("Text").GetComponent<TMP_Text>().text = entity.Item1;
             if ( entity.Item2 == true )
