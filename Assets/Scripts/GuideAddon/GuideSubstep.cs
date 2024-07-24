@@ -221,12 +221,33 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    private IEnumerable<int> AllIndexesOfExactText(string text, string searchString)
+    {
+        int startIndex = 0;
+        while (true)
+        {
+            // Cherche la prochaine occurrence de searchString à partir de startIndex
+            int minIndex = text.IndexOf(searchString, startIndex);
+            
+            // Si aucune occurrence n'est trouvée, quitter la boucle
+            if (minIndex == -1)
+                yield break;
+
+            // Vérifie si l'occurrence trouvée est exactement ce que nous recherchons
+            if (text.Substring(minIndex, searchString.Length) == searchString)
+            {
+                yield return minIndex;
+            }
+
+            // Déplace le startIndex pour chercher la prochaine occurrence après l'actuelle
+            startIndex = minIndex + searchString.Length;
+        }
+    }
+
     private void ParseLogoObjects()
     {
         StringBuilder output = new StringBuilder(tmp_text.text);
-
         string parsedText = tmp_text.GetParsedText();
-
         int offset = 0; // Pour suivre le décalage causé par les remplacements
 
         // Utilisation d'un HashSet pour éviter de remplacer plusieurs fois le même indice
@@ -243,8 +264,10 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
         MatchCollection dofusdbLinksPatternMatches = Regex.Matches(tmp_text.text, dofusdbLinksPattern);
         MatchCollection selfGuideLinksPatternMatches = Regex.Matches(tmp_text.text, selfGuideLinksPattern);
-        var combinedMatches = dofusdbLinksPatternMatches.Cast<Match>().Concat(selfGuideLinksPatternMatches.Cast<Match>()).ToList();
-
+        var combinedMatches = dofusdbLinksPatternMatches.Cast<Match>()
+                                .Concat(selfGuideLinksPatternMatches.Cast<Match>())
+                                .OrderBy(m => m.Index)
+                                .ToList();
 
         stateOfCoroutines = new List<bool>();
         nbOfCustomLinks = combinedMatches.Count;
@@ -282,12 +305,6 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             output.Remove(matchStartIndex, match.Length);
             output.Insert(matchStartIndex, replacement);
 
-            // Calcul des indices dans le nouveau texte et dans le ParsedText
-            int newMatchIndex = matchStartIndex + replacement.Length - 1; // -1 pour pointer à la fin du remplacement
-            int parsedTextIndex = parsedText.IndexOf(match.Value);
-
-            // matchesInfo.Add((match.Value, newMatchIndex, parsedTextIndex));
-
             // Marquer cet indice comme remplacé
             replacedIndices.Add(matchStartIndex);
 
@@ -303,20 +320,23 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
         // Recuperer les index des links pour construire les images
         linkPositions = new List<int>();
-        Dictionary<string, int> occurrenceCount = new Dictionary<string, int>();
+        List<string> matchesSeen = new List<string>();
         foreach (Match match in combinedMatches)
         {
             string linkTxt;
+            int indexOffset = 0;
             if (match.Value.StartsWith("<guide"))
                 linkTxt = match.Groups[3].Value;
             else
                 linkTxt = match.Groups[4].Value;
-            if (occurrenceCount.ContainsKey(linkTxt))
-                occurrenceCount[linkTxt]++;
-            else
-                occurrenceCount[linkTxt] = 1;
-            int index = AllIndexesOfText(tmp_text.GetParsedText(), $"\u00A0\u00A0\u00A0\u00A0{linkTxt}").ElementAt(occurrenceCount[linkTxt] - 1);
+            foreach (string previousMatch in matchesSeen)
+            {
+                if (previousMatch.Contains(linkTxt))
+                    indexOffset++;
+            }
+            int index = AllIndexesOfExactText(tmp_text.GetParsedText(), $"\u00A0\u00A0\u00A0\u00A0{linkTxt}").ElementAt(indexOffset);
             linkPositions.Add(index);
+            matchesSeen.Add(linkTxt);
         }
     }
 
