@@ -59,7 +59,14 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 }
                 if (Regex.Matches(text, @"\[(.*?),(.*?)\]").Count > 0)
                 {
-                    GUIUtility.systemCopyBuffer = (Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1)) ? "/travel " : "") + text;
+                    Match pos = Regex.Match(text, @"\[(.*?),(.*?)\]");
+                    bool wantTravel = Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1));
+                    string pos_x = pos.Groups[1].Value;
+                    string pos_y = pos.Groups[2].Value;
+                    if (wantTravel)
+                        GUIUtility.systemCopyBuffer = $"/travel {pos_x},{pos_y}";
+                    else
+                        GUIUtility.systemCopyBuffer = $"[{pos_x},{pos_y}]";
                 }
                 if (Regex.Matches(text, @"guide_(\d+)_step_(\d+)").Count > 0)
                 {
