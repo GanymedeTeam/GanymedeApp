@@ -31,6 +31,7 @@ public class GuideMenu : MonoBehaviour
     public TMP_Text stepTravelPositionText;
     public TMP_FontAsset textFont;
     public TMP_InputField inputStep;
+    public Scrollbar guideMenuScrollbar;
 
     [SerializeField]
     private GuideEntry guideInfos;
@@ -258,7 +259,7 @@ public class GuideMenu : MonoBehaviour
                     );
                     newGuideObject.transform.Find("GuideInfo/UpdateGuideButton").GetComponent<Button>().onClick.AddListener(
                         delegate {
-                            newGuideObject.GetComponent<GuideObject>().UpdateGuideButton();
+                            StartCoroutine(UpdateSingleGuide(newGuideObject));
                         }
                     );
                 }
@@ -270,6 +271,15 @@ public class GuideMenu : MonoBehaviour
         FormatCurrentPath();
 
         yield return 0;
+
+    }
+
+    private IEnumerator UpdateSingleGuide(GameObject guideObject)
+    {
+        var scrollBarValue = guideMenuScrollbar.value;
+        yield return StartCoroutine(guideObject.GetComponent<GuideObject>().UpdateGuideButton());
+        yield return StartCoroutine(ReloadGuideList());
+        guideMenuScrollbar.value = scrollBarValue;
 
     }
 

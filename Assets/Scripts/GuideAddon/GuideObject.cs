@@ -38,9 +38,9 @@ public class GuideObject : MonoBehaviour
         StartCoroutine(CheckForUpdate());
     }
 
-    public void UpdateGuideButton()
+    public IEnumerator UpdateGuideButton()
     {
-        StartCoroutine(UpdateMyGuide(path, id));
+        yield return StartCoroutine(UpdateMyGuide(path, id));
     }
 
     public IEnumerator UpdateMyGuide(string path, string id)
