@@ -8,51 +8,51 @@ using System;
 
 public class GuideSubstepImage : MonoBehaviour
 {
-    public RawImage rawImage;
-    public float ratio;
 
-    readonly List<string> linksWhitelist = new List<string>
-    {
-        "https://www.dofuspourlesnoobs.com/",
-        "https://huzounet.fr/",
-        "https://static.ankama.com/"
-    };
+    private RawImage rawImage;
+    private AspectRatioFitter ratioFitter;
 
-    private void Awake()
+    // readonly List<string> linksWhitelist = new List<string>
+    // {
+    //     "https://www.dofuspourlesnoobs.com/",
+    //     "https://huzounet.fr/",
+    //     "https://static.ankama.com/"
+    // };
+
+    void Awake()
     {
-        if (rawImage == null)
-        {
-            rawImage = GetComponent<RawImage>();
-        }
+        rawImage = transform.GetChild(0).GetComponent<RawImage>();
+        ratioFitter = transform.GetChild(0).GetComponent<AspectRatioFitter>();
     }
 
-    public void SetImageRatio(float ratio)
+    public void SetImageUrl(string url, float ratio)
     {
-        // Set the image ratio (e.g., adjust the RectTransform size)
-        if (ratio > 1.5f)
-            ratio = 1.5f;
-        else if (ratio < 0.5f)
-            ratio = 0.5f;
-        RectTransform rectTransform = rawImage.GetComponent<RectTransform>();
-        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, rectTransform.sizeDelta.x) * ratio;
+        StartCoroutine(LoadImageFromUrl(url, ratio));
     }
 
-    public void SetImageUrl(string url)
+    private IEnumerator LoadImageFromUrl(string url, float ratio)
     {
-        StartCoroutine(LoadImageFromUrl(url));
-    }
+        // if (!linksWhitelist.Any(prefix => url.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+        //     yield break;
 
-    private IEnumerator LoadImageFromUrl(string url)
-    {
-        if (!linksWhitelist.Any(prefix => url.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
-            yield break;
-
+        // url = "https://www.dofuspourlesnoobs.com/uploads/1/3/0/1/13010384/10t2_orig.png";
         using UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
         yield return www.SendWebRequest();
 
         if (www.result == UnityWebRequest.Result.Success)
         {
-            rawImage.texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            ratioFitter.aspectRatio = (float)texture.width / texture.height;
+
+            float parentWidth = GetComponent<RectTransform>().rect.width;
+            float newParentHeight = parentWidth / ratioFitter.aspectRatio / (2.5f - ratio);
+            if (ratioFitter.aspectRatio <= 1)
+                newParentHeight *= 0.6f;
+            else if (ratioFitter.aspectRatio <= 2)
+                newParentHeight *= 0.8f;
+            GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, newParentHeight);
+
+            rawImage.texture = texture;
         }
         else
         {

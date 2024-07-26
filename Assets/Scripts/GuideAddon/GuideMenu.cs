@@ -455,8 +455,7 @@ public class GuideMenu : MonoBehaviour
             {
                 subStepGameObject = Instantiate(SubstepImagePrefab, StepContent.transform);
                 var imageComponent = subStepGameObject.GetComponent<GuideSubstepImage>();
-                imageComponent.SetImageUrl(content);
-                imageComponent.SetImageRatio(ratio);
+                imageComponent.SetImageUrl(content, ratio);
             }
             else
             {
