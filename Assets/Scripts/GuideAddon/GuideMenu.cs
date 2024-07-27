@@ -23,7 +23,6 @@ public class GuideMenu : MonoBehaviour
     public TMP_Text currentPath;
     public int guideProgress = 0;
     public MapManager mapManager;
-    public TMP_InputField guideGoToStepText;
     public TMP_InputField searchBar;
     public string guidesCurrentPath;
     public TMP_Text guideNameText;
@@ -33,19 +32,24 @@ public class GuideMenu : MonoBehaviour
     public TMP_InputField inputStep;
     public Scrollbar guideMenuScrollbar;
 
+    //Reference to Save Manager
+    public GameObject saveManagerGameObject;
+    private SaveManager saveManager; 
+
     [SerializeField]
     private GuideEntry guideInfos;
 
     void Awake()
     {
         guidesCurrentPath = Application.persistentDataPath + "/guides/";
+        saveManager = saveManagerGameObject.GetComponent<SaveManager>();
+        StartCoroutine(saveManager.ProgressLoadJsonToClass());
     }
 
     public void OnEnable()
     {
         gridGameobject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(gridGameobject.GetComponent<RectTransform>().rect.width, gridGameobject.GetComponent<GridLayoutGroup>().cellSize.y);
         gameObject.GetComponent<PaginationHandler>().enabled = true;
-        StartCoroutine(ReloadGuideList());
     }
 
     public void OnDisable() {
@@ -197,8 +201,7 @@ public class GuideMenu : MonoBehaviour
         }
 
         RemoveGuides();
-
-        yield return 0;
+        yield return saveManager.ProgressLoadJsonToClass();
 
         var fileInfo = GetGuidesInFolder();
         var dirInfo = GetGuidesFolders();
@@ -244,7 +247,18 @@ public class GuideMenu : MonoBehaviour
                 {
                     string fileContent = String.Join("", System.IO.File.ReadAllLines(guidesCurrentPath + file.Name));
                     GuideEntry fileContentSerialized = JsonUtility.FromJson<GuideEntry>(fileContent);
-                    int stepProgress = PlayerPrefs.GetInt(fileContentSerialized.id.ToString() + "_currstep", 0) + 1;
+
+                    // Get step progress
+                    int stepProgress;
+                    try
+                    {
+                        stepProgress = saveManager.saveProgress.guideProgress.First(e => e.id.ToString() == file.Name.Replace(".json", "")).current_step;
+                    }
+                    catch
+                    {
+                        stepProgress = 1;
+                    }
+                    //
                     int totalSteps = fileContentSerialized.steps.Count();
                     if (stepProgress == totalSteps && PlayerPrefs.GetInt("showCompletedGuides", 1) == 0)
                         continue;
@@ -273,9 +287,6 @@ public class GuideMenu : MonoBehaviour
             }
         }
         FormatCurrentPath();
-
-        yield return 0;
-
     }
 
     private IEnumerator UpdateSingleGuide(GameObject guideObject)
@@ -321,6 +332,12 @@ public class GuideMenu : MonoBehaviour
 
     public void LoadGuide(string guideName)
     {
+        IEnumerator LoadGuideAsync()
+        {
+            StartCoroutine(saveManager.GuideLoadJsonToClass(guideInfos.id));
+            GoToGuideStep(guideProgress);
+            yield return 0;
+        }
         OpenedGuide = guideName;
         string[] listOfIdGuides = Directory.GetFiles(Application.persistentDataPath + "/guides/", $"{guideName}.json", SearchOption.AllDirectories);
         if (listOfIdGuides.Count() == 0)
@@ -329,15 +346,17 @@ public class GuideMenu : MonoBehaviour
         string jsonToRead = File.ReadAllText(filePath);
         guideInfos = JsonUtility.FromJson<GuideEntry>(jsonToRead);
 
-        guideProgress = PlayerPrefs.GetInt(guideInfos.id.ToString() + "_currstep", -1);
-        if (guideProgress == -1)
+        try
         {
-            guideProgress = 0;
-            PlayerPrefs.SetInt(guideInfos.id.ToString() + "_currstep", guideProgress);
+            guideProgress = saveManager.saveProgress.guideProgress.First(e => e.id == guideInfos.id).current_step;
+        }
+        catch
+        {
+            guideProgress = 1;
         }
 
         guideNameText.text = guideInfos.name;
-        GoToGuideStep(guideProgress);
+        StartCoroutine(LoadGuideAsync());
     }
 
     public void PublicGoToGuideStep(string guideIndex)
@@ -346,7 +365,7 @@ public class GuideMenu : MonoBehaviour
         {
             int step = Int32.Parse(guideIndex);
             if (step <= guideInfos.steps.Count() && step > 0)
-                GoToGuideStep(step-1);
+                GoToGuideStep(step);
         }
         catch
         {
@@ -356,21 +375,29 @@ public class GuideMenu : MonoBehaviour
 
     public void GoToGuideStep(int guideIndex)
     {
-        if (guideInfos.steps.Count() < guideProgress + 1)
-            return;
         foreach (Transform child in StepContent.transform) {
             if (child.name.Contains("Substep"))
                 GameObject.Destroy(child.gameObject);
         }
         guideProgress = guideIndex;
-        PlayerPrefs.SetInt(guideInfos.id.ToString() + "_currstep", guideProgress);
-        inputStep.text = (guideProgress + 1).ToString();
+
+        try
+        {
+            saveManager.saveProgress.guideProgress.First(e => e.id == guideInfos.id).current_step = guideProgress;
+        }
+        catch
+        {
+            // Guide is not saved yet, create structure
+            saveManager.saveProgress.guideProgress.Add(new SaveManager.SaveProgression.GuideProgress { id = guideInfos.id, current_step = guideProgress });
+        }
+        StartCoroutine(saveManager.ProgressSaveClassToJson());
+
         stepMaxNumberText.text = guideInfos.steps.Count().ToString();
-        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress].pos_x + "," + guideInfos.steps[guideProgress].pos_y + "]</color>";
-        ProcessSubSteps(guideInfos.steps[guideProgress].sub_steps);
-        int posX = guideInfos.steps[guideProgress].pos_x;
-        int posY = guideInfos.steps[guideProgress].pos_y;
-        mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress].map);
+        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress-1].pos_x + "," + guideInfos.steps[guideProgress-1].pos_y + "]</color>";
+        ProcessSubSteps(guideInfos.steps[guideProgress-1].sub_steps);
+        int posX = guideInfos.steps[guideProgress-1].pos_x;
+        int posY = guideInfos.steps[guideProgress-1].pos_y;
+        mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress-1].map);
         StepContent.transform.parent.parent.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 1f;
         FindObjectOfType<WindowManager>().RefreshGuideInteractiveMap();
     }
@@ -475,13 +502,20 @@ public class GuideMenu : MonoBehaviour
             var toggle = toggleObject.GetComponent<Toggle>();
             toggle.onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
 
-            string playerPrefKey = $"{guideInfos.id}_cb_{guideProgress}_{substepIndex}";
-            toggle.isOn = Convert.ToBoolean(PlayerPrefs.GetInt(playerPrefKey, 0));
+            try
+            {
+                toggle.isOn = saveManager.saveGuide.steps.First(e => e.step_index == guideProgress).idCheckboxTicked.Any(e => e == substepIndex);
+            }
+            catch
+            {
+                toggle.isOn = false;
+            }
         }
     }
+
     public void NextStep()
     {
-        if (guideProgress < guideInfos.steps.Count() - 1)
+        if (guideProgress < guideInfos.steps.Count())
         {
             GoToGuideStep(++guideProgress);
         }
@@ -489,21 +523,40 @@ public class GuideMenu : MonoBehaviour
 
     public void SaveCheckboxStates()
     {
+        List<int> checkboxesTicked;
+        try
+        {
+            checkboxesTicked = saveManager.saveGuide.steps.First(e => e.step_index == guideProgress).idCheckboxTicked;
+        }
+        catch
+        {
+            saveManager.saveGuide.steps.Add(new SaveManager.SaveStep { step_index = guideProgress, idCheckboxTicked = new List<int>() });
+            checkboxesTicked = saveManager.saveGuide.steps.First(e => e.step_index == guideProgress).idCheckboxTicked;
+        }
         foreach (Transform child in StepContent.transform)
         {
+            int checkboxId = int.Parse(child.name.Split(' ').Last());
             if (child.Find("Toggle").gameObject.activeSelf)
             {
-                PlayerPrefs.SetInt(
-                    $"{guideInfos.id}_cb_{guideProgress}_{child.name[child.name.Length - 1]}",
-                    child.transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn ? 1 : 0
-                );
+                if (child.transform.Find("Toggle").gameObject.GetComponent<Toggle>().isOn)
+                {
+                    if (!checkboxesTicked.Contains(checkboxId))
+                        checkboxesTicked.Add(checkboxId);
+                }
+                else
+                {
+                    checkboxesTicked.RemoveAll(e => e == checkboxId);
+                }
             }
         }
+        int indexOfStep = saveManager.saveGuide.steps.IndexOf(saveManager.saveGuide.steps.First(e => e.step_index == guideProgress));
+        saveManager.saveGuide.steps[indexOfStep].idCheckboxTicked = checkboxesTicked;
+        StartCoroutine(saveManager.GuideSaveClassToJson(guideInfos.id));
     }
 
     public void PreviousStep()
     {
-        if (guideProgress > 0)
+        if (guideProgress > 1)
             GoToGuideStep(--guideProgress);
     }
 
@@ -514,9 +567,9 @@ public class GuideMenu : MonoBehaviour
         else
             gameObject.GetComponent<PaginationHandler>().enabled = false;
 
-        if (!inputStep.isFocused && inputStep.text != (guideProgress + 1).ToString())
+        if (!inputStep.isFocused && inputStep.text != guideProgress.ToString())
         {
-            inputStep.text = (guideProgress + 1).ToString();
+            inputStep.text = guideProgress.ToString();
         }
     }
 }
