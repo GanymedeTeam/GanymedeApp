@@ -49,15 +49,8 @@ public class WindowManager : MonoBehaviour
         LoadPlayerPrefs();
     }
 
-    private void AppPrerequisites()
-    {
-        if (!Directory.Exists(Application.persistentDataPath + "/guides"))
-            Directory.CreateDirectory(Application.persistentDataPath + "/guides");
-    }
-
     void Start()
     {
-        AppPrerequisites();
         AppWindowUtility.Transparent = true;
         AppWindowUtility.AlwaysOnTop = true;
         SelectedWindow = MainWindow;
