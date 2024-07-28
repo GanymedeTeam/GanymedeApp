@@ -2111,7 +2111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adb30198aa32dd140b5750692dd48104, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 6
+  radius: 3
   image: {fileID: 167121277}
 --- !u!1 &174197114
 GameObject:
@@ -23119,7 +23119,7 @@ Material:
     - _UseUIAlphaClip: 0
     m_Colors:
     - _OuterUV: {r: 0, g: 0, b: 1, a: 1}
-    - _WidthHeightRadius: {r: 300, g: 24.7357, b: 12, a: 0}
+    - _WidthHeightRadius: {r: 300, g: 24.7357, b: 6, a: 0}
   m_BuildTextureStacks: []
 --- !u!1 &1901596213
 GameObject:
