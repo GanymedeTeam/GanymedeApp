@@ -443,7 +443,15 @@ public class GuideMenu : MonoBehaviour
                 }
                 else if (match.Groups[2].Success && match.Groups[3].Success) // Image with ratio
                 {
-                    entities.Add((match.Groups[2].Value, "image", float.Parse(match.Groups[3].Value)));
+                    try
+                    {
+                        entities.Add((match.Groups[2].Value, "image", float.Parse(match.Groups[3].Value)));
+                    }
+                    catch
+                    {
+                        // format error depending on windows lang?
+                        entities.Add((match.Groups[2].Value, "image", float.Parse(match.Groups[3].Value.Replace('.', ','))));
+                    }
                 }
 
                 lastIndex = match.Index + match.Length;
