@@ -136,7 +136,7 @@ public class GuideMenu : MonoBehaviour
 
         DirectoryInfo info = new DirectoryInfo(guidesCurrentPath);
 
-        FileInfo[] fileInfo = info.GetFiles();
+        FileInfo[] fileInfo = info.GetFiles("*.json");
         List<string> guideNameInfo = new List<string>();
         try
         {
