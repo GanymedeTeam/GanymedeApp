@@ -343,7 +343,15 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 if (previousMatch.Contains(linkTxt))
                     indexOffset++;
             }
-            int index = AllIndexesOfExactText(tmp_text.GetParsedText(), $"\u00A0\u00A0\u00A0\u00A0{linkTxt}").ElementAt(indexOffset);
+            int index;
+            try
+            {
+                index = AllIndexesOfExactText(tmp_text.GetParsedText(), $"\u00A0\u00A0\u00A0\u00A0{linkTxt}").ElementAt(indexOffset);
+            }
+            catch
+            {
+                index = AllIndexesOfExactText(tmp_text.GetParsedText(), $"\u00A0\u00A0\u00A0\u00A0{linkTxt}").Last();
+            }
             linkPositions.Add(index);
             matchesSeen.Add(linkTxt);
         }
