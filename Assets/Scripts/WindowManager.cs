@@ -155,7 +155,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
-        ToggleInteractiveMap(false);
+        // ToggleInteractiveMap(false);
     }
 
     public void NotepadWindowClicked()
