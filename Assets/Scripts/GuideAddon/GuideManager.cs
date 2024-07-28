@@ -55,8 +55,11 @@ public class GuideManager : MonoBehaviour
     private string guides_url = $"{Constants.ganymedeWebUrl}/api/guides?status=";
     private string currentMenu = "root";
 
+    public SaveManager saveManager;
+
     public void OnEnable()
     {
+        StartCoroutine(saveManager.ProgressLoadJsonToClass());
         content.GetComponent<GridLayoutGroup>().cellSize = new Vector2(content.GetComponent<RectTransform>().rect.width, content.GetComponent<GridLayoutGroup>().cellSize.y);
         if (currentMenu != "root")
             StartCoroutine(GetGuidesList());
@@ -146,6 +149,7 @@ public class GuideManager : MonoBehaviour
 
     private IEnumerator GetGuide(string url)
     {
+        yield return saveManager.GuideLoadJsonToClass(int.Parse(url.Split('/').Last()));
         using (UnityWebRequest webRequest = UnityWebRequest.Get(url))
         {
             yield return webRequest.SendWebRequest();
@@ -158,16 +162,24 @@ public class GuideManager : MonoBehaviour
 
                 GuideEntry guide = JsonUtility.FromJson<GuideEntry>(jsonResponse);
 
-                // Reset player prefs
-                if (PlayerPrefs.GetInt(url.Split('/')[url.Split('/').Length - 1] + "_currstep") >= guide.steps.Count())
-                    PlayerPrefs.SetInt(url.Split('/')[url.Split('/').Length - 1] + "_currstep", guide.steps.Count() - 1);
-                // Checkboxes
-                for (int stepIndex = 0; stepIndex < guide.steps.Count(); stepIndex++)
+                // Check if step is not overflowing
+                SaveManager.SaveProgression saveProgress = saveManager.saveProgress;
+                try
                 {
-                    for (int i = 0; i < 50; i++)
+                    if (guide.steps.Count() < saveProgress.guideProgress.First(e => e.id == guide.id).current_step)
                     {
-                        PlayerPrefs.DeleteKey(url.Split('/')[url.Split('/').Length - 1] + "_cb_" + stepIndex + "_" + i);
+                        int indexOfGuide = saveProgress.guideProgress.IndexOf(saveProgress.guideProgress.First(e => e.id == guide.id));
+                        saveProgress.guideProgress[indexOfGuide].current_step = guide.steps.Count();
+                        StartCoroutine(saveManager.ProgressSaveClassToJson());
                     }
+                }
+                catch{}
+
+                // Checkboxes
+                if (saveManager.saveGuide.steps.Count() != 0)
+                {
+                    saveManager.saveGuide = new SaveManager.SaveGuide();
+                    StartCoroutine(saveManager.GuideSaveClassToJson(guide.id));
                 }
 
                 DownloadGuide(path, jsonResponse);

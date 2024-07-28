@@ -38,7 +38,7 @@ public class SaveManager : MonoBehaviour
 
     public IEnumerator GuideSaveClassToJson(int id)
     {
-        string path = $"{Application.persistentDataPath}/saves/{id}.json";
+        string path = $"{Application.persistentDataPath}/guideSaves/{id}.json";
         try
         {
             while (isWriting)
@@ -47,7 +47,6 @@ public class SaveManager : MonoBehaviour
             string content = JsonUtility.ToJson(saveGuide);
             File.WriteAllText(path, content);
             isWriting = false;
-            Debug.Log("Done saving guide!");
         }
         catch
         {
@@ -59,7 +58,7 @@ public class SaveManager : MonoBehaviour
     public IEnumerator GuideLoadJsonToClass(int id)
     {
         string content = "";
-        string path = $"{Application.persistentDataPath}/saves/{id}.json";
+        string path = $"{Application.persistentDataPath}/guideSaves/{id}.json";
         try
         {
             content = File.ReadAllText(path);
@@ -82,7 +81,6 @@ public class SaveManager : MonoBehaviour
             string content = JsonUtility.ToJson(saveProgress);
             File.WriteAllText(path, content);
             isWriting = false;
-            Debug.Log("Done saving progress!");
         }
         catch
         {

@@ -26,7 +26,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     readonly List<string> linksWhitelist = new List<string>
     {
         "https://www.dofuspourlesnoobs.com/",
-        "https://huzounet.fr/"
+        "https://huzounet.fr/",
+        "https://www.dofusbook.net/"
     };
 
     readonly string dofusdbLinksPattern = @"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>";
@@ -83,7 +84,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     {
         if (guideId == id)
         {
-            FindObjectOfType<GuideMenu>().GoToGuideStep(step - 1);
+            FindObjectOfType<GuideMenu>().GoToGuideStep(step);
             yield break;
         }
         string[] listOfIdGuides = Directory.GetFiles(Application.persistentDataPath + "/guides/", $"{id}.json", SearchOption.AllDirectories);
@@ -114,13 +115,10 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 System.IO.File.WriteAllText($"{path}/{id}.json", jsonResponse);
             }
         }
-        if (step != 0)
-        {
-            // We set the step where we want to go
-            PlayerPrefs.SetInt($"{id}_currstep", step - 1);
-        }
         // We open it
         FindObjectOfType<GuideMenu>().LoadGuide(id.ToString());
+        FindObjectOfType<GuideMenu>().GoToGuideStep(step);
+
     }
 
     string ReplaceCoordinates(Match match)

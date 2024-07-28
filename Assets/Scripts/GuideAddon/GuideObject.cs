@@ -35,6 +35,7 @@ public class GuideObject : MonoBehaviour
 
     public void Start()
     {
+        StartCoroutine(FindObjectOfType<SaveManager>().GuideLoadJsonToClass(int.Parse(id)));
         StartCoroutine(CheckForUpdate());
     }
 
@@ -86,9 +87,12 @@ public class GuideObject : MonoBehaviour
                 }
                 else
                 {
-                    // Reset player prefs
-                    if (PlayerPrefs.GetInt(id + "_currstep") >= webGuide.steps.Count())
-                        PlayerPrefs.SetInt(id + "_currstep", webGuide.steps.Count() - 1);
+                    SaveManager.SaveProgression saveProgress = FindObjectOfType<SaveManager>().saveProgress;
+                    if (webGuide.steps.Count() < saveProgress.guideProgress.First(e => e.id == int.Parse(id)).current_step)
+                    {
+                        int indexOfGuide = saveProgress.guideProgress.IndexOf(saveProgress.guideProgress.First(e => e.id == int.Parse(id)));
+                        saveProgress.guideProgress[indexOfGuide].current_step = webGuide.steps.Count();
+                    }
                     Debug.Log("File " + id + " downloaded successfully!");
                     updtImage.SetActive(false);
                 }
@@ -98,7 +102,6 @@ public class GuideObject : MonoBehaviour
                 Debug.Log("Guide " + id + " does not need update.");
             }
         }
-        FindObjectOfType<GuideMenu>().OnClickReloadGuideList();
     }
 
     public IEnumerator CheckForUpdate()
