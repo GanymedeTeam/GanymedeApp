@@ -167,8 +167,8 @@ MonoBehaviour:
   m_Version: 1.1.0
   m_SourceFontFileGUID: e3265ab4bf004d28a9537516768c1c75
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75, type: 3}
-  m_SourceFontFile: {fileID: 12800000, guid: e3265ab4bf004d28a9537516768c1c75, type: 3}
-  m_AtlasPopulationMode: 1
+  m_SourceFontFile: {fileID: 0}
+  m_AtlasPopulationMode: 0
   m_FaceInfo:
     m_FaceIndex: 0
     m_FamilyName: Liberation Sans
@@ -191,20 +191,6 @@ MonoBehaviour:
     m_StrikethroughThickness: 6.298828
     m_TabWidth: 4
   m_GlyphTable:
-  - m_Index: 277
-    m_Metrics:
-      m_Width: 75
-      m_Height: 47
-      m_HorizontalBearingX: 3
-      m_HorizontalBearingY: 46
-      m_HorizontalAdvance: 81
-    m_GlyphRect:
-      m_X: 10
-      m_Y: 10
-      m_Width: 75
-      m_Height: 47
-    m_Scale: 1
-    m_AtlasIndex: 0
   - m_Index: 276
     m_Metrics:
       m_Width: 79
@@ -219,14 +205,28 @@ MonoBehaviour:
       m_Height: 61
     m_Scale: 1
     m_AtlasIndex: 0
-  m_CharacterTable:
-  - m_ElementType: 1
-    m_Unicode: 339
-    m_GlyphIndex: 277
+  - m_Index: 277
+    m_Metrics:
+      m_Width: 75
+      m_Height: 47
+      m_HorizontalBearingX: 3
+      m_HorizontalBearingY: 46
+      m_HorizontalAdvance: 81
+    m_GlyphRect:
+      m_X: 10
+      m_Y: 10
+      m_Width: 75
+      m_Height: 47
     m_Scale: 1
+    m_AtlasIndex: 0
+  m_CharacterTable:
   - m_ElementType: 1
     m_Unicode: 338
     m_GlyphIndex: 276
+    m_Scale: 1
+  - m_ElementType: 1
+    m_Unicode: 339
+    m_GlyphIndex: 277
     m_Scale: 1
   m_AtlasTextures:
   - {fileID: 28268798066460806}
@@ -374,7 +374,7 @@ Texture2D:
   m_MipsStripped: 0
   m_TextureFormat: 1
   m_MipCount: 1
-  m_IsReadable: 1
+  m_IsReadable: 0
   m_IsPreProcessed: 0
   m_IgnoreMasterTextureLimit: 0
   m_StreamingMipmaps: 0
