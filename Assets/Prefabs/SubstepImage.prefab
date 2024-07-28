@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1858139370230876872}
   - component: {fileID: 8687406340131738317}
+  - component: {fileID: 4485049434062061288}
   m_Layer: 5
   m_Name: SubstepImage
   m_TagString: Untagged
@@ -49,6 +50,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7381076e0db6cf24986d97e6b815951f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4485049434062061288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 404646247487262957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_HorizontalFit: 0
+  m_VerticalFit: 0
 --- !u!1 &712651086386664029
 GameObject:
   m_ObjectHideFlags: 0
