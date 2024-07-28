@@ -30,6 +30,9 @@ public class GuideMenu : MonoBehaviour
     public TMP_Text stepTravelPositionText;
     public TMP_FontAsset textFont;
     public TMP_InputField inputStep;
+
+    private bool fixScrollbar = false;
+    private float fixedScrollbarValue = 0f;
     public Scrollbar guideMenuScrollbar;
 
     //Reference to Save Manager
@@ -200,6 +203,9 @@ public class GuideMenu : MonoBehaviour
             currentPath.text = text;
         }
 
+        fixedScrollbarValue = guideMenuScrollbar.value;
+        fixScrollbar = true;
+
         RemoveGuides();
         yield return saveManager.ProgressLoadJsonToClass();
 
@@ -287,15 +293,14 @@ public class GuideMenu : MonoBehaviour
             }
         }
         FormatCurrentPath();
+        yield return 0;
+        fixScrollbar = false;
     }
 
     private IEnumerator UpdateSingleGuide(GameObject guideObject)
     {
-        var scrollBarValue = guideMenuScrollbar.value;
         yield return StartCoroutine(guideObject.GetComponent<GuideObject>().UpdateGuideButton());
         yield return StartCoroutine(ReloadGuideList());
-        guideMenuScrollbar.value = scrollBarValue;
-
     }
 
     void RemoveGuides()
@@ -489,6 +494,7 @@ public class GuideMenu : MonoBehaviour
                 subStepGameObject = Instantiate(SubstepPrefab, StepContent.transform);
                 subStepGameObject.name = $"Substep {++substepIndex}";
                 subStepGameObject.transform.Find("Text").GetComponent<TMP_Text>().text = content;
+                subStepGameObject.transform.Find("Text").GetComponent<GuideSubstep>().guideId = guideInfos.id;
             }
 
             return subStepGameObject;
@@ -571,5 +577,7 @@ public class GuideMenu : MonoBehaviour
         {
             inputStep.text = guideProgress.ToString();
         }
+        if (fixScrollbar)
+            guideMenuScrollbar.value = fixedScrollbarValue;
     }
 }
