@@ -181,6 +181,7 @@ public class GuideMenu : MonoBehaviour
 
     public IEnumerator ReloadGuideList()
     {
+        Debug.Log("hehe");
         void FormatCurrentPath()
         {
             string text = guidesCurrentPath;
@@ -311,7 +312,6 @@ public class GuideMenu : MonoBehaviour
     public void BackToGuideSelection()
     {
         FindObjectOfType<WindowManager>().ToggleInteractiveMap(false);
-        StartCoroutine(ReloadGuideList());
         GuideDetailsMenu.SetActive(false);
         GuideSelectionMenu.SetActive(true);
     }
