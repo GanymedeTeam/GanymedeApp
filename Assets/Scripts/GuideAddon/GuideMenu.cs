@@ -51,7 +51,6 @@ public class GuideMenu : MonoBehaviour
 
     public void OnEnable()
     {
-        gridGameobject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(gridGameobject.GetComponent<RectTransform>().rect.width, gridGameobject.GetComponent<GridLayoutGroup>().cellSize.y);
         gameObject.GetComponent<PaginationHandler>().enabled = true;
     }
 
@@ -303,7 +302,7 @@ public class GuideMenu : MonoBehaviour
         yield return StartCoroutine(ReloadGuideList());
     }
 
-    void RemoveGuides()
+    public void RemoveGuides()
     {
         foreach (Transform child in gridGameobject.transform)
             Destroy(child.gameObject);
@@ -404,7 +403,7 @@ public class GuideMenu : MonoBehaviour
             int posX = guideInfos.steps[guideProgress - 1].pos_x;
             int posY = guideInfos.steps[guideProgress - 1].pos_y;
             mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress - 1].map);
-            stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress-1].pos_x + "," + guideInfos.steps[guideProgress-1].pos_y + "]</color>";
+            stepTravelPositionText.text = $"<color=\"yellow\">[{posX},{posY}]</color>";
             FindObjectOfType<WindowManager>().keepInteractiveMapClosed = false;
         }
         else
@@ -577,6 +576,7 @@ public class GuideMenu : MonoBehaviour
 
     void Update()
     {
+        gridGameobject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(gridGameobject.GetComponent<RectTransform>().rect.width, gridGameobject.GetComponent<GridLayoutGroup>().cellSize.y);
         if ( transform.Find("GuideSelectionMenu").gameObject.activeSelf )
             gameObject.GetComponent<PaginationHandler>().enabled = true;
         else

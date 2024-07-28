@@ -1,10 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.Rendering;
-using UnityEngine.EventSystems;
-using TMPro;
 
 public class GuideSelectMenu : MonoBehaviour
 {

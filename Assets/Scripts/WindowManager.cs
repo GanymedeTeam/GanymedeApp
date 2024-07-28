@@ -69,16 +69,19 @@ public class WindowManager : MonoBehaviour
 
     public void MaximizeApp()
     {
-        FullWindows.SetActive(true);
-        MinimizedWindows.SetActive(false);
-        if (SelectedWindow == guideWindow)
+        if (SelectedWindow == guideWindow && guideWindow.transform.Find("GuideDetailsMenu").gameObject.activeSelf)
         {
-            AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
+            if (guideWindow.transform.Find("GuideDetailsMenu").gameObject.activeSelf)
+                InGuideRefreshInteractiveMap();
+            else if (guideWindow.transform.Find("GuideSelectionMenu").gameObject.activeSelf)
+                guideWindow.GetComponent<GuideMenu>().RemoveGuides();
         }
         else
         {
             AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
         }
+        FullWindows.SetActive(true);
+        MinimizedWindows.SetActive(false);
     }
 
     public void CloseApp()
