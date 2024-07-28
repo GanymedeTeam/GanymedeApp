@@ -3,9 +3,10 @@ using UnityEngine;
 public class GuideDetailsMenu : MonoBehaviour
 {
     public GameObject winManager;
+    public GameObject guideMenu;
 
     void OnEnable()
     {
-        winManager.GetComponent<WindowManager>().ToggleInteractiveMap(true);
+        guideMenu.GetComponent<GuideMenu>().GoToGuideStep(guideMenu.GetComponent<GuideMenu>().guideProgress);
     }
 }

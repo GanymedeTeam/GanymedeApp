@@ -43,6 +43,7 @@ public class WindowManager : MonoBehaviour
     public Slider BgOpacitySlider;
 
     public bool isInteractiveMapActive;
+    public bool keepInteractiveMapClosed;
 
     void Awake()
     {
@@ -56,6 +57,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow = MainWindow;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
         isInteractiveMapActive = true;
+        keepInteractiveMapClosed = false;
     }
 
     public void MinimizeApp()
@@ -209,25 +211,46 @@ public class WindowManager : MonoBehaviour
             guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
     }
 
-    public void RefreshGuideInteractiveMap()
+    public void InGuideRefreshInteractiveMap()
     {
-        SetMapFullscale(isInteractiveMapActive);
-        ToggleInteractiveMap(isInteractiveMapActive);
+        if (keepInteractiveMapClosed)
+        {
+            AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
+        }
+        else
+        {
+            if (isInteractiveMapActive)
+            {
+                guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
+                AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
+            }
+            else
+            {
+                guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
+                AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+            }
+        }
     }
 
-    public void ToggleGuideInteractiveMap()
+    public void InGuideToggleInteractiveMap()
     {
         isInteractiveMapActive = !isInteractiveMapActive;
-        SetMapFullscale(isInteractiveMapActive);
-        ToggleInteractiveMap(isInteractiveMapActive);
+        InGuideRefreshInteractiveMap();
     }
 
     public void ToggleInteractiveMap(bool setActive)
     {
-        if (setActive && guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin == new Vector2(0f, 300f))
+        if (setActive)
+        {
+            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
             AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
+        }
         else
+        {
+            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
             AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        }         
     }
 
     public void ChangeCanvasOpacity(float opacity)

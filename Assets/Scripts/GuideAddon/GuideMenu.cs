@@ -40,7 +40,7 @@ public class GuideMenu : MonoBehaviour
     private SaveManager saveManager; 
 
     [SerializeField]
-    private GuideEntry guideInfos;
+    public GuideEntry guideInfos;
 
     void Awake()
     {
@@ -398,13 +398,22 @@ public class GuideMenu : MonoBehaviour
         StartCoroutine(saveManager.ProgressSaveClassToJson());
 
         stepMaxNumberText.text = guideInfos.steps.Count().ToString();
-        stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress-1].pos_x + "," + guideInfos.steps[guideProgress-1].pos_y + "]</color>";
         ProcessSubSteps(guideInfos.steps[guideProgress-1].sub_steps);
-        int posX = guideInfos.steps[guideProgress-1].pos_x;
-        int posY = guideInfos.steps[guideProgress-1].pos_y;
-        mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress-1].map);
+        if (guideInfos.steps[guideProgress - 1].map != "")
+        {
+            int posX = guideInfos.steps[guideProgress - 1].pos_x;
+            int posY = guideInfos.steps[guideProgress - 1].pos_y;
+            mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress - 1].map);
+            stepTravelPositionText.text = "<color=\"yellow\">[" + guideInfos.steps[guideProgress-1].pos_x + "," + guideInfos.steps[guideProgress-1].pos_y + "]</color>";
+            FindObjectOfType<WindowManager>().keepInteractiveMapClosed = false;
+        }
+        else
+        {
+            stepTravelPositionText.text = "";
+            FindObjectOfType<WindowManager>().keepInteractiveMapClosed = true;
+        }
+        FindObjectOfType<WindowManager>().InGuideRefreshInteractiveMap();
         StepContent.transform.parent.parent.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 1f;
-        FindObjectOfType<WindowManager>().RefreshGuideInteractiveMap();
     }
 
     private void ProcessSubSteps(List<SubstepEntry> subentries)
