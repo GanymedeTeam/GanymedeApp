@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GuideDetailsMenu : MonoBehaviour
@@ -15,7 +16,13 @@ public class GuideDetailsMenu : MonoBehaviour
 
     void OnEnable()
     {
-        windowManagerScript.InGuideRefreshInteractiveMap();
+        StartCoroutine(DelayedRefresh());
+    }
+    
+    IEnumerator DelayedRefresh()
+    {
+        yield return null; // Wait for one frame
         guideMenuScript.LoadGuide(guideMenu.GetComponent<GuideMenu>().OpenedGuide);
+        windowManagerScript.InGuideRefreshInteractiveMap();
     }
 }
