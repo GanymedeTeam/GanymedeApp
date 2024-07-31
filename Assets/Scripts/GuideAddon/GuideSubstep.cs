@@ -28,7 +28,17 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         "https://www.dofuspourlesnoobs.com/",
         "https://huzounet.fr/",
         "https://www.dofusbook.net/",
-        "https://ganymede-dofus.com/"
+        "https://ganymede-dofus.com/",
+        "https://dofus-portals.fr/",
+        "https://www.youtube.com/",
+        "https://twitter.com/",
+        "https://x.com/",
+        "https://www.dofus.com/",
+        "https://www.twitch.tv/",
+        "https://metamob.fr/",
+        "https://dofusdb.fr/",
+        "https://www.dofuskin.com/",
+        "https://barbofus.com/",
     };
 
     readonly string dofusdbLinksPattern = @"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>";
