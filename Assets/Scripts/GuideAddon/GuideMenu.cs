@@ -73,9 +73,9 @@ public class GuideMenu : MonoBehaviour
     {
         bool wantTravel = Convert.ToBoolean(PlayerPrefs.GetInt("wantTravel", 1));
         if (wantTravel)
-            GUIUtility.systemCopyBuffer = $"/travel {guideInfos.steps[guideProgress].pos_x},{guideInfos.steps[guideProgress].pos_y}";
+            GUIUtility.systemCopyBuffer = $"/travel {guideInfos.steps[guideProgress-1].pos_x},{guideInfos.steps[guideProgress-1].pos_y}";
         else
-            GUIUtility.systemCopyBuffer = $"[{guideInfos.steps[guideProgress].pos_x},{guideInfos.steps[guideProgress].pos_y}]";
+            GUIUtility.systemCopyBuffer = $"[{guideInfos.steps[guideProgress-1].pos_x},{guideInfos.steps[guideProgress-1].pos_y}]";
     }
 
     public void OpenGuideFileStorage()
