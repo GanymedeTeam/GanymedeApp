@@ -62,11 +62,11 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 {
                     if (Input.GetKey(KeyCode.LeftControl))
                     {
-                        GUIUtility.systemCopyBuffer = tmp_text.textInfo.linkInfo[index].GetLinkText();
+                        Application.OpenURL(text);
                     }
                     else
                     {
-                        Application.OpenURL(text);
+                        GUIUtility.systemCopyBuffer = tmp_text.textInfo.linkInfo[index].GetLinkText();
                     }
                 }
                 if (Regex.Matches(text, @"\[(.*?),(.*?)\]").Count > 0)
