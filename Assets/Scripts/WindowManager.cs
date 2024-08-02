@@ -9,8 +9,8 @@ using System.IO;
 
 public class WindowManager : MonoBehaviour
 {
-    private int windowWidth = 300;
-    private int windowHeight = 450;
+    private int windowWidth;
+    private int windowHeight;
     private int mapHeight = 300;
     public TMP_InputField windowWidthText;
     public TMP_InputField windowHeightText;
@@ -114,10 +114,13 @@ public class WindowManager : MonoBehaviour
         ChangeBgOpacity(guideBgOpacity);
 
         //Resolution
-        windowWidth = PlayerPrefs.GetInt("XResolution", 0) * 50 + 300;
-        windowHeight = PlayerPrefs.GetInt("YResolution", 0) * 50 + 450;
-        Xresolution.GetComponent<TMP_Dropdown>().value = PlayerPrefs.GetInt("XResolution", 0);
-        Yresolution.GetComponent<TMP_Dropdown>().value = PlayerPrefs.GetInt("YResolution", 0);
+        int xResolutionIndex = PlayerPrefs.GetInt("XResolution", 1);
+        int yResolutionIndex = PlayerPrefs.GetInt("YResolution", 0);
+        Xresolution.GetComponent<TMP_Dropdown>().value = xResolutionIndex;
+        Yresolution.GetComponent<TMP_Dropdown>().value = yResolutionIndex;
+        windowWidth = xResolutionIndex * 50 + 250;
+        windowHeight = yResolutionIndex * 50 + 450;
+
     }
 
     public void ToggleWindow()
@@ -282,7 +285,7 @@ public class WindowManager : MonoBehaviour
 
     public void SetXResolution(int x)
     {
-        windowWidth = 300 + x * 50;
+        windowWidth = 250 + x * 50;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
         PlayerPrefs.SetInt("XResolution", x);
     }
