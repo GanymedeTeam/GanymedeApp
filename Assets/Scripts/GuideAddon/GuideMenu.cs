@@ -181,7 +181,6 @@ public class GuideMenu : MonoBehaviour
 
     public IEnumerator ReloadGuideList()
     {
-        Debug.Log("hehe");
         void FormatCurrentPath()
         {
             string text = guidesCurrentPath;
