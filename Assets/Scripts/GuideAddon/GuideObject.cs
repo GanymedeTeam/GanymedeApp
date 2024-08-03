@@ -1,12 +1,9 @@
 using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using TMPro;
 using System.Linq;
-using System.Text.RegularExpressions;
-using UnityEngine.UI;
 using UnityEngine.Networking;
 
 public class GuideObject : MonoBehaviour
@@ -16,6 +13,8 @@ public class GuideObject : MonoBehaviour
     public string id;
     public GameObject updtImage;
     public string path;
+
+    private GuideEntry guideContent;
     
     public void Initialize(string guideName, string id, string path)
     {
@@ -35,6 +34,13 @@ public class GuideObject : MonoBehaviour
 
     public void Start()
     {
+        try
+        {
+            string jsonToRead = File.ReadAllText(path + id + ".json");
+            guideContent = JsonUtility.FromJson<GuideEntry>(jsonToRead);
+        }
+        catch
+        {}
         StartCoroutine(FindObjectOfType<SaveManager>().GuideLoadJsonToClass(int.Parse(id)));
         StartCoroutine(CheckForUpdate());
     }
@@ -106,37 +112,23 @@ public class GuideObject : MonoBehaviour
 
     public IEnumerator CheckForUpdate()
     {
-        GuideEntry localGuide;
+        yield return new WaitForSeconds(0.5f);
+        while (FindObjectOfType<GuideMenu>().apiGuides.guides.Count() == 0)
+            yield return 0;
+        GuideManager.ApiGuide apiGuide;
         try
         {
-            string jsonToRead = File.ReadAllText(path + id + ".json");
-            localGuide = JsonUtility.FromJson<GuideEntry>(jsonToRead);
+            apiGuide = FindObjectOfType<GuideMenu>().apiGuides.guides.First(g => g.id.ToString() == id);
         }
         catch
         {
+            Debug.Log($"Guide {id} does not exist anymore");
             yield break;
         }
-
-        using UnityWebRequest webRequest = UnityWebRequest.Get($"{Constants.ganymedeWebGuidesUrl}/{id}");
-        yield return webRequest.SendWebRequest();
-
-        if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
-        {
-            string jsonResponse = webRequest.downloadHandler.text;
-
-            GuideEntry webGuide = JsonUtility.FromJson<GuideEntry>(jsonResponse);
-            if (!JsonUtility.ToJson(localGuide).Equals(JsonUtility.ToJson(webGuide)))
-            {
-                updtImage.SetActive(true);
-            }
-            else
-            {
-                updtImage.SetActive(false);
-            }
-        }
-
-        yield return new WaitForSeconds(60);
-        StartCoroutine(CheckForUpdate());
+        if (guideContent.updated_at != apiGuide.updated_at)
+            updtImage.SetActive(true);
+        else
+            updtImage.SetActive(false);
     }
 
     void Update()
