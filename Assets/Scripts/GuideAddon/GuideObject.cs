@@ -5,6 +5,7 @@ using UnityEngine;
 using TMPro;
 using System.Linq;
 using UnityEngine.Networking;
+using System.Globalization;
 
 public class GuideObject : MonoBehaviour
 {
@@ -52,6 +53,11 @@ public class GuideObject : MonoBehaviour
 
     public IEnumerator UpdateMyGuide(string path, string id)
     {
+        if (!updtImage.activeSelf)
+        {
+            Debug.Log($"Guide {id} is currently up to date.");
+            yield break;
+        }
         GuideEntry localGuide;
         try
         {
@@ -94,11 +100,16 @@ public class GuideObject : MonoBehaviour
                 else
                 {
                     SaveManager.SaveProgression saveProgress = FindObjectOfType<SaveManager>().saveProgress;
-                    if (webGuide.steps.Count() < saveProgress.guideProgress.First(e => e.id == int.Parse(id)).current_step)
+                    int currStep;
+                    try
                     {
+                        currStep = saveProgress.guideProgress.First(e => e.id == int.Parse(id)).current_step;
                         int indexOfGuide = saveProgress.guideProgress.IndexOf(saveProgress.guideProgress.First(e => e.id == int.Parse(id)));
                         saveProgress.guideProgress[indexOfGuide].current_step = webGuide.steps.Count();
                     }
+                    catch
+                    {}
+
                     Debug.Log("File " + id + " downloaded successfully!");
                     updtImage.SetActive(false);
                 }
@@ -125,10 +136,28 @@ public class GuideObject : MonoBehaviour
             Debug.Log($"Guide {id} does not exist anymore");
             yield break;
         }
-        if (guideContent.updated_at != apiGuide.updated_at)
+
+        if (ConvertToStandardFormat(apiGuide.updated_at) != ConvertToStandardFormat(guideContent.updated_at))
+        {
             updtImage.SetActive(true);
+        }
         else
             updtImage.SetActive(false);
+    }
+
+    private static string ConvertToStandardFormat(string dateStr)
+    {
+        if (DateTime.TryParseExact(dateStr, "yyyy-MM-ddTHH:mm:ss.ffffffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out DateTime date))
+        {
+            return date.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        if (DateTime.TryParseExact(dateStr, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out date))
+        {
+            return date.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        throw new FormatException("Le format de la date n'est pas reconnu : " + dateStr);
     }
 
     void Update()
