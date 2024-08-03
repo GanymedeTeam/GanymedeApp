@@ -7,6 +7,7 @@ using TMPro;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class GuideMenu : MonoBehaviour
 {
@@ -37,7 +38,10 @@ public class GuideMenu : MonoBehaviour
 
     //Reference to Save Manager
     public GameObject saveManagerGameObject;
-    private SaveManager saveManager; 
+    private SaveManager saveManager;
+
+    //distant list of guides
+    public GuideManager.ApiGuides apiGuides;
 
     [SerializeField]
     public GuideEntry guideInfos;
@@ -202,6 +206,8 @@ public class GuideMenu : MonoBehaviour
             currentPath.text = text;
         }
 
+        StartCoroutine(GetAllGuidesDistant());
+
         fixedScrollbarValue = guideMenuScrollbar.value;
         fixScrollbar = true;
 
@@ -295,6 +301,21 @@ public class GuideMenu : MonoBehaviour
         yield return 0;
         fixScrollbar = false;
     }
+
+    private IEnumerator GetAllGuidesDistant()
+    {
+        string url = $"{Constants.ganymedeWebUrl}/api/guides";
+        using UnityWebRequest webRequest = UnityWebRequest.Get(url);
+        yield return webRequest.SendWebRequest();
+
+        if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
+        {
+            string jsonResponse = webRequest.downloadHandler.text;
+            apiGuides = JsonUtility.FromJson<GuideManager.ApiGuides>("{\"guides\":" + jsonResponse + "}");
+        }
+    }
+
+
 
     private IEnumerator UpdateSingleGuide(GameObject guideObject)
     {
