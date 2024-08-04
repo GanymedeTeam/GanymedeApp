@@ -1,0 +1,206 @@
+{
+    "Searchbar":
+    {
+        "fr": "Rechercher...",
+        "en": "Search...",
+        "es": "Buscar...",
+        "po": "Pesquisar..."
+    },
+    "Guides":
+    {
+        "fr": "Guides",
+        "en": "Guides",
+        "es": "Guías",
+        "po": "Guias"
+    },
+    "MainMenu":
+    {
+        "MenuName":
+        {
+            "fr": "Ganymède",
+            "en": "Ganymede",
+            "es": "Ganymede",
+            "po": "Ganymede"
+        },
+        "MenuDesc":
+        {
+            "fr": "Présentation",
+            "en": "Presentation",
+            "es": "Presentación",
+            "po": "Apresentação"
+        },
+        "Presentation":
+        {
+            "fr": "Bienvenue sur <color=\"yellow\">GANYMEDE</color> !\n\nCet outil a pour but de vous assister tout au long de votre aventure sur <color=\"green\">Dofus</color>!\n\nVous pouvez créer, utiliser et partager des guides vous permettant d'optimiser votre aventure.\n\nCréez vos guides via le site officiel et téléchargez ceux des autres!",
+            "en": "Welcome to <color=\"yellow\">GANYMEDE</color>!\n\nThis tool is designed to assist you throughout your adventure on <color=\"green\">Dofus</color>!\n\nYou can create, use and share guides to help you optimize your adventure.\n\nCreate your guides via the official site and download those of others!",
+            "es": "Bienvenido a <color=\"yellow\">GANYMEDE</color>!\n\nEl objetivo de esta herramienta es ayudarte a lo largo de tu aventura en <color=\"green\">Dofus</color>!\n\nPuedes crear, utilizar y compartir guías que te permitirán optimizar tu aventura.\n\n¡Crea tus guías a través del sitio oficial y descarga las de los demás!",
+            "po": "Bem-vindo ao <color=\"yellow\">GANYMEDE</color>!\n\nO objetivo desta ferramenta é ajudá-lo durante toda a sua aventura no <color=\"green\">Dofus</color>!\n\nVocê pode criar, usar e compartilhar guias para otimizar sua aventura.\n\nCrie seus guias por meio do site oficial e baixe os de outras pessoas!"
+        },
+        "DiscordButton":
+        {
+            "fr": "Discord officiel",
+            "en": "Official Discord",
+            "es": "Discord oficial",
+            "po": "Discord oficial"
+        },
+        "Affiliation":
+        {
+            "fr": "Ganymede - Non affilié à Ankama Games",
+            "en": "Ganymede - Not affiliated with Ankama Games",
+            "es": "Ganymede - No afiliado a Ankama Games",
+            "po": "Ganymede - Não afiliado à Ankama Games"
+        }
+    },
+    "DownloadMenu":
+    {
+        "MenuTitle":
+        {
+            "fr": "Téléchargement",
+            "en": "Download",
+            "es": "Descargar",
+            "po": "Baixar"
+        },
+        "RootMenuTitle":
+        {
+            "fr": "Catégories",
+            "en": "Categories",
+            "es": "Categorías",
+            "po": "Categorias"
+        },
+        "CertifiedGuides":
+        {
+            "fr": "Guides certifiés",
+            "en": "Certified guides",
+            "es": "Guías certificados",
+            "po": "Guias certificados"
+        },
+        "PublicGuides":
+        {
+            "fr": "Guides publics",
+            "en": "Public guides",
+            "es": "Guías públicas",
+            "po": "Guias públicos"
+        },
+        "DraftGuides":
+        {
+            "fr": "Guides draft",
+            "en": "Draft guides",
+            "es": "Guías draft",
+            "po": "Guias draft"
+        }
+    },
+    "NotepadMenu":
+    {
+        "MenuTitle":
+        {
+            "fr": "Bloc-notes",
+            "en": "Notepad",
+            "es": "Bloc de notas",
+            "po": "Bloco de notas"
+        },
+        "MenuName":
+        {
+            "fr": "Mes notes",
+            "en": "My notes",
+            "es": "Mis notas",
+            "po": "Minhas notas"
+        },
+        "NoteEditionName":
+        {
+            "fr": "Edition de note",
+            "en": "Note editing",
+            "es": "Edición de notas",
+            "po": "Edição de notas"
+        },
+        "NoteContent":
+        {
+            "fr": "Ceci est ma note.\n\nDepuis le menu précédent, une fois créée, je peux la modifier en cliquant dessus, ou copier le contenu en cliquant sur le bouton associé.\n\nUne fois un titre inséré, et le contenu rempli, je sauvegarde ma note via le bouton SAVE en haut a droite de la fenêtre.",
+            "en": "This is my note.\n\nFrom the previous menu, once created, I can modify it by clicking on it, or copy the content by clicking on the associated button.\n\nOnce a title has been inserted, and the content filled in, I save my note using the SAVE button at the top right of the window.",
+            "es": "Esta es mi nota.\n\nDesde el menú anterior, una vez creada, puedo modificarla pulsando sobre ella, o copiar el contenido pulsando sobre el botón asociado.\n\nUna vez insertado el título y rellenado el contenido, guardo mi nota utilizando el botón SAVE situado en la parte superior derecha de la ventana.",
+            "po": "Esta é a minha nota.\n\nNo menu anterior, depois de criada, posso modificá-la clicando nela ou copiar o conteúdo clicando no botão associado.\n\nDepois de inserir um título e preencher o conteúdo, eu salvo minha nota usando o botão SAVE no canto superior direito da janela."
+        }
+    },
+    "TravelMenu":
+    {
+        "MenuTitle":
+        {
+            "fr": "Autopilotage",
+            "en": "Autopilot",
+            "es": "Piloto automático",
+            "po": "Piloto automático"
+        },
+        "Name":
+        {
+            "fr": "Nom",
+            "en": "Name",
+            "es": "Nombre",
+            "po": "Nome"
+        }
+    },
+    "SettingsMenu":
+    {
+        "MenuTitle":
+        {
+            "fr": "Options",
+            "en": "Settings",
+            "es": "Opciones",
+            "po": "Opções"
+        },
+        "GlobalOpacity":
+        {
+            "fr": "Opacité globale",
+            "en": "Overall opacity",
+            "es": "Opacidad global",
+            "po": "Opacidade geral"
+        },
+        "BgOpacity":
+        {
+            "fr": "Opacité de l'arrière plan",
+            "en": "Background opacity",
+            "es": "Opacidad del fondo",
+            "po": "Opacidade do plano de fundo"
+        },
+        "Resolution":
+        {
+            "fr": "Résolution",
+            "en": "Resolution",
+            "es": "Resolución",
+            "po": "Resolução"
+        },
+        "Width":
+        {
+            "fr": "Largeur",
+            "en": "Width",
+            "es": "Anchura",
+            "po": "Largura"
+        },
+        "Height":
+        {
+            "fr": "Hauteur",
+            "en": "Height",
+            "es": "Altura",
+            "po": "Altura"
+        },
+        "CopyTravel":
+        {
+            "fr": "Copie d'autopilote",
+            "en": "Autopilot copy",
+            "es": "Copia del piloto automático",
+            "po": "Cópia do piloto automático"
+        },
+        "ShowGuides":
+        {
+            "fr": "Afficher les guides terminés",
+            "en": "Show finished guides",
+            "es": "Mostrar guías completadas",
+            "po": "Mostrar guias concluídos"
+        },
+        "Language":
+        {
+            "fr": "Langue",
+            "en": "Language",
+            "es": "Idioma",
+            "po": "Idioma"
+        }
+    }
+}

@@ -27,7 +27,6 @@ public class WindowManager : MonoBehaviour
     public GameObject GuideBg;
     public Toggle TravelCheckbox;
     public Toggle ShowCompletedGuidesCheckbox;
-    public TMP_Text menuTitle;
 
     // Lock button
     public GameObject LockButton;
@@ -38,6 +37,9 @@ public class WindowManager : MonoBehaviour
     // Resolution fields
     public GameObject Xresolution;
     public GameObject Yresolution;
+
+    //Language field
+    public GameObject language;
 
     public Slider opacitySlider;
     public Slider BgOpacitySlider;
@@ -121,6 +123,9 @@ public class WindowManager : MonoBehaviour
         windowWidth = xResolutionIndex * 50 + 250;
         windowHeight = yResolutionIndex * 50 + 450;
 
+        //Language
+        int langIndex = PlayerPrefs.GetInt("lang", 0);
+        language.GetComponent<TMP_Dropdown>().value = langIndex;
     }
 
     public void ToggleWindow()
@@ -132,7 +137,6 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == MainWindow)
             return;
-        menuTitle.text = "Ganymede";
         SelectedWindow.SetActive(false);
         SelectedWindow = MainWindow;
         SelectedWindow.SetActive(true);
@@ -143,7 +147,6 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == travelWindow)
             return;
-        menuTitle.text = "Autopilotage";
         SelectedWindow.SetActive(false);
         SelectedWindow = travelWindow;
         SelectedWindow.SetActive(true);
@@ -154,7 +157,6 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == guideWindow)
             return;
-        menuTitle.text = "Guides";
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
@@ -165,7 +167,6 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == notepadWindow)
             return;
-        menuTitle.text = "Bloc-notes";
         SelectedWindow.SetActive(false);
         SelectedWindow = notepadWindow;
         SelectedWindow.SetActive(true);
@@ -176,7 +177,6 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == settingsWindow)
             return;
-        menuTitle.text = "Options";
         SelectedWindow.SetActive(false);
         SelectedWindow = settingsWindow;
         SelectedWindow.SetActive(true);            
@@ -187,7 +187,6 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == downloadWindow)
             return;
-        menuTitle.text = "Téléchargement";
         SelectedWindow.SetActive(false);
         SelectedWindow = downloadWindow;
         SelectedWindow.SetActive(true);
@@ -295,6 +294,11 @@ public class WindowManager : MonoBehaviour
         windowHeight = 450 + y * 50;
         AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
         PlayerPrefs.SetInt("YResolution", y);
+    }
+
+    public void SetLang(int langIndex)
+    {
+        PlayerPrefs.SetInt("lang", langIndex);
     }
 
     public void ResetAppSize()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TravelMenu : MonoBehaviour
 {
@@ -11,6 +12,17 @@ public class TravelMenu : MonoBehaviour
     public TMP_Text positionText;
     public GameObject travelUIPositionPrefab;
     public GameObject gridGameobject;
+
+    private IEnumerator ResizeContentGridLayout()
+    {
+        yield return 0;
+        gridGameobject.GetComponent<GridLayoutGroup>().cellSize = new Vector2(gridGameobject.GetComponent<RectTransform>().rect.width - 15f, 32f);
+    }
+
+    public void OnEnable()
+    {
+        StartCoroutine(ResizeContentGridLayout());
+    }
 
     public List<TravelEntry> travelPositionsData = new List<TravelEntry>();
     // Start is called before the first frame update
