@@ -71,7 +71,10 @@ public class RotatingLogHandler : ILogHandler
         logFile.Flush();
 
         RotateLogs();
-        defaultLogHandler.LogException(exception, context);
+        try
+        {
+            defaultLogHandler.LogException(exception, context);
+        } catch {}
     }
 
     public void Close()
