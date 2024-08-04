@@ -9,6 +9,7 @@ using TMPro;
 public class ColorLinkHandler : MonoBehaviour
 {
     private int _targetedSharpColorIndex = -1;
+    private int idIntersectedLink = -1;
     private TMP_Text tmp_text;
 
     private Canvas _canvas;
@@ -97,6 +98,7 @@ public class ColorLinkHandler : MonoBehaviour
             // reset previous targetet link color to unhovered
             SetColor("unhover");
             _targetedSharpColorIndex = -1;
+            idIntersectedLink = -1;
             return;
         }
 
@@ -107,6 +109,16 @@ public class ColorLinkHandler : MonoBehaviour
             // reset previous targetet link color to unhovered
             SetColor("unhover");
             _targetedSharpColorIndex = -1;
+            idIntersectedLink = -1;
+            return;
+        }
+
+        if (idIntersectedLink != -1 && idIntersectedLink != tmp_text.textInfo.linkInfo[intersectingLink].linkIdFirstCharacterIndex)
+        {
+            // reset previous targetet link color to unhovered
+            SetColor("unhover");
+            _targetedSharpColorIndex = -1;
+            idIntersectedLink = -1;
             return;
         }
 
@@ -129,6 +141,7 @@ public class ColorLinkHandler : MonoBehaviour
             }
 
             SetColor("hover");
+            idIntersectedLink = linkInfo.linkIdFirstCharacterIndex;
         }
     }
 
