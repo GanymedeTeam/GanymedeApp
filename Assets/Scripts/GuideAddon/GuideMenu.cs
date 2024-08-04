@@ -424,18 +424,18 @@ public class GuideMenu : MonoBehaviour
 
         stepMaxNumberText.text = guideInfos.steps.Count().ToString();
         ProcessSubSteps(guideInfos.steps[guideProgress-1].sub_steps);
-        if (guideInfos.steps[guideProgress - 1].map != "")
+        if (guideInfos.steps[guideProgress - 1].map == "Nomap" || guideInfos.steps[guideProgress - 1].map == "")
+        {
+            stepTravelPositionText.text = "";
+            FindObjectOfType<WindowManager>().keepInteractiveMapClosed = true;
+        }
+        else
         {
             int posX = guideInfos.steps[guideProgress - 1].pos_x;
             int posY = guideInfos.steps[guideProgress - 1].pos_y;
             mapManager.updateMapFromStep(posX, posY, guideInfos.steps[guideProgress - 1].map);
             stepTravelPositionText.text = $"<color=\"yellow\">[{posX},{posY}]</color>";
             FindObjectOfType<WindowManager>().keepInteractiveMapClosed = false;
-        }
-        else
-        {
-            stepTravelPositionText.text = "";
-            FindObjectOfType<WindowManager>().keepInteractiveMapClosed = true;
         }
         FindObjectOfType<WindowManager>().InGuideRefreshInteractiveMap();
         StepContent.transform.parent.parent.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 1f;
