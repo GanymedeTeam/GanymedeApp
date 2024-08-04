@@ -43,6 +43,9 @@ public class GuideMenu : MonoBehaviour
     //distant list of guides
     public GuideManager.ApiGuides apiGuides;
 
+    //each time a guide is updating, it increments, then decrements when it is done
+    private int countGuidesToUpdate = 0;
+
     [SerializeField]
     public GuideEntry guideInfos;
 
@@ -319,8 +322,11 @@ public class GuideMenu : MonoBehaviour
 
     private IEnumerator UpdateSingleGuide(GameObject guideObject)
     {
+        countGuidesToUpdate++;
         yield return StartCoroutine(guideObject.GetComponent<GuideObject>().UpdateGuideButton());
-        yield return StartCoroutine(ReloadGuideList());
+        countGuidesToUpdate--;
+        if (countGuidesToUpdate == 0)
+            yield return StartCoroutine(ReloadGuideList());
     }
 
     public void RemoveGuides()
