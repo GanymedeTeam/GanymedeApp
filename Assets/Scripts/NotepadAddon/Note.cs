@@ -15,6 +15,30 @@ public class Note : MonoBehaviour
     public string noteContent;
 
     public GameObject Notepad;
+    public TMP_Text CopyButtonText;
+
+    void Awake()
+    {
+        int lang = PlayerPrefs.GetInt("lang", 0);
+        switch (lang)
+        {
+            case 0: //fr
+                CopyButtonText.text = "Copier";
+                break;
+
+            case 1: //en
+                CopyButtonText.text = "Copy";
+                break;
+
+            case 2: //es
+                CopyButtonText.text = "Copia";
+                break;
+
+            case 3: //po
+                CopyButtonText.text = "Cópia";
+                break;
+        }
+    }
 
     public void OnClickModifyCurrentID()
     {

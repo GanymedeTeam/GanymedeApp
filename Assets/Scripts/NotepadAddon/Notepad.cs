@@ -36,16 +36,6 @@ public class Notepad : MonoBehaviour
         public List<NoteSerialize> notes;
     }
 
-    public void Start()
-    {
-        FilePath = Application.persistentDataPath + "/notepadData.json";
-        targetedNote = gameObject.AddComponent<Note>();
-        targetedNote.noteName = "";
-        targetedNote.noteContent = "";
-        targetedNote.noteId = -1;
-        targetedNote.hideFlags = HideFlags.HideInHierarchy;
-    }
-
     public void OnEnable()
     {
         FilePath = Application.persistentDataPath + "/notepadData.json";
@@ -101,7 +91,7 @@ public class Notepad : MonoBehaviour
     private IEnumerator ResizeContentGridLayout()
     {
         yield return 0;
-        content.GetComponent<GridLayoutGroup>().cellSize = new Vector2(content.GetComponent<RectTransform>().rect.width, 32f);
+        content.GetComponent<GridLayoutGroup>().cellSize = new Vector2(content.GetComponent<RectTransform>().rect.width - 20f, 32f);
     }
 
     public void GoToRootMenu()
@@ -109,8 +99,8 @@ public class Notepad : MonoBehaviour
         StartCoroutine(ResizeContentGridLayout());
         try
         {
-            targetedNote.noteName = "Nom";
-            targetedNote.noteContent = "Contenu";
+            targetedNote.noteName = "Name";
+            targetedNote.noteContent = "";
             targetedNote.noteId = -1;
         }
         catch { }
@@ -183,7 +173,9 @@ public class Notepad : MonoBehaviour
     {
         rootMenu.SetActive(false);
         editMenu.SetActive(true);
-        nameInput.text = targetedNote.noteName;
-        contentInput.text = targetedNote.noteContent;
+        try{
+            nameInput.text = targetedNote.noteName;
+            contentInput.text = targetedNote.noteContent;
+        }catch{}
     }
 }

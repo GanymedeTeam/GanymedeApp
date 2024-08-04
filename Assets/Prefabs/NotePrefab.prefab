@@ -934,3 +934,4 @@ MonoBehaviour:
   noteName: 
   noteContent: 
   Notepad: {fileID: 0}
+  CopyButtonText: {fileID: 9169753090184992892}
