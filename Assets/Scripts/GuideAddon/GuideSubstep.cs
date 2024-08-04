@@ -141,16 +141,6 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         return $"<link=\"{coordinate}\"><color={cd["pos"].UnhoverColor}>{coordinate}</color></link>";
     }
 
-    string ReplaceGoToGuides(Match match)
-    {
-        string id = match.Groups[1].Value;
-        string step = match.Groups[2].Value;
-        string guideName = match.Groups[3].Value;
-        string gotoGuide = $"guide_{id}_step_{step}";
-        var cd = gameObject.GetComponent<ColorLinkHandler>().ColorDictionary;
-        return $"<link=\"{gotoGuide}\"><color={cd["gotoguide"].UnhoverColor}>{guideName}</color></link>";
-    }
-
     private void ParseNoLogoObjects()
     {
         Regex coordRegex = new Regex(@"\[(-?\d+),(-?\d+)\]");
@@ -228,16 +218,6 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                     catch{};
                 }
             }
-        }
-    }
-
-    private IEnumerable<int> AllIndexesOfText(string text, string searchstring)
-    {
-        int minIndex = text.IndexOf(searchstring);
-        while (minIndex != -1)
-        {
-            yield return minIndex;
-            minIndex = text.IndexOf(searchstring, minIndex + searchstring.Length);
         }
     }
 
