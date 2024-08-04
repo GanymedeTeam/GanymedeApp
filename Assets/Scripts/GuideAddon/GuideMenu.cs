@@ -405,6 +405,7 @@ public class GuideMenu : MonoBehaviour
 
     public void GoToGuideStep(int guideIndex)
     {
+        Resources.UnloadUnusedAssets();
         foreach (Transform child in StepContent.transform) {
             if (child.name.Contains("Substep"))
                 GameObject.Destroy(child.gameObject);
