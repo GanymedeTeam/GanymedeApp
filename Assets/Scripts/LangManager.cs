@@ -26,7 +26,7 @@ public class LangManager : MonoBehaviour
             public TradFormat MenuName;
             public TradFormat MenuDesc;
             public TradFormat Presentation;
-            public TradFormat DiscordButton;
+            public TradFormat AlmanaxInfo;
             public TradFormat Affiliation;
         }
 
@@ -83,7 +83,7 @@ public class LangManager : MonoBehaviour
     public TMP_Text MainMenuTopName;
     public TMP_Text MainMenuName;
     public TMP_Text MainMenuPresentation;
-    public TMP_Text MainMenuDiscordButton;
+    public TMP_Text MainMenuAlmanaxInfoRetrieve;
     public TMP_Text MainMenuAffiliation;
 
     //GuidesMenu
@@ -143,7 +143,7 @@ public class LangManager : MonoBehaviour
         MainMenuTopName.text = GetTranslationField(traductor.MainMenu.MenuName, languageCode);
         MainMenuName.text = GetTranslationField(traductor.MainMenu.MenuDesc, languageCode);
         MainMenuPresentation.text = GetTranslationField(traductor.MainMenu.Presentation, languageCode);
-        MainMenuDiscordButton.text = GetTranslationField(traductor.MainMenu.DiscordButton, languageCode);
+        MainMenuAlmanaxInfoRetrieve.text = GetTranslationField(traductor.MainMenu.AlmanaxInfo, languageCode);
         MainMenuAffiliation.text = GetTranslationField(traductor.MainMenu.Affiliation, languageCode);
 
         GuidesMenuTopName.text = GetTranslationField(traductor.Guides, languageCode);

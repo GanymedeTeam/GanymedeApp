@@ -41,12 +41,10 @@ public class VersionManager : MonoBehaviour
             string hashedID = HashUniqueID(uniqueID);
             PlayerPrefs.SetString(UniqueIDKey, hashedID);
             PlayerPrefs.Save();
-            Debug.Log("Nouvel identifiant unique généré et stocké: " + hashedID);
         }
         else
         {
             string uniqueID = PlayerPrefs.GetString(UniqueIDKey);
-            Debug.Log("Identifiant unique existant récupéré: " + uniqueID);
         }
     }
 

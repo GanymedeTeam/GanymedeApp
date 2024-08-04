@@ -36,12 +36,12 @@
             "es": "Bienvenido a <color=\"yellow\">GANYMEDE</color>!\n\nEl objetivo de esta herramienta es ayudarte a lo largo de tu aventura en <color=\"green\">Dofus</color>!\n\nPuedes crear, utilizar y compartir guías que te permitirán optimizar tu aventura.\n\n¡Crea tus guías a través del sitio oficial y descarga las de los demás!",
             "po": "Bem-vindo ao <color=\"yellow\">GANYMEDE</color>!\n\nO objetivo desta ferramenta é ajudá-lo durante toda a sua aventura no <color=\"green\">Dofus</color>!\n\nVocê pode criar, usar e compartilhar guias para otimizar sua aventura.\n\nCrie seus guias por meio do site oficial e baixe os de outras pessoas!"
         },
-        "DiscordButton":
+        "AlmanaxInfo":
         {
-            "fr": "Discord officiel",
-            "en": "Official Discord",
-            "es": "Discord oficial",
-            "po": "Discord oficial"
+            "fr": "Récupération de \nl'offrande du jour...",
+            "en": "Loading the \nday's offering...",
+            "es": "Recogiendo la \nofrenda del día...",
+            "po": "Carregando a \noferta de hoje..."
         },
         "Affiliation":
         {
