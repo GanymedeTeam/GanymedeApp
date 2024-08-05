@@ -17,7 +17,7 @@ public class Notepad : MonoBehaviour
 
     public TMP_InputField nameInput;
     public TMP_InputField contentInput;
-    public Note targetedNote;
+    public Note targetedNote = null;
 
     public int currentNoteId;
     private string FilePath;
@@ -73,7 +73,7 @@ public class Notepad : MonoBehaviour
             noteId = -1
         };
 
-        if (targetedNote.noteId == -1)
+        if (targetedNote == null)
         {
             note.noteId = serializedNotes.notes.Count();
             serializedNotes.notes.Add(note);
@@ -97,13 +97,7 @@ public class Notepad : MonoBehaviour
     public void GoToRootMenu()
     {
         StartCoroutine(ResizeContentGridLayout());
-        try
-        {
-            targetedNote.noteName = "Name";
-            targetedNote.noteContent = "";
-            targetedNote.noteId = -1;
-        }
-        catch { }
+        targetedNote = null;
         editMenu.SetActive(false);
         rootMenu.SetActive(true);
         ShowNotes();
@@ -176,6 +170,10 @@ public class Notepad : MonoBehaviour
         try{
             nameInput.text = targetedNote.noteName;
             contentInput.text = targetedNote.noteContent;
-        }catch{}
+        }catch
+        {
+            nameInput.text = "";
+            contentInput.text = "";
+        }
     }
 }
