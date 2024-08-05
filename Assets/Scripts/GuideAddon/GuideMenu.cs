@@ -429,7 +429,7 @@ public class GuideMenu : MonoBehaviour
         StartCoroutine(saveManager.ProgressSaveClassToJson());
 
         stepMaxNumberText.text = guideInfos.steps.Count().ToString();
-        ProcessSubSteps(guideInfos.steps[guideProgress-1].sub_steps);
+        ProcessSubSteps(guideInfos.steps[guideProgress-1].text);
         if (guideInfos.steps[guideProgress - 1].map == "Nomap" || guideInfos.steps[guideProgress - 1].map == "")
         {
             stepTravelPositionText.text = "";
@@ -447,17 +447,14 @@ public class GuideMenu : MonoBehaviour
         StepContent.transform.parent.parent.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 1f;
     }
 
-    private void ProcessSubSteps(List<SubstepEntry> subentries)
+    private void ProcessSubSteps(string subentry)
     {
         int substepIndex = 0;
         Regex CombinedRegex = new Regex(@"<checkbox>(.*?)</checkbox>|<image url=""([^""]+)"" ratio=""([\d.]+)"">");
 
         List<(string content, string type, float ratio)> entities = new List<(string content, string type, float ratio)>();
 
-        foreach (SubstepEntry subentry in subentries)
-        {
-            ExtractEntitiesFromText(subentry.text, entities);
-        }
+        ExtractEntitiesFromText(subentry, entities);
 
         InstantiateSubstepGameObjects(entities, ref substepIndex);
 
