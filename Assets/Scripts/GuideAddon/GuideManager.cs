@@ -32,6 +32,7 @@ public class GuideManager : MonoBehaviour
         public string category;
         public string like;
         public string dislike;
+        public string lang;
         public string created_at;
         public string updated_at;
         public string deleted_at;
@@ -51,6 +52,11 @@ public class GuideManager : MonoBehaviour
     public GameObject backButton;
     public Sprite spriteCertified;
     public TMP_InputField searchBar;
+
+    public Sprite fr_flag;
+    public Sprite en_flag;
+    public Sprite es_flag;
+    public Sprite pt_flag;
 
     private string guides_url = $"{Constants.ganymedeWebUrl}/api/guides?status=";
     private string currentMenu = "root";
@@ -228,7 +234,7 @@ public class GuideManager : MonoBehaviour
         List<ApiGuide> listOfShownGuides = new List<ApiGuide>();
         foreach (ApiGuide apiguide in listOfGuides.guides)
         {
-            if (listOfLocalGuides.Contains(apiguide.id.ToString()))
+            if (listOfLocalGuides.Any(name => name.Split('\\').Last().Equals(apiguide.id.ToString())))
                 continue;
             if (searchBar.text == "")
                 listOfShownGuides.Add(apiguide);
@@ -268,9 +274,23 @@ public class GuideManager : MonoBehaviour
             {
                 StartCoroutine(SetCertification(webGuide.transform.Find("GuideInfo/GuideAuthor").GetComponent<TMP_Text>()));
             }
+            SetFlag(webGuide, guide.lang);
             webGuide.transform.Find("GuideInfo/GuideID").GetComponent<TMP_Text>().text = "id: <color=#dce775>" +  guide.id + "</color>";
             webGuide.transform.Find("GuideInfo/DownloadGuideButton").GetComponent<Button>().onClick.AddListener(delegate { StartCoroutine(GetGuide($"{Constants.ganymedeWebGuidesUrl}/{guide.id}")); });
         }
+    }
+
+    public IEnumerator SetFlag(GameObject webGuide, string lang)
+    {
+        if (lang == "fr")
+            webGuide.transform.Find("GuideInfo/FlagInfo").GetComponent<Image>().sprite = fr_flag;
+        else if (lang == "en")
+            webGuide.transform.Find("GuideInfo/FlagInfo").GetComponent<Image>().sprite = en_flag;
+        else if (lang == "es")
+            webGuide.transform.Find("GuideInfo/FlagInfo").GetComponent<Image>().sprite = es_flag;
+        else if (lang == "pt")
+            webGuide.transform.Find("GuideInfo/FlagInfo").GetComponent<Image>().sprite = pt_flag;
+        yield return 0;
     }
 
     public IEnumerator SetCertification(TMP_Text text)
