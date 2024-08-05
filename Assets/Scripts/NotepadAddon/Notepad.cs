@@ -161,7 +161,7 @@ public class Notepad : MonoBehaviour
         System.IO.File.WriteAllText(FilePath, jsonToWrite);
         ShowNotes();
     }
-        
+
 
     public void GoToEditMenu()
     {

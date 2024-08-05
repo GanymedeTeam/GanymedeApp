@@ -6,6 +6,7 @@ using TMPro;
 using System.Linq;
 using UnityEngine.Networking;
 using System.Globalization;
+using UnityEngine.UI;
 
 public class GuideObject : MonoBehaviour
 {
@@ -15,6 +16,12 @@ public class GuideObject : MonoBehaviour
     public GameObject updtImage;
     public string path;
 
+    public Image FlagImage;
+
+    public Sprite fr_flag;
+    public Sprite en_flag;
+    public Sprite es_flag;
+    public Sprite pt_flag;
 
     private GuideEntry guideContent;
     
@@ -45,6 +52,7 @@ public class GuideObject : MonoBehaviour
         {}
         if (guideContent.steps.Count() == 0)
             transform.Find("GuideInfo/OpenGuideButton").gameObject.SetActive(false);
+        SetLanguageFlag();
         StartCoroutine(FindObjectOfType<SaveManager>().GuideLoadJsonToClass(int.Parse(id)));
         StartCoroutine(CheckForUpdate());
     }
@@ -161,6 +169,18 @@ public class GuideObject : MonoBehaviour
         }
 
         throw new FormatException("Le format de la date n'est pas reconnu : " + dateStr);
+    }
+
+    private void SetLanguageFlag()
+    {
+        if (guideContent.lang == "fr")
+            FlagImage.sprite = fr_flag;
+        else if (guideContent.lang == "en")
+            FlagImage.sprite = en_flag;
+        else if (guideContent.lang == "es")
+            FlagImage.sprite = es_flag;
+        else if (guideContent.lang == "pt")
+            FlagImage.sprite = pt_flag;
     }
 
     void Update()
