@@ -87,7 +87,13 @@ public class GuideMenu : MonoBehaviour
 
     public void OpenGuideFileStorage()
     {
+#if UNITY_EDITOR
         System.Diagnostics.Process.Start("explorer.exe", "/open," + Application.persistentDataPath.Replace('/', '\\') + "\\guides");
+#elif UNITY_STANDALONE_OSX
+        System.Diagnostics.Process.Start("open", $"\"{Application.persistentDataPath}/guides\"");
+#else
+        System.Diagnostics.Process.Start("explorer.exe", "/open," + Application.persistentDataPath.Replace('/', '\\') + "\\guides");
+#endif
     }
 
     private DirectoryInfo[] GetGuidesFolders()
@@ -337,7 +343,6 @@ public class GuideMenu : MonoBehaviour
 
     public void BackToGuideSelection()
     {
-        FindObjectOfType<WindowManager>().ToggleInteractiveMap(false);
         GuideDetailsMenu.SetActive(false);
         GuideSelectionMenu.SetActive(true);
     }

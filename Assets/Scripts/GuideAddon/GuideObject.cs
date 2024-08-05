@@ -15,6 +15,7 @@ public class GuideObject : MonoBehaviour
     public GameObject updtImage;
     public string path;
 
+
     private GuideEntry guideContent;
     
     public void Initialize(string guideName, string id, string path)
@@ -42,6 +43,8 @@ public class GuideObject : MonoBehaviour
         }
         catch
         {}
+        if (guideContent.steps.Count() == 0)
+            transform.Find("GuideInfo/OpenGuideButton").gameObject.SetActive(false);
         StartCoroutine(FindObjectOfType<SaveManager>().GuideLoadJsonToClass(int.Parse(id)));
         StartCoroutine(CheckForUpdate());
     }
@@ -123,7 +126,7 @@ public class GuideObject : MonoBehaviour
 
     public IEnumerator CheckForUpdate()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(1f);
         while (FindObjectOfType<GuideMenu>().apiGuides.guides.Count() == 0)
             yield return 0;
         GuideManager.ApiGuide apiGuide;
