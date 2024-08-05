@@ -1,11 +1,11 @@
 using UnityEngine;
-using SatorImaging.AppWindowUtility;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using System;
 using System.IO;
+using Kirurobo;
 
 public class WindowManager : MonoBehaviour
 {
@@ -28,6 +28,13 @@ public class WindowManager : MonoBehaviour
     public Toggle TravelCheckbox;
     public Toggle ShowCompletedGuidesCheckbox;
 
+    //Window utility
+    public GameObject UIWindowController;
+
+    //Grabbers
+    public GameObject FullSizeGrabber;
+    public GameObject minSizeGrabber;
+
     // Lock button
     public GameObject LockButton;
     public Sprite LockSprite;
@@ -44,7 +51,8 @@ public class WindowManager : MonoBehaviour
     public Slider opacitySlider;
     public Slider BgOpacitySlider;
 
-    public bool isInteractiveMapActive;
+    public bool mapState;
+    public bool trueMapState;
     public bool keepInteractiveMapClosed;
 
     void Awake()
@@ -54,34 +62,36 @@ public class WindowManager : MonoBehaviour
 
     void Start()
     {
-        AppWindowUtility.Transparent = true;
-        AppWindowUtility.AlwaysOnTop = true;
+#if !UNITY_EDITOR
+        UIWindowController.SetActive(true);
+#endif
         SelectedWindow = MainWindow;
-        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
-        isInteractiveMapActive = true;
         keepInteractiveMapClosed = false;
+        StartCoroutine(ResizeAtStart());
+    }
+
+    private IEnumerator ResizeAtStart()
+    {
+        yield return 0;
+        SetScreenSize(windowWidth, windowHeight);
+    }
+
+    void SetScreenSize(int x, int y)
+    {
+        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+        u.windowSize = new Vector2(x, y);
     }
 
     public void MinimizeApp()
     {
         FullWindows.SetActive(false);
         MinimizedWindows.SetActive(true);
-        AppWindowUtility.SetScreenSize(50, 50);
+        SetScreenSize(50, 50);
     }
 
     public void MaximizeApp()
     {
-        if (SelectedWindow == guideWindow && guideWindow.transform.Find("GuideDetailsMenu").gameObject.activeSelf)
-        {
-            if (guideWindow.transform.Find("GuideDetailsMenu").gameObject.activeSelf)
-                InGuideRefreshInteractiveMap();
-            else if (guideWindow.transform.Find("GuideSelectionMenu").gameObject.activeSelf)
-                guideWindow.GetComponent<GuideMenu>().RemoveGuides();
-        }
-        else
-        {
-            AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
-        }
+        ToggleMap(mapState);
         FullWindows.SetActive(true);
         MinimizedWindows.SetActive(false);
     }
@@ -128,11 +138,6 @@ public class WindowManager : MonoBehaviour
         language.GetComponent<TMP_Dropdown>().value = langIndex;
     }
 
-    public void ToggleWindow()
-    {
-        AppWindowUtility.Transparent = !AppWindowUtility.Transparent;
-    }
-
     public void MainWindowClicked()
     {
         if (SelectedWindow == MainWindow)
@@ -140,7 +145,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = MainWindow;
         SelectedWindow.SetActive(true);
-        ToggleInteractiveMap(false);
+        ToggleMap(false);
     }
 
     public void TravelWindowClicked()
@@ -150,7 +155,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = travelWindow;
         SelectedWindow.SetActive(true);
-        ToggleInteractiveMap(false);
+        ToggleMap(false);
     }
 
     public void GuideWindowClicked()
@@ -160,7 +165,6 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
-        // ToggleInteractiveMap(false);
     }
 
     public void NotepadWindowClicked()
@@ -170,7 +174,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = notepadWindow;
         SelectedWindow.SetActive(true);
-        ToggleInteractiveMap(false);
+        ToggleMap(false);
     }
 
     public void SettingsWindowClicked()
@@ -180,7 +184,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = settingsWindow;
         SelectedWindow.SetActive(true);            
-        ToggleInteractiveMap(false);
+        ToggleMap(false);
     }
 
     public void DownloadWindowClicked()
@@ -190,7 +194,7 @@ public class WindowManager : MonoBehaviour
         SelectedWindow.SetActive(false);
         SelectedWindow = downloadWindow;
         SelectedWindow.SetActive(true);
-        ToggleInteractiveMap(false);
+        ToggleMap(false);
     }
 
     public void DiscordButtonClicked()
@@ -208,54 +212,43 @@ public class WindowManager : MonoBehaviour
         Application.OpenURL("https://ganymede-dofus.com");
     }
 
-    public void SetMapFullscale(bool full)
-    {
-        if (full)
-            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
-        else
-            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
-    }
-
     public void InGuideRefreshInteractiveMap()
     {
-        if (keepInteractiveMapClosed)
+        ToggleMap(mapState);
+    }
+
+    public void ToggleMap(bool setActive)
+    {
+        if (!setActive || keepInteractiveMapClosed)
         {
-            AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
             guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
+            SetScreenSize(windowWidth, windowHeight);
+            if (mapState)
+            {;
+                UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+                u.windowPosition += new Vector2(0, mapHeight);
+            }
+            trueMapState = false;
+            if (!keepInteractiveMapClosed)
+                mapState = false;
         }
         else
         {
-            if (isInteractiveMapActive)
+            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
+            SetScreenSize(windowWidth, windowHeight + mapHeight);
+            if (!mapState || trueMapState != mapState)
             {
-                guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
-                AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
+                UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+                u.windowPosition += new Vector2(0, -mapHeight);
             }
-            else
-            {
-                guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
-                AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
-            }
+            trueMapState = true;
+            mapState = true;
         }
     }
 
     public void InGuideToggleInteractiveMap()
     {
-        isInteractiveMapActive = !isInteractiveMapActive;
-        InGuideRefreshInteractiveMap();
-    }
-
-    public void ToggleInteractiveMap(bool setActive)
-    {
-        if (setActive)
-        {
-            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
-            AppWindowUtility.SetScreenSize(windowWidth, windowHeight + mapHeight);
-        }
-        else
-        {
-            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
-            AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
-        }         
+        ToggleMap(!mapState);
     }
 
     public void ChangeCanvasOpacity(float opacity)
@@ -285,15 +278,19 @@ public class WindowManager : MonoBehaviour
     public void SetXResolution(int x)
     {
         windowWidth = 250 + x * 50;
-        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        SetScreenSize(windowWidth, windowHeight);
         PlayerPrefs.SetInt("XResolution", x);
     }
     
     public void SetYResolution(int y)
     {
+        int offset = windowHeight;
         windowHeight = 450 + y * 50;
-        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
+        offset -= windowHeight;
+        SetScreenSize(windowWidth, windowHeight);
         PlayerPrefs.SetInt("YResolution", y);
+        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+        u.windowPosition += new Vector2(0, offset);
     }
 
     public void SetLang(int langIndex)
@@ -301,26 +298,21 @@ public class WindowManager : MonoBehaviour
         PlayerPrefs.SetInt("lang", langIndex);
     }
 
-    public void ResetAppSize()
-    {
-        windowWidth = 300;
-        windowHeight = 450;
-        AppWindowUtility.SetScreenSize(windowWidth, windowHeight);
-    }
-
     public void LockUnlockApp()
     {
         if ( isAppLocked )
         {
             // Unlock it
-            this.GetComponent<WindowGrabber>().enabled = true;
+            FullSizeGrabber.SetActive(true);
+            minSizeGrabber.SetActive(true);
             LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = LockSprite;
             isAppLocked = false;
         }
         else
         {
             // Lock it
-            this.GetComponent<WindowGrabber>().enabled = false;
+            FullSizeGrabber.SetActive(false);
+            minSizeGrabber.SetActive(false);
             LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = UnlockSprite;
             isAppLocked = true;
         }

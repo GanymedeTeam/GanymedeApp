@@ -12,6 +12,7 @@ public class GuideSelectMenu : MonoBehaviour
 
     void OnEnable()
     {
+        FindObjectOfType<WindowManager>().ToggleMap(false);
         guideMenu.GetComponent<GuideMenu>().OnClickReloadGuideList();
     }
 }

@@ -66,6 +66,13 @@ public class VersionManager : MonoBehaviour
         string uniqueID = PlayerPrefs.GetString(UniqueIDKey);
         form.AddField("uniqueID", uniqueID);
         form.AddField("version", Application.version);
+#if UNITY_EDITOR
+        form.AddField("os", "UnityEditor");
+#elif UNITY_STANDALONE_OSX
+        form.AddField("os", "Mac_OS");
+#else
+        form.AddField("os", "Windows");
+#endif
 
         using UnityWebRequest www = UnityWebRequest.Post($"{Constants.ganymedeWebUrl}/api/downloaded", form);
         www.timeout = 2;
