@@ -127,6 +127,18 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             }
         }
         // We open it
+        if (step == 0)
+        {
+            // Load save, else go step 1
+            try
+            {
+                step = FindObjectOfType<SaveManager>().saveProgress.guideProgress.Find(e => e.id == id).current_step;
+            }
+            catch
+            {
+                step = 1;
+            }
+        }
         FindObjectOfType<GuideMenu>().LoadGuide(id.ToString());
         FindObjectOfType<GuideMenu>().GoToGuideStep(step);
 
