@@ -83,6 +83,8 @@ public class WindowManager : MonoBehaviour
 
     public void MinimizeApp()
     {
+        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+        u.windowPosition += new Vector2(0, windowHeight + (mapState ? mapHeight : 0) - 50);
         FullWindows.SetActive(false);
         MinimizedWindows.SetActive(true);
         SetScreenSize(50, 50);
@@ -90,7 +92,9 @@ public class WindowManager : MonoBehaviour
 
     public void MaximizeApp()
     {
-        ToggleMap(mapState);
+        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+        u.windowPosition += new Vector2(0, - (windowHeight + (mapState ? mapHeight : 0) - 50));
+        SetScreenSize(windowWidth, windowHeight + (mapState ? mapHeight : 0));
         FullWindows.SetActive(true);
         MinimizedWindows.SetActive(false);
     }
