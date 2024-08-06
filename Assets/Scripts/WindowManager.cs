@@ -52,8 +52,8 @@ public class WindowManager : MonoBehaviour
     public Slider BgOpacitySlider;
 
     public bool mapState;
-    public bool trueMapState;
-    public bool keepInteractiveMapClosed;
+    public bool toggleMapState = false;
+    public bool keepInteractiveMapClosed = false;
 
     void Awake()
     {
@@ -66,7 +66,6 @@ public class WindowManager : MonoBehaviour
         UIWindowController.SetActive(true);
 #endif
         SelectedWindow = MainWindow;
-        keepInteractiveMapClosed = false;
         StartCoroutine(ResizeAtStart());
     }
 
@@ -219,36 +218,35 @@ public class WindowManager : MonoBehaviour
 
     public void ToggleMap(bool setActive)
     {
-        if (!setActive || keepInteractiveMapClosed)
+        if (!setActive) //Close map in any cases
         {
-            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
-            SetScreenSize(windowWidth, windowHeight);
-            if (mapState)
-            {;
+            if (mapState) //Map was previously opened, so offset it
+            {
+                guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 0f);
+                SetScreenSize(windowWidth, windowHeight);
                 UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
                 u.windowPosition += new Vector2(0, mapHeight);
             }
-            trueMapState = false;
-            if (!keepInteractiveMapClosed)
-                mapState = false;
         }
-        else
+        else //Open map if allowed
         {
-            guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
-            SetScreenSize(windowWidth, windowHeight + mapHeight);
-            if (!mapState || trueMapState != mapState)
+            if (keepInteractiveMapClosed) // no map
+                return;
+            if (!mapState) //map was previously closed, so open it
             {
+                guideWindow.transform.Find("GuideDetailsMenu").GetComponent<RectTransform>().offsetMin = new Vector2(0f, 300f);
+                SetScreenSize(windowWidth, windowHeight + mapHeight);
                 UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
                 u.windowPosition += new Vector2(0, -mapHeight);
             }
-            trueMapState = true;
-            mapState = true;
         }
+        mapState = setActive;
     }
 
     public void InGuideToggleInteractiveMap()
     {
-        ToggleMap(!mapState);
+        toggleMapState = !mapState;
+        ToggleMap(toggleMapState);
     }
 
     public void ChangeCanvasOpacity(float opacity)
