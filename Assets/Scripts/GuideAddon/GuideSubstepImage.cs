@@ -35,7 +35,6 @@ public class GuideSubstepImage : MonoBehaviour
         // if (!linksWhitelist.Any(prefix => url.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
         //     yield break;
 
-        // url = "https://www.dofuspourlesnoobs.com/uploads/1/3/0/1/13010384/10t2_orig.png";
         using UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
         yield return www.SendWebRequest();
 
