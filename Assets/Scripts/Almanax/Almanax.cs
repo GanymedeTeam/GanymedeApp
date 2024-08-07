@@ -317,7 +317,7 @@ public class Almanax : MonoBehaviour
         try
         {
             int levelParsed = int.Parse(level);
-            if (levelParsed != actualPlayerLevel && levelParsed >= 0 && levelParsed <= 200)
+            if (levelParsed != actualPlayerLevel && levelParsed >= 20 && levelParsed <= 200)
             {
                 PlayerPrefs.SetInt("AlmanaxLevel", levelParsed);
                 actualPlayerLevel = levelParsed;
