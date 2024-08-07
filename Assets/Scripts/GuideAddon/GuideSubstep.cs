@@ -307,7 +307,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             string replacement = "";
             if (match.Value.StartsWith("<guide"))
             {
-                StartCoroutine(DownloadImageAndSetSprite(imageId++, "https://api.dofusdb.fr/img/items/1000/25010.png"));
+                StartCoroutine(DownloadImageAndSetSprite(imageId++, "https://ganymede-dofus.com/images/texteditor/guides.png"));
                 string id = match.Groups[1].Value;
                 string step = match.Groups[2].Value;
                 string name = match.Groups[3].Value;
