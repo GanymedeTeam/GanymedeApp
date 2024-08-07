@@ -35,6 +35,7 @@ public class LangManager : MonoBehaviour
         {
             public TradFormat MenuTitle;
             public TradFormat RootMenuTitle;
+            public TradFormat GPGuides;
             public TradFormat CertifiedGuides;
             public TradFormat PublicGuides;
             public TradFormat DraftGuides;
@@ -94,6 +95,7 @@ public class LangManager : MonoBehaviour
     public TMP_Text DownloadMenuTopName;
     public TMP_Text DownloadMenuRootName;
     public TMP_Text DownloadMenuDlName;
+    public TMP_Text DownloadMenuGPGuides;
     public TMP_Text DownloadMenuCertifiedGuides;
     public TMP_Text DownloadMenuPublicGuides;
     public TMP_Text DownloadMenuDraftGuides;
@@ -152,6 +154,7 @@ public class LangManager : MonoBehaviour
         DownloadMenuTopName.text = GetTranslationField(traductor.DownloadMenu.MenuTitle, languageCode);
         DownloadMenuRootName.text = GetTranslationField(traductor.DownloadMenu.RootMenuTitle, languageCode);
         DownloadMenuDlName.text = GetTranslationField(traductor.Guides, languageCode);
+        DownloadMenuGPGuides.text = GetTranslationField(traductor.DownloadMenu.GPGuides, languageCode);
         DownloadMenuCertifiedGuides.text = GetTranslationField(traductor.DownloadMenu.CertifiedGuides, languageCode);
         DownloadMenuPublicGuides.text = GetTranslationField(traductor.DownloadMenu.PublicGuides, languageCode);
         DownloadMenuDraftGuides.text = GetTranslationField(traductor.DownloadMenu.DraftGuides, languageCode);
