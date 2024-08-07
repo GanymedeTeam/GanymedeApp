@@ -18,10 +18,12 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 {
     public int guideId;
     private TMP_Text tmp_text;
-    List<int> linkPositions = new List<int>();
+    private List<int> linkPositions = new List<int>();
 
-    List<bool> stateOfCoroutines;
-    int nbOfCustomLinks = -1;
+    private List<bool> stateOfCoroutines;
+    private int nbOfCustomLinks = -1;
+
+    private List<string> storedUrls = new List<string>();
 
     readonly List<string> linksWhitelist = new List<string>
     {
@@ -60,16 +62,13 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             if (index > -1)
             {
                 string text = tmp_text.textInfo.linkInfo[index].GetLinkID();
-                if (text.Contains("http://") || text.Contains("https://"))
+                if (Input.GetKey(KeyCode.LeftControl))
                 {
-                    if (Input.GetKey(KeyCode.LeftControl))
-                    {
-                        Application.OpenURL(text);
-                    }
-                    else
-                    {
-                        GUIUtility.systemCopyBuffer = tmp_text.textInfo.linkInfo[index].GetLinkText();
-                    }
+                    Application.OpenURL(storedUrls[int.Parse(text)]);
+                }
+                else
+                {
+                    GUIUtility.systemCopyBuffer = tmp_text.textInfo.linkInfo[index].GetLinkText();
                 }
                 if (Regex.Matches(text, @"\[(.*?),(.*?)\]").Count > 0)
                 {
@@ -164,15 +163,24 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
 
     public void ParseCustomBrackets()
     {
-        // prevent user from adding links manually
         Regex linkRegex = new Regex(@"<link=""([^""]+)"">([^<]+)<\/link>");
+        var cd = gameObject.GetComponent<ColorLinkHandler>().ColorDictionary;
+
+        //store every link in table and replace it
+        foreach (Match match in linkRegex.Matches(tmp_text.text))
+        {
+            tmp_text.text = tmp_text.text.Replace(match.Value, $"<link={storedUrls.Count}>{match.Groups[2].Value}</link>");
+            storedUrls.Add(match.Groups[1].Value);
+        }
+        // remove unwanted urls to front
+        linkRegex = new Regex(@"<link=([^>]+)>([^<]+)<\/link>");
         while (linkRegex.Matches(tmp_text.text).Count != 0)
         {
             string textToWrite;
-            if (linksWhitelist.Any(url => linkRegex.Matches(tmp_text.text)[0].Groups[1].Value.StartsWith(url)))
+            int urlIndex = int.Parse(linkRegex.Matches(tmp_text.text)[0].Groups[1].Value);
+            if (linksWhitelist.Any(url => storedUrls[urlIndex].StartsWith(url)))
             {
                 Match m = linkRegex.Matches(tmp_text.text)[0];
-                var cd = gameObject.GetComponent<ColorLinkHandler>().ColorDictionary;
                 textToWrite = $"<link={m.Groups[1].Value}><color={cd["classic_link"].UnhoverColor}>{m.Groups[2].Value}</color></link>";
                 tmp_text.text = tmp_text.text.Replace(linkRegex.Matches(tmp_text.text)[0].Value, textToWrite);
             }
@@ -182,7 +190,6 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 tmp_text.text = tmp_text.text.Replace(linkRegex.Matches(tmp_text.text)[0].Value, textToWrite);
                 tmp_text.ForceMeshUpdate();
             }
-
         }
 
         ParseNoLogoObjects();
@@ -313,7 +320,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                 string dofusdbId = match.Groups[2].Value;
                 string url = $"https://dofusdb.fr/fr/database/{patternName}/{dofusdbId}";
                 string name = match.Groups[4].Value;
-                replacement = $"<link={url}><color={cd[patternName].UnhoverColor}>{name}</color></link>";
+                replacement = $"<link={storedUrls.Count}><color={cd[patternName].UnhoverColor}>{name}</color></link>";
+                storedUrls.Add(url);
             }
 
             output.Remove(matchStartIndex, match.Length);
