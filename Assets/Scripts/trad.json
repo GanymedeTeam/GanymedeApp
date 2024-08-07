@@ -67,6 +67,13 @@
             "es": "Categorías",
             "po": "Categorias"
         },
+        "GPGuides":
+        {
+            "fr": "Guides principaux",
+            "en": "Main guides",
+            "es": "Guías principales",
+            "po": "Guias principais"
+        },
         "CertifiedGuides":
         {
             "fr": "Guides certifiés",

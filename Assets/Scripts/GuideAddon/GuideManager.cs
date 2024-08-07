@@ -98,6 +98,15 @@ public class GuideManager : MonoBehaviour
         }
     }
 
+    public void onClickGuidesGPList()
+    {
+        backButton.SetActive(true);
+        rootMenu.SetActive(false);
+        dlMenu.SetActive(true);
+        currentMenu = "gp";
+        StartCoroutine(GetGuidesList());
+    }
+
     public void onClickGuidesPublicList()
     {
         backButton.SetActive(true);
@@ -162,9 +171,19 @@ public class GuideManager : MonoBehaviour
 
             if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
+                string path;
+                if (currentMenu == "gp")
+                {
+                    path = $"{Application.persistentDataPath}/guides/GP/{url.Split('/').Last()}.json";
+                    if (!Directory.Exists($"{Application.persistentDataPath}/guides/GP"))
+                        Directory.CreateDirectory($"{Application.persistentDataPath}/guides/GP");
+                }
+                else
+                {
+                    path = $"{Application.persistentDataPath}/guides/{url.Split('/').Last()}.json";
+                }
                 string jsonResponse = webRequest.downloadHandler.text;
 
-                string path = Application.persistentDataPath + "/guides/" + url.Split('/')[url.Split('/').Length - 1] + ".json" ;
 
                 GuideEntry guide = JsonUtility.FromJson<GuideEntry>(jsonResponse);
 
