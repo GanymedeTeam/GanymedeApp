@@ -39,6 +39,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
         "https://dofusdb.fr/",
         "https://www.dofuskin.com/",
         "https://barbofus.com/",
+        "https://dofensive.com/",
+        "https://www.dofuskin.com/",  
     };
 
     readonly string dofusdbLinksPattern = @"<(\w+) dofusdb=""(\d+)"" imageurl=""([^""]+)"">([^<]+)<\/\1>";
