@@ -51,6 +51,15 @@ public class WindowManager : MonoBehaviour
     public Slider opacitySlider;
     public Slider BgOpacitySlider;
 
+    //Buttons
+    public Button mainMenuButton;
+    public Button guideMenuButton;
+    public Button downloadMenuButton;
+    public Button notepadMenuButton;
+    public Button travelMenuButton;
+
+    private Button currentSelectedMenu;
+
     public bool mapState;
     public bool toggleMapState = false;
     public bool keepInteractiveMapClosed = false;
@@ -66,6 +75,8 @@ public class WindowManager : MonoBehaviour
         UIWindowController.SetActive(true);
 #endif
         SelectedWindow = MainWindow;
+        currentSelectedMenu = mainMenuButton;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
         StartCoroutine(ResizeAtStart());
     }
 
@@ -145,6 +156,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == MainWindow)
             return;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
+        currentSelectedMenu = mainMenuButton;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
         SelectedWindow.SetActive(false);
         SelectedWindow = MainWindow;
         SelectedWindow.SetActive(true);
@@ -155,6 +169,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == travelWindow)
             return;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
+        currentSelectedMenu = travelMenuButton;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
         SelectedWindow.SetActive(false);
         SelectedWindow = travelWindow;
         SelectedWindow.SetActive(true);
@@ -165,6 +182,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == guideWindow)
             return;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
+        currentSelectedMenu = guideMenuButton;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
         SelectedWindow.SetActive(false);
         SelectedWindow = guideWindow;
         SelectedWindow.SetActive(true);
@@ -174,6 +194,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == notepadWindow)
             return;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
+        currentSelectedMenu = notepadMenuButton;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
         SelectedWindow.SetActive(false);
         SelectedWindow = notepadWindow;
         SelectedWindow.SetActive(true);
@@ -194,6 +217,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == downloadWindow)
             return;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
+        currentSelectedMenu = downloadMenuButton;
+        currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
         SelectedWindow.SetActive(false);
         SelectedWindow = downloadWindow;
         SelectedWindow.SetActive(true);
