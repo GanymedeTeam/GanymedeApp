@@ -225,7 +225,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                         int indexOfCharacter = linkPositions[int.Parse(customLinkSprite.name.Split('_').Last())];
                         Vector3 position = tmp_text.textInfo.characterInfo[indexOfCharacter].bottomLeft;
                         Vector3 worldPosition = tmp_text.rectTransform.TransformPoint(position);
-                        rawImage.GetComponent<RectTransform>().position = worldPosition + new Vector3(8.5f, 6f, 0f);
+                        rawImage.GetComponent<RectTransform>().position = worldPosition + new Vector3(8.5f, 5f, 0f);
                     }
                     catch{};
                 }
