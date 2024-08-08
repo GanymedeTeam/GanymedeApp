@@ -53,12 +53,12 @@ public class GuideMenu : MonoBehaviour
     {
         guidesCurrentPath = Application.persistentDataPath + "/guides/";
         saveManager = saveManagerGameObject.GetComponent<SaveManager>();
-        StartCoroutine(saveManager.ProgressLoadJsonToClass());
     }
 
     public void OnEnable()
     {
         gameObject.GetComponent<PaginationHandler>().enabled = true;
+        StartCoroutine(saveManager.ProgressLoadJsonToClass());
     }
 
     public void OnDisable() {
@@ -557,7 +557,6 @@ public class GuideMenu : MonoBehaviour
             toggleObject.SetActive(true);
 
             var toggle = toggleObject.GetComponent<Toggle>();
-            toggle.onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
 
             try
             {
@@ -567,6 +566,8 @@ public class GuideMenu : MonoBehaviour
             {
                 toggle.isOn = false;
             }
+
+            toggle.onValueChanged.AddListener(delegate { SaveCheckboxStates(); });
         }
     }
 

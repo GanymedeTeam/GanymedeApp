@@ -144,7 +144,6 @@ public class GuideObject : MonoBehaviour
         }
         catch
         {
-            Debug.Log($"Guide {id} does not exist anymore");
             yield break;
         }
 

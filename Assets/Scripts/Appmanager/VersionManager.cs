@@ -17,8 +17,6 @@ public class VersionManager : MonoBehaviour
     {
         if (!Directory.Exists(Application.persistentDataPath + "/guides"))
             Directory.CreateDirectory(Application.persistentDataPath + "/guides");
-        if (!Directory.Exists(Application.persistentDataPath + "/guideSaves"))
-            Directory.CreateDirectory(Application.persistentDataPath + "/guideSaves");
     }
 
     void Awake()
