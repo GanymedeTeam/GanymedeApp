@@ -84,6 +84,14 @@ public class WindowManager : MonoBehaviour
     {
         yield return 0;
         SetScreenSize(windowWidth, windowHeight);
+        float x = PlayerPrefs.GetFloat("windowXPosition", -1f);
+        float y = PlayerPrefs.GetFloat("windowYPosition", -1f);
+        if (x != -1 && y != -1)
+        {
+            UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+            u.windowPosition = new Vector2(x, y);
+        }
+
     }
 
     void SetScreenSize(int x, int y)
@@ -324,6 +332,13 @@ public class WindowManager : MonoBehaviour
     public void SetLang(int langIndex)
     {
         PlayerPrefs.SetInt("lang", langIndex);
+    }
+
+    void OnApplicationQuit()
+    {
+        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+        PlayerPrefs.SetFloat("windowXPosition", u.windowPosition.x);
+        PlayerPrefs.SetFloat("windowYPosition", u.windowPosition.y);
     }
 
     public void LockUnlockApp()
