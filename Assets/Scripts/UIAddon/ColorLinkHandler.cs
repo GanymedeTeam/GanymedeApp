@@ -30,10 +30,10 @@ public class ColorLinkHandler : MonoBehaviour
     public Dictionary<string, ColorPair> ColorDictionary = new Dictionary<string, ColorPair>
     {
         { "classic_link", new ColorPair("#cfdcfa", "#aac2fa")},
-        { "quest", new ColorPair("#7ede9d", "#2cc75d")},
+        { "quest", new ColorPair("#f0a8dd", "#eb5bc6")},
         { "object", new ColorPair("#f7cd9c", "#db9542")},
         { "monster", new ColorPair("#e38485", "#d94a4b")},
-        { "dungeon", new ColorPair("#f0a8dd", "#eb5bc6")},
+        { "dungeon", new ColorPair("#7ede9d", "#2cc75d")},
         { "pos", new ColorPair("#fffec2", "#FFFD01")},
         { "gotoguide", new ColorPair("#c7bce6", "#8e7cc3")},
     };
