@@ -129,9 +129,8 @@ public class LangManager : MonoBehaviour
 
     void Awake()
     {
-        string tradPath = $"{Application.dataPath}/Scripts/trad.json";
-        string tradContent = File.ReadAllText(tradPath);
-        traductor = JsonUtility.FromJson<Trad>(tradContent);
+        TextAsset tradFile = Resources.Load<TextAsset>("trad");
+        traductor = JsonUtility.FromJson<Trad>(tradFile.text);
         int lang = PlayerPrefs.GetInt("lang", 0);
         string languageCode = lang switch
         {
