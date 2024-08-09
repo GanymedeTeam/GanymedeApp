@@ -69,6 +69,8 @@ public class LangManager : MonoBehaviour
             public TradFormat CopyTravel;
             public TradFormat ShowGuides;
             public TradFormat Language;
+            public TradFormat Profiles;
+            public TradFormat CreateProfiles;
         }
 
         public TradFormat Searchbar;
@@ -124,6 +126,8 @@ public class LangManager : MonoBehaviour
     public TMP_Text SettingsMenuCopyTravel;
     public TMP_Text SettingsMenuShowGuides;
     public TMP_Text SettingsMenuLanguage;
+    public TMP_Text SettingsMenuProfiles;
+    public TMP_Text SettingsMenuCreateProfiles;
 
     public Trad traductor;
 
@@ -177,6 +181,8 @@ public class LangManager : MonoBehaviour
         SettingsMenuCopyTravel.text = GetTranslationField(traductor.SettingsMenu.CopyTravel, languageCode);
         SettingsMenuShowGuides.text = GetTranslationField(traductor.SettingsMenu.ShowGuides, languageCode);
         SettingsMenuLanguage.text = GetTranslationField(traductor.SettingsMenu.Language, languageCode);
+        SettingsMenuProfiles.text = GetTranslationField(traductor.SettingsMenu.Profiles, languageCode);
+        SettingsMenuCreateProfiles.text = GetTranslationField(traductor.SettingsMenu.CreateProfiles, languageCode);
     }
 
     public static string GetTranslationField(Trad.TradFormat translation, string languageCode)
