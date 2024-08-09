@@ -52,6 +52,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     {
         tmp_text = transform.GetComponent<TMP_Text>();
         ParseCustomBrackets();
+        if (tmp_text.text.EndsWith("<br>"))
+            tmp_text.text += "<br>";
     }
 
     public void OnPointerClick(PointerEventData eventData)
