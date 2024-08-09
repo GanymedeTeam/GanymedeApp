@@ -208,6 +208,20 @@
             "en": "Language",
             "es": "Idioma",
             "po": "Idioma"
+        },
+        "Profiles":
+        {
+            "fr": "Profils",
+            "en": "Profiles",
+            "es": "Perfiles",
+            "po": "Perfis"
+        },
+        "CreateProfiles":
+        {
+            "fr": "Créer un profil",
+            "en": "Create profile",
+            "es": "Crear un perfil",
+            "po": "Criar um perfil"
         }
     }
 }
