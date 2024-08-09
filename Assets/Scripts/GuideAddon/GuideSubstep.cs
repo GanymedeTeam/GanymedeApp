@@ -125,7 +125,14 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             if (webRequest.result != UnityWebRequest.Result.ConnectionError && webRequest.result != UnityWebRequest.Result.ProtocolError)
             {
                 string jsonResponse = webRequest.downloadHandler.text;
+                GuideEntry guide = JsonUtility.FromJson<GuideEntry>(jsonResponse);
                 string path = Application.persistentDataPath + "/guides";
+                if (guide.status == "gp")
+                {
+                    if (!Directory.Exists($"{Application.persistentDataPath}/guides/GP"))
+                        Directory.CreateDirectory($"{Application.persistentDataPath}/guides/GP");
+                    path += "/GP";
+                }
                 System.IO.File.WriteAllText($"{path}/{id}.json", jsonResponse);
             }
         }
