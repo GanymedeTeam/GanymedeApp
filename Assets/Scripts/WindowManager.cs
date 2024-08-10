@@ -28,6 +28,17 @@ public class WindowManager : MonoBehaviour
     public Toggle TravelCheckbox;
     public Toggle ShowCompletedGuidesCheckbox;
 
+    // menu dropdown
+    public GameObject menuDropdown;
+    public GameObject toggleMenuDropdownButton;
+
+    // current menu shown
+    public GameObject currentMenuIcon;
+    public GameObject currentMenuText;
+
+    // lang manager
+    public LangManager langManager;
+
     //Window utility
     public GameObject UIWindowController;
 
@@ -164,6 +175,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == MainWindow)
             return;
+        currentMenuIcon.GetComponent<Image>().sprite = mainMenuButton.transform.Find("Image").GetComponent<Image>().sprite;
+        currentMenuText.GetComponent<TMP_Text>().text = langManager.GetTranslationField(langManager.traductor.MainMenu.MenuName, langManager.languageCode);
+        menuDropdown.SetActive(false);
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
         currentSelectedMenu = mainMenuButton;
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
@@ -177,6 +191,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == travelWindow)
             return;
+        currentMenuIcon.GetComponent<Image>().sprite = travelMenuButton.transform.Find("Image").GetComponent<Image>().sprite;
+        currentMenuText.GetComponent<TMP_Text>().text = langManager.GetTranslationField(langManager.traductor.TravelMenu.MenuTitle, langManager.languageCode);
+        menuDropdown.SetActive(false);
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
         currentSelectedMenu = travelMenuButton;
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
@@ -190,6 +207,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == guideWindow)
             return;
+        currentMenuIcon.GetComponent<Image>().sprite = guideMenuButton.transform.Find("Image").GetComponent<Image>().sprite;
+        currentMenuText.GetComponent<TMP_Text>().text = langManager.GetTranslationField(langManager.traductor.Guides, langManager.languageCode);
+        menuDropdown.SetActive(false);
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
         currentSelectedMenu = guideMenuButton;
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
@@ -202,6 +222,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == notepadWindow)
             return;
+        currentMenuIcon.GetComponent<Image>().sprite = notepadMenuButton.transform.Find("Image").GetComponent<Image>().sprite;
+        currentMenuText.GetComponent<TMP_Text>().text = langManager.GetTranslationField(langManager.traductor.NotepadMenu.MenuName, langManager.languageCode);
+        menuDropdown.SetActive(false);
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
         currentSelectedMenu = notepadMenuButton;
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
@@ -225,6 +248,9 @@ public class WindowManager : MonoBehaviour
     {
         if (SelectedWindow == downloadWindow)
             return;
+        currentMenuIcon.GetComponent<Image>().sprite = downloadMenuButton.transform.Find("Image").GetComponent<Image>().sprite;
+        currentMenuText.GetComponent<TMP_Text>().text = langManager.GetTranslationField(langManager.traductor.DownloadMenu.MenuTitle, langManager.languageCode);
+        menuDropdown.SetActive(false);
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(false);
         currentSelectedMenu = downloadMenuButton;
         currentSelectedMenu.transform.Find("HighlightedBorder").gameObject.SetActive(true);
@@ -361,5 +387,22 @@ public class WindowManager : MonoBehaviour
         }
         LockButton.GetComponent<Button>().interactable = false;
         LockButton.GetComponent<Button>().interactable = true;
+    }
+
+    public void ToggleMenuDropdown()
+    {
+        toggleMenuDropdownButton.GetComponent<Button>().interactable = false;
+        menuDropdown.SetActive(!menuDropdown.activeSelf);
+    }
+
+    public IEnumerator EnableDropdownDelay()
+    {
+        yield return new WaitForSeconds(0.2f);
+        toggleMenuDropdownButton.GetComponent<Button>().interactable = true;
+    }
+
+    public void EnableDropdown()
+    {
+        StartCoroutine(EnableDropdownDelay());
     }
 }

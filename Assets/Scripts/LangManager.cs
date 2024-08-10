@@ -82,19 +82,25 @@ public class LangManager : MonoBehaviour
         public MenuSettings SettingsMenu;
     }
 
+    public TMP_Text MenuName;
+
+    // Dropdown Menu
+    public TMP_Text ddMainMenu;
+    public TMP_Text ddGuidesMenu;
+    public TMP_Text ddDownloadMenu;
+    public TMP_Text ddNotepadMenu;
+    public TMP_Text ddTravelMenu;
+
     //MainMenu
-    public TMP_Text MainMenuTopName;
     public TMP_Text MainMenuName;
     public TMP_Text MainMenuPresentation;
     public TMP_Text MainMenuAlmanaxInfoRetrieve;
     public TMP_Text MainMenuAffiliation;
 
     //GuidesMenu
-    public TMP_Text GuidesMenuTopName;
     public TMP_Text GuidesMenuSearchbar;
 
     //DownloadMenu
-    public TMP_Text DownloadMenuTopName;
     public TMP_Text DownloadMenuRootName;
     public TMP_Text DownloadMenuDlName;
     public TMP_Text DownloadMenuGPGuides;
@@ -105,18 +111,15 @@ public class LangManager : MonoBehaviour
 
 
     //NotepadMenu
-    public TMP_Text NotepadMenuTopName;
     public TMP_Text NotepadMenuName;
     public TMP_Text NotepadMenuEditName;
     public TMP_Text NotepadContent;
     // NoteCopyButton handled in its
 
     //TravelMenu
-    public TMP_Text TravelMenuTopName;
     public TMP_Text TravelMenuName;
 
     //SettingsMenu
-    public TMP_Text SettingsMenuTopName;
     public TMP_Text SettingsMenuTitle;
     public TMP_Text SettingsMenuGlobalOpacity;
     public TMP_Text SettingsMenuBgOpacity;
@@ -130,13 +133,14 @@ public class LangManager : MonoBehaviour
     public TMP_Text SettingsMenuCreateProfiles;
 
     public Trad traductor;
+    public string languageCode;
 
     void Awake()
     {
         TextAsset tradFile = Resources.Load<TextAsset>("trad");
         traductor = JsonUtility.FromJson<Trad>(tradFile.text);
         int lang = PlayerPrefs.GetInt("lang", 0);
-        string languageCode = lang switch
+        languageCode = lang switch
         {
             0 => "fr",
             1 => "en",
@@ -145,16 +149,21 @@ public class LangManager : MonoBehaviour
             _ => "fr",
         };
 
-        MainMenuTopName.text = GetTranslationField(traductor.MainMenu.MenuName, languageCode);
+        MenuName.text = GetTranslationField(traductor.MainMenu.MenuName, languageCode);
+
+        ddMainMenu.text = GetTranslationField(traductor.MainMenu.MenuName, languageCode);
+        ddGuidesMenu.text = GetTranslationField(traductor.Guides, languageCode);
+        ddDownloadMenu.text = GetTranslationField(traductor.DownloadMenu.RootMenuTitle, languageCode);
+        ddNotepadMenu.text = GetTranslationField(traductor.NotepadMenu.MenuName, languageCode);
+        ddTravelMenu.text = GetTranslationField(traductor.TravelMenu.MenuTitle, languageCode);
+
         MainMenuName.text = GetTranslationField(traductor.MainMenu.MenuDesc, languageCode);
         MainMenuPresentation.text = GetTranslationField(traductor.MainMenu.Presentation, languageCode);
         MainMenuAlmanaxInfoRetrieve.text = GetTranslationField(traductor.MainMenu.AlmanaxInfo, languageCode);
         MainMenuAffiliation.text = GetTranslationField(traductor.MainMenu.Affiliation, languageCode);
 
-        GuidesMenuTopName.text = GetTranslationField(traductor.Guides, languageCode);
         GuidesMenuSearchbar.text = GetTranslationField(traductor.Searchbar, languageCode);
 
-        DownloadMenuTopName.text = GetTranslationField(traductor.DownloadMenu.MenuTitle, languageCode);
         DownloadMenuRootName.text = GetTranslationField(traductor.DownloadMenu.RootMenuTitle, languageCode);
         DownloadMenuDlName.text = GetTranslationField(traductor.Guides, languageCode);
         DownloadMenuGPGuides.text = GetTranslationField(traductor.DownloadMenu.GPGuides, languageCode);
@@ -163,15 +172,12 @@ public class LangManager : MonoBehaviour
         DownloadMenuDraftGuides.text = GetTranslationField(traductor.DownloadMenu.DraftGuides, languageCode);
         DownloadMenuSearchbar.text = GetTranslationField(traductor.Searchbar, languageCode);
 
-        NotepadMenuTopName.text = GetTranslationField(traductor.NotepadMenu.MenuTitle, languageCode);
         NotepadMenuName.text = GetTranslationField(traductor.NotepadMenu.MenuName, languageCode);
         NotepadMenuEditName.text = GetTranslationField(traductor.NotepadMenu.NoteEditionName, languageCode);
         NotepadContent.text = GetTranslationField(traductor.NotepadMenu.NoteContent, languageCode);
 
-        TravelMenuTopName.text = GetTranslationField(traductor.TravelMenu.MenuTitle, languageCode);
         TravelMenuName.text = GetTranslationField(traductor.TravelMenu.MenuTitle, languageCode);
 
-        SettingsMenuTopName.text = GetTranslationField(traductor.SettingsMenu.MenuTitle, languageCode);
         SettingsMenuTitle.text = GetTranslationField(traductor.SettingsMenu.MenuTitle, languageCode);
         SettingsMenuGlobalOpacity.text = GetTranslationField(traductor.SettingsMenu.GlobalOpacity, languageCode);
         SettingsMenuBgOpacity.text = GetTranslationField(traductor.SettingsMenu.BgOpacity, languageCode);
@@ -185,7 +191,7 @@ public class LangManager : MonoBehaviour
         SettingsMenuCreateProfiles.text = GetTranslationField(traductor.SettingsMenu.CreateProfiles, languageCode);
     }
 
-    public static string GetTranslationField(Trad.TradFormat translation, string languageCode)
+    public string GetTranslationField(Trad.TradFormat translation, string languageCode)
     {
         Type type = translation.GetType();
         FieldInfo field = type.GetField(languageCode, BindingFlags.Public | BindingFlags.Instance);

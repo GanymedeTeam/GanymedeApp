@@ -17,17 +17,17 @@
     {
         "MenuName":
         {
+            "fr": "Menu principal",
+            "en": "Main menu",
+            "es": "Menú principal",
+            "po": "Menu principal"
+        },
+        "MenuDesc":
+        {
             "fr": "Ganymède",
             "en": "Ganymede",
             "es": "Ganymede",
             "po": "Ganymede"
-        },
-        "MenuDesc":
-        {
-            "fr": "Présentation",
-            "en": "Presentation",
-            "es": "Presentación",
-            "po": "Apresentação"
         },
         "Presentation":
         {
@@ -45,7 +45,7 @@
         },
         "Affiliation":
         {
-            "fr": "Ganymede - Non affilié à Ankama Games",
+            "fr": "Ganymède - Non affilié à Ankama Games",
             "en": "Ganymede - Not affiliated with Ankama Games",
             "es": "Ganymede - No afiliado a Ankama Games",
             "po": "Ganymede - Não afiliado à Ankama Games"
