@@ -6,12 +6,16 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 using UnityEngine.UI;
+using System.Text.RegularExpressions;
 
 public class CharacterManager : MonoBehaviour
 {
     private GameObject actualCharacter;
     public GameObject characterPrefab;
     public GameObject content;
+    public TMP_InputField inputProfile;
+
+    private static readonly Regex InvalidCharsRegex = new Regex("[\\\\/:*?\"<>|]", RegexOptions.Compiled);
 
     void Start()
     {
@@ -73,13 +77,20 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    public void CreateProfile(string characterName)
+    public void CreateProfile()
     {
+        string characterName = inputProfile.text;
+        if (InvalidCharsRegex.IsMatch(characterName) || string.IsNullOrWhiteSpace(characterName))
+        {
+            inputProfile.text = "";
+            return;
+        }
         DirectoryInfo saveDir = new DirectoryInfo($"{Application.persistentDataPath}/Saves");
         DirectoryInfo[] saveDirectories = saveDir.GetDirectories();
         if (saveDirectories.Any(d => d.Name == characterName))
         {
             Debug.Log($"Profile {characterName} already exists!");
+            inputProfile.text = "";
         }
         else
         {
@@ -100,6 +111,7 @@ public class CharacterManager : MonoBehaviour
             if (!Directory.Exists($"{Application.persistentDataPath}/Saves/{characterName}"))
                 Directory.CreateDirectory($"{Application.persistentDataPath}/Saves/{characterName}");
             StartCoroutine(ResetContentSize());
+            inputProfile.text = "";
         }
     }
 
