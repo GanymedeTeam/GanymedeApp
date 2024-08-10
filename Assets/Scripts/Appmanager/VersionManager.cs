@@ -71,6 +71,10 @@ public class VersionManager : MonoBehaviour
 #else
         form.AddField("os", "Windows");
 #endif
+        string lang = PlayerPrefs.GetString("lang", "fr");
+        if (lang == "po")
+            lang = "pt";
+        form.AddField("lang", lang);
 
         using UnityWebRequest www = UnityWebRequest.Post($"{Constants.ganymedeWebUrl}/api/downloaded", form);
         www.timeout = 2;
