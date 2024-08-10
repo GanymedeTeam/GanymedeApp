@@ -6,6 +6,7 @@ using TMPro;
 using System;
 using System.IO;
 using Kirurobo;
+using UnityEngine.SceneManagement;
 
 public class WindowManager : MonoBehaviour
 {
@@ -360,13 +361,6 @@ public class WindowManager : MonoBehaviour
         PlayerPrefs.SetInt("lang", langIndex);
     }
 
-    void OnApplicationQuit()
-    {
-        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
-        PlayerPrefs.SetFloat("windowXPosition", u.windowPosition.x);
-        PlayerPrefs.SetFloat("windowYPosition", u.windowPosition.y);
-    }
-
     public void LockUnlockApp()
     {
         if ( isAppLocked )
@@ -404,5 +398,33 @@ public class WindowManager : MonoBehaviour
     public void EnableDropdown()
     {
         StartCoroutine(EnableDropdownDelay());
+    }
+
+    public IEnumerator EmergencyResetWindowPosition()
+    {
+        yield return new WaitForSeconds(5);
+        if (Input.GetKey(KeyCode.G) && Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.N))
+        {
+            UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+            u.windowPosition = new Vector2(300, 300);
+        }
+        isRunningEmergency = false;
+    }
+
+    private bool isRunningEmergency = false;
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.G) && Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.N) && !isRunningEmergency)
+        {
+            isRunningEmergency = true;
+            StartCoroutine(EmergencyResetWindowPosition());
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
+        PlayerPrefs.SetFloat("windowXPosition", u.windowPosition.x);
+        PlayerPrefs.SetFloat("windowYPosition", u.windowPosition.y);
     }
 }
