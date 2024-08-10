@@ -368,7 +368,7 @@ public class WindowManager : MonoBehaviour
             // Unlock it
             FullSizeGrabber.SetActive(true);
             minSizeGrabber.SetActive(true);
-            LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = LockSprite;
+            LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = UnlockSprite;
             isAppLocked = false;
         }
         else
@@ -376,7 +376,7 @@ public class WindowManager : MonoBehaviour
             // Lock it
             FullSizeGrabber.SetActive(false);
             minSizeGrabber.SetActive(false);
-            LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = UnlockSprite;
+            LockButton.transform.Find("LockImage").GetComponent<Image>().sprite = LockSprite;
             isAppLocked = true;
         }
         LockButton.GetComponent<Button>().interactable = false;
