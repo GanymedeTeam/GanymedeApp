@@ -325,7 +325,12 @@ public class Almanax : MonoBehaviour
             }
             else
             {
-                inputLevel.text = actualPlayerLevel.ToString();
+                if (levelParsed < 20)
+                    inputLevel.text = "20";
+                else if (levelParsed > 200)
+                    inputLevel.text = "200";
+                else
+                    inputLevel.text = actualPlayerLevel.ToString();
             }
         }
         catch
