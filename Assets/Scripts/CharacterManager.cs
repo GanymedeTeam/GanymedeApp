@@ -8,6 +8,7 @@ using System.Linq;
 using UnityEngine.UI;
 using System.Text.RegularExpressions;
 
+[ExecuteAlways]
 public class CharacterManager : MonoBehaviour
 {
     private GameObject actualCharacter;
@@ -117,8 +118,7 @@ public class CharacterManager : MonoBehaviour
 
     private IEnumerator ResetContentSize()
     {
-        content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.Unconstrained;
         yield return 0;
-        content.GetComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content.GetComponent<RectTransform>());
     }
 }

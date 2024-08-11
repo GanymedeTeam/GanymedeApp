@@ -60,6 +60,9 @@ public class WindowManager : MonoBehaviour
     //Language field
     public GameObject language;
 
+    //Font size field
+    public GameObject FontSizeObject;
+
     public Slider opacitySlider;
     public Slider BgOpacitySlider;
 
@@ -156,7 +159,7 @@ public class WindowManager : MonoBehaviour
 
         // Guide Background Opacity
         float guideBgOpacity = PlayerPrefs.GetFloat("guideBgOpacity", 1);
-        BgOpacitySlider.value = opacity;
+        BgOpacitySlider.value = guideBgOpacity;
         ChangeBgOpacity(guideBgOpacity);
 
         //Resolution
@@ -170,6 +173,27 @@ public class WindowManager : MonoBehaviour
         //Language
         int langIndex = PlayerPrefs.GetInt("lang", 0);
         language.GetComponent<TMP_Dropdown>().value = langIndex;
+
+        //Font size
+        int fontSize = PlayerPrefs.GetInt("fontSize", 14);
+        switch (fontSize)
+        {
+            case 14:
+                FontSizeObject.GetComponent<TMP_Dropdown>().value = 0;
+                break;
+
+            case 18:
+                FontSizeObject.GetComponent<TMP_Dropdown>().value = 1;
+                break;
+
+            case 22:
+                FontSizeObject.GetComponent<TMP_Dropdown>().value = 2;
+                break;
+
+            case 28:
+                FontSizeObject.GetComponent<TMP_Dropdown>().value = 3;
+                break;
+        }
     }
 
     public void MainWindowClicked()
@@ -359,6 +383,31 @@ public class WindowManager : MonoBehaviour
     public void SetLang(int langIndex)
     {
         PlayerPrefs.SetInt("lang", langIndex);
+    }
+
+    public void SetFontSize(int fontIndex)
+    {
+        switch (fontIndex)
+        {
+            case 0:
+                PlayerPrefs.SetInt("fontSize", 14);
+                break;
+
+            case 1:
+                PlayerPrefs.SetInt("fontSize", 18);
+                break;
+
+            case 2:
+                PlayerPrefs.SetInt("fontSize", 22);
+                break;
+
+            case 3:
+                PlayerPrefs.SetInt("fontSize", 28);
+                break;
+
+            default:
+                break;
+        }
     }
 
     public void LockUnlockApp()
