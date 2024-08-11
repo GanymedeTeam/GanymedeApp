@@ -12,6 +12,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using System.Linq;
 using UnityEngine.Assertions.Must;
+using UnityEngine.Animations;
 
 
 public class GuideSubstep : MonoBehaviour, IPointerClickHandler
@@ -51,6 +52,12 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
     void Start()
     {
         tmp_text = transform.GetComponent<TMP_Text>();
+        tmp_text.fontSize = PlayerPrefs.GetInt("fontSize", 14);
+        transform.parent.GetComponent<HorizontalLayoutGroup>().spacing = 18.76f + Mathf.Abs(tmp_text.fontSize - 14)*0.5f;
+        transform.parent.Find("Toggle/Background").GetComponent<RectTransform>().sizeDelta =
+        new Vector2(18f + Mathf.Abs(tmp_text.fontSize - 14) * 0.5f, 18f + Mathf.Abs(tmp_text.fontSize - 14) * 0.5f);
+        transform.parent.Find("Toggle/Background").GetComponent<RectTransform>().anchoredPosition =
+        new Vector2(18f + Mathf.Abs(tmp_text.fontSize - 14) * 0.5f, -(18f + Mathf.Abs(tmp_text.fontSize - 14) * 1.2f))/2;
         ParseCustomBrackets();
         if (tmp_text.text.EndsWith("<br>"))
             tmp_text.text += "<br>";
@@ -215,7 +222,7 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
             GameObject sprite = new GameObject($"CustomLinkSprite_{id}");
             RawImage rawImage = sprite.AddComponent(typeof(RawImage)) as RawImage;
             rawImage.texture = texture;
-            rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(15, 15);
+            rawImage.GetComponent<RectTransform>().sizeDelta = new Vector2(tmp_text.fontSize + 1, tmp_text.fontSize + 1);
             rawImage.GetComponent<RectTransform>().anchorMin = new Vector2(0, 1f);
             rawImage.GetComponent<RectTransform>().anchorMax = new Vector2(0, 1f);
             rawImage.GetComponent<RectTransform>().pivot = new Vector2(0.5f, 0.5f);
@@ -243,7 +250,8 @@ public class GuideSubstep : MonoBehaviour, IPointerClickHandler
                         int indexOfCharacter = linkPositions[int.Parse(customLinkSprite.name.Split('_').Last())];
                         Vector3 position = tmp_text.textInfo.characterInfo[indexOfCharacter].bottomLeft;
                         Vector3 worldPosition = tmp_text.rectTransform.TransformPoint(position);
-                        rawImage.GetComponent<RectTransform>().position = worldPosition + new Vector3(8.5f, 5f, 0f);
+                        rawImage.GetComponent<RectTransform>().position = 
+                        worldPosition + new Vector3(8.5f + 0.5f*Mathf.Abs(tmp_text.fontSize - 14), 5f, 0f);
                     }
                     catch{};
                 }

@@ -222,6 +222,41 @@
             "en": "Create profile",
             "es": "Crear un perfil",
             "po": "Criar um perfil"
+        },
+        "FontSizeText":
+        {
+            "fr": "Taille de la police (guides)",
+            "en": "Font size (guides)",
+            "es": "Tamaño de letra (guías)",
+            "po": "Tamanho da fonte (guias)"
+        },
+        "NormalFontSize":
+        {
+            "fr": "Normale",
+            "en": "Standard",
+            "es": "Normal",
+            "po": "Normal"
+        },
+        "BigFontSize":
+        {
+            "fr": "Grande",
+            "en": "Large",
+            "es": "Grande",
+            "po": "Grande"
+        },
+        "VeryBigFontSize":
+        {
+            "fr": "Très grande",
+            "en": "Very large",
+            "es": "Muy grande",
+            "po": "Muito grande"
+        },
+        "GiganticFontSize":
+        {
+            "fr": "Gigantesque",
+            "en": "Gigantic",
+            "es": "Gigantesco",
+            "po": "Gigantesco"
         }
     }
 }
