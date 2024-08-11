@@ -24,7 +24,7 @@ public class VersionManager : MonoBehaviour
         version.text = $"v{Application.version}";
         AppPrerequisites();
         GenerateClientID();
-        if (PlayerPrefs.GetString("AppVersion", "None") != Application.version)
+        if (PlayerPrefs.GetString("AppVersion", "None") != Application.version || PlayerPrefs.GetInt("sendVAtNextBoot", 0) == 1)
         {
             PlayerPrefs.SetString("AppVersion", Application.version);
             StartCoroutine(SendUniqueIDToApi());
@@ -82,10 +82,12 @@ public class VersionManager : MonoBehaviour
 
         if (www.result != UnityWebRequest.Result.Success)
         {
+            PlayerPrefs.SetInt("sendVAtNextBoot", 1);
             Debug.LogError("Erreur lors de l'envoi des informations: " + www.error);
         }
         else
         {
+            PlayerPrefs.SetInt("sendVAtNextBoot", 0);
             Debug.Log("Envoi unique du téléchargement de la nouvelle version avec succès!");
         }
     }
