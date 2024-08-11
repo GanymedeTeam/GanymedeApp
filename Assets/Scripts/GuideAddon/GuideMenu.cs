@@ -410,6 +410,12 @@ public class GuideMenu : MonoBehaviour
 
     public void GoToGuideStep(int guideIndex)
     {
+        IEnumerator ResetContentSize()
+        {
+            yield return 0;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(StepContent.GetComponent<RectTransform>());
+        }
+
         Resources.UnloadUnusedAssets();
         foreach (Transform child in StepContent.transform) {
             if (child.name.Contains("Substep"))
@@ -451,6 +457,7 @@ public class GuideMenu : MonoBehaviour
             wManager.ToggleMap(wManager.toggleMapState);
         }
         StepContent.transform.parent.parent.Find("Scrollbar Vertical").GetComponent<Scrollbar>().value = 1f;
+        StartCoroutine(ResetContentSize());
     }
 
     private void ProcessSubSteps(string subentry)
