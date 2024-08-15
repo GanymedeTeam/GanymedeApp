@@ -101,12 +101,15 @@ public class WindowManager : MonoBehaviour
         SetScreenSize(windowWidth, windowHeight);
         float x = PlayerPrefs.GetFloat("windowXPosition", -1f);
         float y = PlayerPrefs.GetFloat("windowYPosition", -1f);
+        UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
         if (x != -1 && y != -1)
         {
-            UniWindowController u = UIWindowController.GetComponent<UniWindowController>();
             u.windowPosition = new Vector2(x, y);
         }
-
+        if (windowHeight + u.windowPosition.y >= Display.main.systemHeight)
+        {
+            u.windowPosition = new Vector2(200, 200);
+        }
     }
 
     void SetScreenSize(int x, int y)
