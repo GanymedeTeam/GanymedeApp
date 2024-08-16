@@ -12,6 +12,7 @@ public class VersionManager : MonoBehaviour
 {
     public TMP_Text version;
     private const string UniqueIDKey = "ClientID";
+    public GameObject UpdateNotification;
 
     private void AppPrerequisites()
     {
@@ -29,6 +30,7 @@ public class VersionManager : MonoBehaviour
             PlayerPrefs.SetString("AppVersion", Application.version);
             StartCoroutine(SendUniqueIDToApi());
         }
+        StartCoroutine(GetLatestReleaseTag());
     }
 
     private void GenerateClientID()
@@ -89,6 +91,32 @@ public class VersionManager : MonoBehaviour
         {
             PlayerPrefs.SetInt("sendVAtNextBoot", 0);
             Debug.Log("Envoi unique du téléchargement de la nouvelle version avec succès!");
+        }
+    }
+
+    [Serializable]
+    public class GitHubRelease
+    {
+        public string tag_name;
+    }
+
+    private IEnumerator GetLatestReleaseTag()
+    {
+        string apiUrl = "https://api.github.com/repos/GanymedeTeam/GanymedeApp/releases/latest";
+        UnityWebRequest request = UnityWebRequest.Get(apiUrl);
+        request.SetRequestHeader("User-Agent", "UnityApp");
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.ConnectionError && request.result != UnityWebRequest.Result.ProtocolError)
+        {
+            string jsonResponse = request.downloadHandler.text;
+            GitHubRelease release = JsonUtility.FromJson<GitHubRelease>(jsonResponse);
+            if (release.tag_name != $"v{Application.version}")
+            {
+                UpdateNotification.SetActive(true);
+                Debug.Log($"Latest release tag name: {release.tag_name}, current version is v{Application.version}");
+            }
         }
     }
 }

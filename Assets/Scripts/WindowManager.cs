@@ -300,7 +300,7 @@ public class WindowManager : MonoBehaviour
 
     public void WebsiteButtonClicked()
     {
-        Application.OpenURL("https://ganymede-dofus.com");
+        Application.OpenURL("https://ganymede-dofus.com/about");
     }
 
     public void InGuideRefreshInteractiveMap()
