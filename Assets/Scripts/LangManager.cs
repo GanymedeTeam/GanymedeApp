@@ -80,6 +80,7 @@ public class LangManager : MonoBehaviour
             public TradFormat BigFontSize;
             public TradFormat VeryBigFontSize;
             public TradFormat GiganticFontSize;
+            public TradFormat ProfilesPlaceholder;
         }
 
         public TradFormat Searchbar;
@@ -143,6 +144,7 @@ public class LangManager : MonoBehaviour
     public TMP_Text SettingsMenuShowGuides;
     public TMP_Text SettingsMenuLanguage;
     public TMP_Text SettingsMenuProfiles;
+    public TMP_Text SettingsMenuProfilesPlaceholder;
     public TMP_Text SettingsMenuCreateProfiles;
     public TMP_Text SettingsMenuFontSizeText;
     public TMP_Dropdown SettingsMenuFontSizeDropdown;
@@ -207,6 +209,7 @@ public class LangManager : MonoBehaviour
         SettingsMenuShowGuides.text = GetTranslationField(traductor.SettingsMenu.ShowGuides, languageCode);
         SettingsMenuLanguage.text = GetTranslationField(traductor.SettingsMenu.Language, languageCode);
         SettingsMenuProfiles.text = GetTranslationField(traductor.SettingsMenu.Profiles, languageCode);
+        SettingsMenuProfilesPlaceholder.text = GetTranslationField(traductor.SettingsMenu.ProfilesPlaceholder, languageCode);
         SettingsMenuCreateProfiles.text = GetTranslationField(traductor.SettingsMenu.CreateProfiles, languageCode);
         SettingsMenuFontSizeText.text = GetTranslationField(traductor.SettingsMenu.FontSizeText, languageCode);
         SettingsMenuFontSizeDropdown.options[0].text = GetTranslationField(traductor.SettingsMenu.NormalFontSize, languageCode);

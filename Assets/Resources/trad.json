@@ -244,6 +244,13 @@
             "es": "Crear un perfil",
             "po": "Criar um perfil"
         },
+        "ProfilesPlaceholder":
+        {
+            "fr": "Mon pseudo",
+            "en": "My username",
+            "es": "Mi nombre",
+            "po": "Meu nome"
+        },
         "FontSizeText":
         {
             "fr": "Taille de la police (guides)",
