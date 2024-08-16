@@ -5,6 +5,7 @@ using UnityEngine;
 using System.IO;
 using System;
 using System.Reflection;
+using UnityEngine.UI;
 
 public class LangManager : MonoBehaviour
 {
@@ -28,6 +29,9 @@ public class LangManager : MonoBehaviour
             public TradFormat Presentation;
             public TradFormat AlmanaxInfo;
             public TradFormat Affiliation;
+            public TradFormat NotifUpdateTitle;
+            public TradFormat NotifUpdateText;
+            public TradFormat NotifUpdateButton;
         }
 
         [Serializable]
@@ -102,6 +106,10 @@ public class LangManager : MonoBehaviour
     public TMP_Text MainMenuAlmanaxInfoRetrieve;
     public TMP_Text MainMenuAffiliation;
 
+    public TMP_Text NotifUpdateTitle;
+    public TMP_Text NotifUpdateText;
+    public Text NotifUpdateButtonText;
+
     //GuidesMenu
     public TMP_Text GuidesMenuSearchbar;
 
@@ -160,7 +168,7 @@ public class LangManager : MonoBehaviour
 
         ddMainMenu.text = GetTranslationField(traductor.MainMenu.MenuName, languageCode);
         ddGuidesMenu.text = GetTranslationField(traductor.Guides, languageCode);
-        ddDownloadMenu.text = GetTranslationField(traductor.DownloadMenu.RootMenuTitle, languageCode);
+        ddDownloadMenu.text = GetTranslationField(traductor.DownloadMenu.MenuTitle, languageCode);
         ddNotepadMenu.text = GetTranslationField(traductor.NotepadMenu.MenuName, languageCode);
         ddTravelMenu.text = GetTranslationField(traductor.TravelMenu.MenuTitle, languageCode);
 
@@ -168,6 +176,10 @@ public class LangManager : MonoBehaviour
         MainMenuPresentation.text = GetTranslationField(traductor.MainMenu.Presentation, languageCode);
         MainMenuAlmanaxInfoRetrieve.text = GetTranslationField(traductor.MainMenu.AlmanaxInfo, languageCode);
         MainMenuAffiliation.text = GetTranslationField(traductor.MainMenu.Affiliation, languageCode);
+
+        NotifUpdateTitle.text = GetTranslationField(traductor.MainMenu.NotifUpdateTitle, languageCode);
+        NotifUpdateText.text = GetTranslationField(traductor.MainMenu.NotifUpdateText, languageCode);
+        NotifUpdateButtonText.text = GetTranslationField(traductor.MainMenu.NotifUpdateButton, languageCode);
 
         GuidesMenuSearchbar.text = GetTranslationField(traductor.Searchbar, languageCode);
 

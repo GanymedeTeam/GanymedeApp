@@ -49,6 +49,27 @@
             "en": "Ganymede - Not affiliated with Ankama Games",
             "es": "Ganymede - No afiliado a Ankama Games",
             "po": "Ganymede - Não afiliado à Ankama Games"
+        },
+        "NotifUpdateTitle":
+        {
+            "fr": "Nouvelle version disponible!",
+            "en": "New version available!",
+            "es": "Nueva versión disponible",
+            "po": "Nova versão disponível!" 
+        },
+        "NotifUpdateText":
+        {
+            "fr": "Une nouvelle version de l'application Ganymède est disponible !\nPour la télécharger, rend-toi sur notre site.\nTa version de l'application n'est plus supportée.",
+            "en": "A new version of the Ganymede application is now available!\nTo download it, go to our website.\nYour version of the application is no longer supported.",
+            "es": "Ya está disponible una nueva versión de la aplicación Ganímedes.\nPara descargarla, visite nuestro sitio web.\nSu versión de la aplicación ya no es compatible.",
+            "po": "Uma nova versão do aplicativo Ganymede já está disponível!\nPara fazer o download, acesse nosso site.\nSua versão do aplicativo não é mais compatível." 
+        },
+        "NotifUpdateButton":
+        {
+            "fr": "J'y vais!",
+            "en": "Go!",
+            "es": "¡Adelante!",
+            "po": "Vá!" 
         }
     },
     "DownloadMenu":
